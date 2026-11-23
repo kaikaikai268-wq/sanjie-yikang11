@@ -78,7 +78,10 @@ pnpm verify      # astro check → build → 測試（字級、配色、inline s
 | `GOOGLE_SA_EMAIL` | 本機：以 `gcloud auth login` 的使用者模擬此服務帳號，不下載金鑰 |
 | `GOOGLE_SA_KEY_JSON` | 雲端 session：服務帳號 JSON 金鑰全文。只放在 claude.ai/code 的環境設定，不進版控 |
 
-權限：服務帳號在 GSC「設定 → 使用者和權限」加為使用者；GA4「管理 → 資源存取管理」加為檢視者。
+本站專用服務帳號：`analytics-reader@sanjie-3jwellness.iam.gserviceaccount.com`（GCP 專案 `sanjie-3jwellness`，已開 Search Console／Analytics Data／Analytics Admin／IAM Credentials API）。
+- 本機：`.env` 設 `GOOGLE_SA_EMAIL` 為上述帳號，`gcloud auth login`（lightman.chang@gmail.com，已有 Token Creator）後即可，不用金鑰。
+- 雲端 session：金鑰檔在建立者本機 `~/.config/sanjie-yikang11/sa-key.json`，全文貼到 claude.ai/code 環境變數 `GOOGLE_SA_KEY_JSON`。金鑰不進版控；換金鑰用 `gcloud iam service-accounts keys create/delete --iam-account <上述帳號>`。
+- 權限：服務帳號在 GSC「設定 → 使用者和權限」加為「完整」使用者；GA4「管理 → 資源存取管理」加為檢視者。少了哪個，`pnpm seo` 會直接講。
 
 雲端 Claude session（claude.ai/code）：`.claude/settings.json` 的 SessionStart hook 會跑 `scripts/cloud-setup.sh` 裝依賴。環境的網路設定要允許 `oauth2.googleapis.com`、`searchconsole.googleapis.com`、`analyticsdata.googleapis.com`，`pnpm seo` 才連得到。
 
