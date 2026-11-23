@@ -19,7 +19,7 @@ const DAYS = daysArg >= 0 ? Number(args[daysArg + 1]) : 28;
 const want = (s) => cmd === 'all' || cmd === s;
 
 const SITE = process.env.GSC_SITE || 'sc-domain:3jwellness.com';
-const PROPERTY = process.env.GA_PROPERTY;
+const PROPERTY = process.env.GA_PROPERTY || '565563726';
 const ORIGIN = process.env.PUBLIC_SITE_URL || 'https://3jwellness.com';
 
 let api, account;

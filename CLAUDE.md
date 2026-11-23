@@ -3,7 +3,7 @@
 保健商品展示＋洽詢導流網站。不賣東西、不收單：所有轉換都是導到 FB／IG／電話／LINE，以及原廠商品頁。
 原始雛形（單檔 HTML，圖片 base64 內嵌）保留在 `docs/prototype/`，只當參考，不再修改。
 
-Astro 7 純靜態輸出。現在部署在 GitHub Pages 暫時站，目標是正式網域 `https://3jwellness.com`（Cloudflare Workers 靜態資產），見「環境與上線」。無後端、無 UI 框架，互動是頁面內 `<script>`。
+Astro 7 純靜態輸出。部署在 GitHub Pages，正式網域 `https://3jwellness.com`，見「環境與上線」。無後端、無 UI 框架，互動是頁面內 `<script>`。
 
 ## 收手前一定要跑
 
@@ -23,7 +23,6 @@ pnpm verify      # astro check → build → 測試（字級、配色、inline s
 | `pnpm seo [index\|search\|ga\|submit] [--days N]` | GSC 收錄與搜尋成效、GA4 流量與轉換事件、提交 sitemap |
 | `pnpm seo gsc '<json>'`／`pnpm seo ga4 '<json>'` | 自訂 GSC searchAnalytics／GA4 runReport 查詢，原樣輸出 JSON（臨時分析用） |
 | `pnpm sync:tokens` | 從上游設計系統同步 `src/styles/tokens.css`（只在本機有上游 repo 時可用） |
-| `pnpm deploy` | 以正式階段建置並部署到 Cloudflare（正式網域 DNS 就緒後才用） |
 
 ## 數字與狀態：只留指令，不寫進文件
 
@@ -44,7 +43,7 @@ pnpm verify      # astro check → build → 測試（字級、配色、inline s
 
 頁面：`/`、`/products/`（篩選＋搜尋，`?category=` 可帶分類）、`/products/<id>/`（每個商品一頁）、`/about/`、`/partners/`、`/contact/`、`/404`。
 
-- 商品 `id` 就是網址，建立後不要改：改了會讓 GSC／GA 的歷史資料斷掉。真要改，在 `wrangler.jsonc` 旁加轉址再改。
+- 商品 `id` 就是網址，建立後不要改：改了會讓 GSC／GA 的歷史資料斷掉。真要改，在 `astro.config.mjs` 加 `redirects`（舊網址 → 新網址）再改。
 - 商品文案只寫原廠公開的成分與規格，**不寫功效宣稱**（食品廣告法規）；完整資訊導回原廠。
 - 場地套餐的價格是對外報價，改之前跟窗口確認。
 
@@ -61,9 +60,10 @@ pnpm verify      # astro check → build → 測試（字級、配色、inline s
 
 - 建置階段：預設全站 `noindex`＋robots 全擋、不載 GA；`PUBLIC_SITE_STAGE=production` 才開放收錄並載 GA。
 - 站內連結一律用 `src/lib/url.ts` 的 `u('/path/')`，不要寫死 `href="/..."`（子路徑部署會斷，`pnpm verify` 的連結測試會擋）。
-- **現行：GitHub Pages 暫時站**。`.github/workflows/deploy.yml` 在 push main 時以 `PUBLIC_BASE_PATH=/sanjie-yikang11` 建置並部署到 `https://kaikaikai268-wq.github.io/sanjie-yikang11/`，維持 noindex。Pages 的 Source 要設成 GitHub Actions（repo 設定，需 owner 權限）。部署狀態：`gh run list -R kaikaikai268-wq/sanjie-yikang11 -w deploy`。
-- **目標：正式網域 `https://3jwellness.com`**（www 同內容，canonical 指向根網域；`astro.config.mjs` 預設值）。網域在 Porkbun 註冊，DNS 要移到 Cloudflare（帳號 ID 在 `wrangler.jsonc`）；現況用 `dig +short NS 3jwellness.com` 查。`wrangler.jsonc` 已掛根網域與 www 兩個 custom domain，前提是 zone 在該 Cloudflare 帳號裡。
-- 切正式網域時：workflow 改成不設 `PUBLIC_BASE_PATH`、`PUBLIC_SITE_URL`，設 `PUBLIC_SITE_STAGE=production` 與 GA／GSC 變數（repository variables `PUBLIC_GA_ID`、`PUBLIC_GSC_TOKEN`），部署步驟換成 `pnpm exec wrangler deploy`（secret `CLOUDFLARE_API_TOKEN`）；之後 `pnpm seo submit` 提交 sitemap。
+- **部署：GitHub Pages，正式網域 `https://3jwellness.com`**（canonical 指向根網域，`astro.config.mjs` 預設值；www 由 GitHub 轉到根網域）。`.github/workflows/deploy.yml` 在 push main 時以 `PUBLIC_SITE_STAGE=production` 跑 `pnpm verify` 再部署；檢查沒過就不部署。部署狀態：`gh run list -R kaikaikai268-wq/sanjie-yikang11 -w deploy`。
+- Pages 設定（Source＝GitHub Actions、Custom domain＝`3jwellness.com`、Enforce HTTPS）在 repo 的 Settings → Pages，需 owner 權限。
+- DNS 在 Porkbun（網域也在那註冊）：根網域 A 記錄指向 GitHub Pages 的 185.199.108–111.153、www CNAME 指向 `kaikaikai268-wq.github.io`；另有 email 轉寄（MX）與 GSC 驗證 TXT，改 DNS 時不要動到。現況：`dig +short A 3jwellness.com`、`dig +short TXT 3jwellness.com`。
+- 上線或網址結構大改後跑 `pnpm seo submit` 提交 sitemap。GSC 驗證用 DNS TXT，不需要 `PUBLIC_GSC_TOKEN`。GA4 評估 ID 是 `src/lib/env.ts` 的預設值。
 - GA4 事件（Base.astro）：`contact_click`（參數 `channel`：phone／email／facebook／instagram／line_venue／facebook_package）、`official_click`（參數 `product_id`）。改事件名或參數值會讓報表前後不連續。要在 GA4 報表用參數，先到 GA4「自訂定義」把 `channel`、`product_id` 註冊為事件範圍維度。
 
 ## 流量資料（GSC／GA4）
@@ -73,7 +73,7 @@ pnpm verify      # astro check → build → 測試（字級、配色、inline s
 | 變數 | 說明 |
 |---|---|
 | `GSC_SITE` | Search Console 資源，預設 `sc-domain:3jwellness.com` |
-| `GA_PROPERTY` | GA4 資源 ID（純數字，不是 G- 開頭） |
+| `GA_PROPERTY` | GA4 資源 ID，預設 `565563726`（純數字；評估 ID 是 `G-K1GS5Q1QEN`） |
 | `PUBLIC_SITE_URL` | 預設 `https://3jwellness.com`，`pnpm seo index`／`submit` 讀線上 sitemap 用 |
 | `GOOGLE_SA_EMAIL` | 本機：以 `gcloud auth login` 的使用者模擬此服務帳號，不下載金鑰 |
 | `GOOGLE_SA_KEY_JSON` | 雲端 session：服務帳號 JSON 金鑰全文。只放在 claude.ai/code 的環境設定，不進版控 |

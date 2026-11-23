@@ -1,6 +1,5 @@
-# push main → 檢查＋建置 → 部署到 GitHub Pages（暫時網址 https://kaikaikai268-wq.github.io/sanjie-yikang11/）。
-# 暫時站維持 noindex（PUBLIC_SITE_STAGE 不設 production），canonical 已指向正式網域，不會跟正式站搶收錄。
-# 切到正式網域 3jwellness.com 的步驟見 CLAUDE.md「環境與上線」。
+# push main → 檢查＋建置（正式階段：開放收錄、載入 GA）→ 部署到 GitHub Pages，網址 https://3jwellness.com。
+# 自訂網域在 repo 的 Settings → Pages 設定（需 owner 權限），DNS 在 Porkbun。見 CLAUDE.md「環境與上線」。
 name: deploy
 
 on:
@@ -24,8 +23,7 @@ jobs:
     timeout-minutes: 15
     env:
       TZ: Asia/Taipei
-      PUBLIC_SITE_URL: https://kaikaikai268-wq.github.io
-      PUBLIC_BASE_PATH: /sanjie-yikang11
+      PUBLIC_SITE_STAGE: production
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6          # 版本讀 package.json 的 packageManager
