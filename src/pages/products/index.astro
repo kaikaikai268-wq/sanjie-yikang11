@@ -1,0 +1,59 @@
+---
+import Base from '../../layouts/Base.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { PRODUCTS, CATEGORIES, BRANDS, productsIn } from '../../data/products';
+---
+<Base title="保健商品" description={`三傑益康生技精選 ${Object.values(BRANDS).map((b) => b.name).join('、')} 保健商品：${CATEGORIES.join('、')}。`}>
+  <section class="section">
+    <div class="wrap">
+      <SectionHead level="h1" eyebrow="3J HEALTH SELECTION" title="保健商品" lead="依分類或商品名稱找到適合的日常保健。商品資訊整理自原廠公開資料，供貨與售價請洽詢確認。" />
+
+      <div class="toolbar">
+        <div class="filters" role="group" aria-label="商品分類">
+          <button type="button" data-filter="all" aria-pressed="true">全部商品 <span>{PRODUCTS.length}</span></button>
+          {CATEGORIES.map((c) => <button type="button" data-filter={c} aria-pressed="false">{c} <span>{productsIn(c).length}</span></button>)}
+        </div>
+        <label class="search">搜尋商品
+          <input id="product-search" type="search" placeholder="輸入商品名稱" autocomplete="off" />
+        </label>
+      </div>
+      <p id="result-count" role="status" aria-live="polite">顯示 {PRODUCTS.length} 款商品</p>
+      <div class="product-grid">{PRODUCTS.map((p) => <ProductCard product={p} headingLevel="h2" />)}</div>
+      <p id="empty" hidden>沒有符合的商品，請換個關鍵字或分類試試。</p>
+    </div>
+  </section>
+</Base>
+
+<script>
+  // 篩選與搜尋只在瀏覽器端，網址 ?category= 可直接帶分類（首頁「從你的日常」連結用）
+  const cards = [...document.querySelectorAll<HTMLElement>('.product-card')];
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+  const search = document.getElementById('product-search') as HTMLInputElement;
+  const count = document.getElementById('result-count')!;
+  const empty = document.getElementById('empty')!;
+  let category = new URLSearchParams(location.search).get('category') ?? 'all';
+  if (!buttons.some((b) => b.dataset.filter === category)) category = 'all';
+
+  function update() {
+    const q = search.value.trim().toLocaleLowerCase();
+    let n = 0;
+    for (const c of cards) {
+      const show = (category === 'all' || c.dataset.category === category) && c.dataset.name!.toLocaleLowerCase().includes(q);
+      c.hidden = !show;
+      if (show) n++;
+    }
+    buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === category)));
+    count.textContent = `顯示 ${n} 款商品`;
+    empty.hidden = n !== 0;
+  }
+  buttons.forEach((b) => b.addEventListener('click', () => {
+    category = b.dataset.filter!;
+    const url = new URL(location.href);
+    if (category === 'all') url.searchParams.delete('category'); else url.searchParams.set('category', category);
+    history.replaceState(null, '', url);
+    update();
+  }));
+  search.addEventListener('input', update);
+  update();
+</script>

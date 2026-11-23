@@ -1,0 +1,218 @@
+/* ============================================================
+ * 三傑益康生技：品牌 token 與元件樣式
+ *
+ * 規則（test/style.test.mjs 會擋）：
+ *   - 顏色只用 oklch() 或 var(--*)；hex 只能出現在下方 @supports not 的 fallback 區塊
+ *   - 字級只用 var(--text-xs) ~ var(--text-3xl)，或 clamp() 下限 ≥ 18px
+ *   - 新增色先加 token 到 :root，並同步補 fallback
+ * 基礎 token（文字、背景、字級）來自 tokens.css（pnpm sync:tokens）
+ * ============================================================ */
+
+:root {
+  /* 中性：暖白與鼠尾草綠底（取自雛形） */
+  --bg-page:      oklch(0.98 0.006 95);
+  --bg-sage:      oklch(0.94 0.018 125);
+  --line:         oklch(0.88 0.012 110);
+  /* 品牌：森林綠為主色、金色為點綴、深藍來自 3J 標誌 */
+  --brand:        oklch(0.42 0.06 160);
+  --brand-strong: oklch(0.34 0.05 160);
+  --brand-tint:   oklch(0.94 0.02 150);
+  --gold:         oklch(0.52 0.09 80);
+  --gold-tint:    oklch(0.93 0.04 85);
+  --navy:         oklch(0.36 0.1 260);
+  --on-brand:     oklch(0.98 0.005 95);
+  --shadow:       oklch(0.2 0.02 160 / 0.08);
+
+  --font-serif: 'Noto Serif TC', 'PMingLiU', serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+  --radius: 1rem;
+  --wrap: 72rem;
+}
+
+@supports not (color: oklch(0 0 0)) {
+  :root {
+    --bg-page:      #faf8f4;
+    --bg-sage:      #e8ede1;
+    --line:         #d8d8cf;
+    --brand:        #2d5742;
+    --brand-strong: #1e402f;
+    --brand-tint:   #e2efe4;
+    --gold:         #846324;
+    --gold-tint:    #f4e6ca;
+    --navy:         #1b3b71;
+    --on-brand:     #f9f8f5;
+    --shadow:       #00000014;
+  }
+}
+
+/* ── 基礎 ── */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.6;
+}
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--brand); text-underline-offset: 0.2em; }
+a:hover { color: var(--brand-strong); }
+h1, h2, h3 { font-family: var(--font-serif); color: var(--brand-strong); line-height: 1.3; margin: 0 0 0.5em; }
+p { margin: 0 0 1em; }
+:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+
+.wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 1.25rem; }
+.center { text-align: center; }
+.skip { position: absolute; left: -999px; top: 0; padding: 0.5rem 1rem; background: var(--brand); color: var(--on-brand); font-size: var(--text-xs); z-index: 10; }
+.skip:focus { left: 0; }
+
+/* ── 按鈕與標籤 ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.4em;
+  min-height: 3rem; padding: 0.5rem 1.4rem; border-radius: 999px;
+  font-size: var(--text-xs); font-weight: 700; text-decoration: none; border: 2px solid transparent;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-primary { background: var(--brand); color: var(--on-brand); }
+.btn-primary:hover { background: var(--brand-strong); color: var(--on-brand); }
+.btn-outline { border-color: var(--brand); color: var(--brand); background: transparent; }
+.btn-outline:hover { background: var(--brand-tint); }
+.btn-ghost { color: var(--brand); padding-inline: 0.5rem; }
+.tag { display: inline-block; font-size: var(--text-xs); color: var(--gold); font-weight: 700; margin-bottom: 0.4rem; }
+.eyebrow { font-size: var(--text-xs); letter-spacing: 0.18em; color: var(--gold); font-weight: 700; margin: 0 0 0.5rem; }
+.chips { list-style: none; padding: 0; margin: 0 0 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.chips li { font-size: var(--text-xs); padding: 0.15rem 0.8rem; border-radius: 999px; background: var(--brand-tint); color: var(--brand-strong); }
+.points { padding-left: 1.2em; margin: 0 0 1rem; color: var(--text-secondary); font-size: var(--text-sm); }
+.points.two-col { columns: 2 16rem; }
+
+/* ── Header / Footer ── */
+.site-header { position: sticky; top: 0; z-index: 5; background: var(--bg-page); border-bottom: 1px solid var(--line); }
+.header-inner { display: flex; align-items: center; justify-content: space-between; min-height: 4.5rem; gap: 1rem; }
+.brand { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; color: var(--brand-strong); font-family: var(--font-serif); font-weight: 700; font-size: var(--text-sm); }
+.brand img { width: 52px; height: auto; }
+.nav { display: flex; align-items: center; gap: 1.5rem; }
+.nav a:not(.btn) { color: var(--text-secondary); text-decoration: none; font-size: var(--text-xs); font-weight: 700; }
+.nav a[aria-current='page']:not(.btn) { color: var(--brand); text-decoration: underline; }
+.nav-mobile { display: none; position: relative; }
+.nav-mobile summary { cursor: pointer; list-style: none; font-size: var(--text-xs); font-weight: 700; padding: 0.5rem 1rem; border: 2px solid var(--brand); border-radius: 999px; color: var(--brand); }
+.nav-mobile summary::-webkit-details-marker { display: none; }
+.nav-mobile nav { position: absolute; right: 0; top: calc(100% + 0.5rem); background: var(--bg-page); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.5rem; min-width: 12rem; box-shadow: 0 8px 24px var(--shadow); }
+.nav-mobile nav a { display: block; padding: 0.6rem 1rem; text-decoration: none; font-size: var(--text-sm); }
+@media (max-width: 860px) { .nav { display: none; } .nav-mobile { display: block; } }
+
+.site-footer { background: var(--brand-strong); color: var(--on-brand); padding: 3rem 0 1.5rem; margin-top: 0; }
+.site-footer a { color: var(--on-brand); }
+.footer-inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2rem; }
+.footer-inner img { background: var(--on-brand); border-radius: 0.75rem; padding: 0.5rem; margin-bottom: 1rem; }
+.footer-cols { display: flex; flex-wrap: wrap; gap: 3rem; }
+.footer-cols nav, .footer-contact { display: flex; flex-direction: column; gap: 0.4rem; font-size: var(--text-xs); }
+.site-footer .motto { font-family: var(--font-serif); font-size: var(--text-sm); }
+.footer-legal { border-top: 1px solid var(--brand); margin-top: 2rem; padding-top: 1rem; font-size: var(--text-xs); }
+
+/* ── 區段 ── */
+.section { padding: clamp(3rem, 7vw, 5.5rem) 0; }
+.section-sage { background: var(--bg-sage); }
+.section-head { max-width: 44rem; margin-bottom: 2rem; }
+.section-head.center { margin-inline: auto; text-align: center; }
+.section-title { font-size: clamp(var(--text-xl), 4vw, var(--text-2xl)); }
+.section-title small { display: block; font-size: var(--text-sm); color: var(--gold); font-family: var(--font-sans); }
+.subhead { font-size: var(--text-lg); margin-top: 1.5rem; }
+.lead { color: var(--text-secondary); font-size: var(--text-base); }
+.more { text-align: center; margin-top: 2rem; }
+
+/* ── Hero ── */
+.hero { background: var(--bg-sage); padding: clamp(2.5rem, 6vw, 5rem) 0; }
+.hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 3rem; align-items: center; }
+.hero h1 { margin-bottom: 1rem; }
+.hero-name { display: block; font-size: var(--text-sm); color: var(--text-secondary); letter-spacing: 0.1em; }
+.hero-headline { display: block; font-size: clamp(var(--text-2xl), 6vw, var(--text-3xl)); }
+.hero-headline span { display: block; }
+.motto-lines { font-family: var(--font-serif); color: var(--gold); font-size: var(--text-lg); }
+.motto-lines span { display: block; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 1.5rem 0; }
+.hero-brands { font-size: var(--text-xs); color: var(--text-secondary); }
+.hero-visual { text-align: center; }
+.hero-visual-title { font-family: var(--font-serif); font-size: var(--text-lg); color: var(--brand-strong); }
+.hero-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; align-items: end; }
+.hero-tile { background: var(--on-brand); border-radius: 999px 999px var(--radius) var(--radius); overflow: hidden; text-decoration: none; box-shadow: 0 8px 24px var(--shadow); }
+.hero-tile:nth-child(2) { transform: translateY(1.5rem); }
+.hero-tile img { aspect-ratio: 1; object-fit: cover; width: 100%; }
+.hero-tile span { display: block; padding: 0.4rem; font-size: var(--text-xs); color: var(--brand); }
+.hero-slogan { margin-top: 2.5rem; font-family: var(--font-serif); color: var(--gold); font-size: var(--text-sm); font-style: italic; }
+@media (max-width: 900px) { .hero-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* ── 步驟 ── */
+.steps-inline { list-style: none; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem 2rem; counter-reset: s; }
+.steps-inline li { counter-increment: s; font-size: var(--text-sm); color: var(--text-secondary); }
+.steps-inline li::before { content: '0' counter(s) ' '; color: var(--gold); font-weight: 700; }
+.process { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 1rem; counter-reset: p; }
+.process li { counter-increment: p; background: var(--bg-page); border-radius: var(--radius); padding: 1.5rem; display: flex; flex-direction: column; gap: 0.4rem; }
+.process li::before { content: '0' counter(p); font-family: var(--font-serif); color: var(--gold); font-size: var(--text-lg); font-weight: 700; }
+.process strong { color: var(--brand-strong); font-size: var(--text-sm); }
+.process span { color: var(--text-secondary); font-size: var(--text-xs); }
+
+/* ── 需求入口 ── */
+.needs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1rem; }
+.need-card { background: var(--bg-page); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.5rem; text-decoration: none; display: flex; flex-direction: column; gap: 0.4rem; transition: transform 0.2s; }
+.need-card:hover { transform: translateY(-4px); }
+.need-card strong { color: var(--brand-strong); font-size: var(--text-base); }
+.need-card span { color: var(--text-secondary); font-size: var(--text-xs); }
+.need-card b { color: var(--gold); font-size: var(--text-xs); margin-top: auto; }
+
+/* ── 商品 ── */
+.toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; align-items: center; margin-bottom: 1rem; }
+.filters { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.filters button { font: inherit; font-size: var(--text-xs); padding: 0.4rem 1rem; border-radius: 999px; border: 1px solid var(--line); background: var(--bg-page); color: var(--text-secondary); cursor: pointer; min-height: 2.75rem; }
+.filters button[aria-pressed='true'] { background: var(--brand); color: var(--on-brand); border-color: var(--brand); }
+.search { display: flex; align-items: center; gap: 0.5rem; font-size: var(--text-xs); color: var(--text-secondary); }
+.search input { font: inherit; font-size: var(--text-xs); padding: 0.5rem 1rem; border: 1px solid var(--line); border-radius: 999px; background: var(--bg-page); min-width: 14rem; }
+#result-count { font-size: var(--text-xs); color: var(--text-secondary); }
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr)); gap: 1.5rem; }
+.product-card { background: var(--bg-page); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; }
+.product-card[hidden] { display: none; }
+.product-image img { aspect-ratio: 1; object-fit: cover; width: 100%; background: var(--on-brand); }
+.product-body { padding: 1.25rem; display: flex; flex-direction: column; }
+.product-name { font-size: var(--text-lg); margin: 0 0 0.5rem; }
+.product-name a { text-decoration: none; color: var(--brand-strong); }
+.product-name a:hover { text-decoration: underline; }
+.audience { font-size: var(--text-xs); color: var(--brand); background: var(--brand-tint); border-radius: 0.5rem; padding: 0.4rem 0.75rem; margin-bottom: 0.75rem; }
+.audience span { display: block; color: var(--text-secondary); }
+
+.breadcrumb { font-size: var(--text-xs); color: var(--text-secondary); margin-bottom: 1.5rem; }
+.product-detail { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 3rem; align-items: start; }
+.product-detail-media { display: flex; flex-direction: column; gap: 1rem; }
+.product-detail-media img { border-radius: var(--radius); background: var(--on-brand); }
+@media (max-width: 900px) { .product-detail { grid-template-columns: minmax(0, 1fr); } }
+.facts { display: grid; gap: 0.5rem; margin: 0 0 1rem; }
+.facts div { display: grid; grid-template-columns: 8rem minmax(0, 1fr); gap: 1rem; border-bottom: 1px solid var(--line); padding-bottom: 0.5rem; }
+.facts dt { color: var(--text-secondary); font-size: var(--text-xs); }
+.facts dd { margin: 0; font-size: var(--text-sm); overflow-wrap: anywhere; }
+.note { font-size: var(--text-xs); color: var(--text-secondary); }
+.contact-buttons { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; }
+.cta-band .contact-buttons { justify-content: center; }
+.contact-facts { max-width: 40rem; }
+
+/* ── 卡片、顧問、團隊、夥伴 ── */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 1.5rem; }
+.card-grid.two { grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr)); }
+.card { background: var(--bg-page); border-radius: var(--radius); padding: 1.5rem; box-shadow: 0 8px 24px var(--shadow); }
+.card h3 { font-size: var(--text-lg); }
+.venue img { border-radius: 0.75rem; margin-bottom: 1rem; aspect-ratio: 16 / 9; object-fit: cover; width: 100%; }
+.advisor { display: grid; grid-template-columns: 22rem 1fr; gap: 2.5rem; background: var(--brand-tint); border-radius: var(--radius); padding: 2rem; align-items: start; }
+.advisor img { border-radius: var(--radius); }
+@media (max-width: 900px) { .advisor { grid-template-columns: minmax(0, 1fr); } }
+.team { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 1rem; }
+.team li { background: var(--bg-page); border-radius: var(--radius); padding: 1.25rem 2rem; font-family: var(--font-serif); font-size: var(--text-lg); color: var(--brand-strong); }
+.team span { display: block; font-family: var(--font-sans); font-size: var(--text-xs); color: var(--gold); letter-spacing: 0.15em; }
+.partner-list { display: grid; gap: 1.5rem; }
+.partner { display: grid; grid-template-columns: 16rem 1fr; gap: 2rem; background: var(--bg-page); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.5rem; align-items: center; }
+.partner-logo { background: var(--on-brand); border-radius: 0.75rem; padding: 1rem; text-align: center; }
+.wordmark { font-family: var(--font-serif); font-size: var(--text-2xl); letter-spacing: 0.1em; color: var(--gold); margin: 0; }
+.wordmark small { display: block; font-size: var(--text-xs); letter-spacing: 0; color: var(--text-secondary); }
+@media (max-width: 700px) { .partner { grid-template-columns: 1fr; } }
+
+.cta-band { background: var(--brand-tint); }
+.cta-band .motto-lines { font-size: clamp(var(--text-lg), 3.5vw, var(--text-2xl)); }

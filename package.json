@@ -1,0 +1,30 @@
+{
+  "name": "sanjie-yikang11",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "三傑益康生技 3J Wellness Biotech 品牌網站",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "test": "node --test \"test/**/*.test.mjs\"",
+    "verify": "astro check && astro build && node --test \"test/**/*.test.mjs\"",
+    "seo": "node --env-file-if-exists=.env scripts/seo.mjs",
+    "catalog": "node scripts/catalog.mjs",
+    "sync:tokens": "node scripts/sync-tokens.mjs",
+    "deploy": "PUBLIC_SITE_STAGE=production astro build && wrangler deploy"
+  },
+  "packageManager": "pnpm@10.32.1",
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.6",
+    "astro": "^7.4.13",
+    "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "typescript": "^6.0.3",
+    "wrangler": "^4.166.0"
+  }
+}

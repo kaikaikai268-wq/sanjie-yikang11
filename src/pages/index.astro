@@ -1,0 +1,114 @@
+---
+import { u } from '../lib/url';
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/SectionHead.astro';
+import ProductCard from '../components/ProductCard.astro';
+import ContactButtons from '../components/ContactButtons.astro';
+import { SITE, HERO, SELECTION, NEEDS, PROCESS } from '../data/site';
+import { PRODUCTS, BRANDS, CATEGORIES, productsIn } from '../data/products';
+import { siteImage, productImage } from '../lib/images';
+
+const heroTiles = [
+  { img: productImage('ym-d3'), label: '營養補給', alt: '陽明維生素D3商品介紹圖' },
+  { img: siteImage('hero-probiotic'), label: '日常保養', alt: '一家人益生菌商品介紹圖' },
+  { img: siteImage('hero-night'), label: '夜間補給', alt: '夜光孅子夜間補給商品介紹圖' },
+];
+// 首頁精選：各分類輪流取，共 6 項（兩列三欄排滿）
+const FEATURED_COUNT = 6;
+const pools = CATEGORIES.map((c) => productsIn(c));
+const featured: typeof PRODUCTS = [];
+for (let i = 0; featured.length < FEATURED_COUNT && pools.some((p) => p[i]); i++)
+  for (const pool of pools) if (pool[i] && featured.length < FEATURED_COUNT) featured.push(pool[i]);
+const needHref = (c: string | null) => u(c ? `/products/?category=${encodeURIComponent(c)}` : '/products/');
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: SITE.name,
+  alternateName: SITE.nameEn,
+  url: Astro.site?.href,
+  description: SITE.description,
+};
+---
+<Base jsonLd={jsonLd}>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">{HERO.eyebrow}</p>
+        <h1>
+          <span class="hero-name">{SITE.name}</span>
+          <span class="hero-headline">{HERO.headline.map((l) => <span>{l}</span>)}</span>
+        </h1>
+        <p class="motto-lines">{SITE.motto.map((m) => <span>{m}</span>)}</p>
+        <p class="lead">{HERO.lead.join('')}</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href={u('/products/')}>探索保健商品</a>
+          <a class="btn btn-ghost" href={u('/about/')}>我們的選品理念 →</a>
+        </div>
+        <p class="hero-brands">合作品牌：{Object.values(BRANDS).map((b) => b.name).join('、')}</p>
+      </div>
+      <div class="hero-visual">
+        <p class="eyebrow">{HERO.collectionLabel}</p>
+        <p class="hero-visual-title">{HERO.collectionTitle}</p>
+        <div class="hero-tiles">
+          {heroTiles.map((t, i) => (
+            <a class="hero-tile" href={u('/products/')}>
+              <Image src={t.img} alt={t.alt} widths={[240, 400]} sizes="(max-width: 900px) 30vw, 200px" loading={i === 0 ? 'eager' : 'lazy'} />
+              <span>{t.label}</span>
+            </a>
+          ))}
+        </div>
+        <p class="hero-slogan">{SITE.slogan}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <SectionHead eyebrow="OUR SELECTION" title={SELECTION.title} lead={SELECTION.lead} center />
+      <ol class="steps-inline">{SELECTION.steps.map((s) => <li>{s}</li>)}</ol>
+    </div>
+  </section>
+
+  <section class="section section-sage">
+    <div class="wrap">
+      <SectionHead eyebrow="START WITH YOUR NEEDS" title="從你的日常，找到起點。" lead="先選一個你在意的方向，再慢慢認識商品。" />
+      <div class="needs-grid">
+        {NEEDS.map((n) => (
+          <a class="need-card" href={needHref(n.category)}>
+            <strong>{n.title}</strong>
+            <span>{n.desc}</span>
+            <b>探索商品 →</b>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <SectionHead eyebrow="3J HEALTH SELECTION" title="一家人，日常好選擇。" lead="健康不用很複雜。從了解需求開始，找到真正適合自己的日常保健。" />
+      <div class="product-grid">{featured.map((p) => <ProductCard product={p} />)}</div>
+      <p class="more"><a class="btn btn-outline" href={u('/products/')}>看全部 {PRODUCTS.length} 款商品 →</a></p>
+    </div>
+  </section>
+
+  <section class="section section-sage">
+    <div class="wrap">
+      <SectionHead eyebrow="商品洽詢流程" title="從了解，到安心選擇。" lead="日常補給或節慶送禮，先從你的需求開始。" center />
+      <ol class="process">
+        {PROCESS.map((s) => <li><strong>{s.title}</strong><span>{s.desc}</span></li>)}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section cta-band">
+    <div class="wrap center">
+      <p class="eyebrow">聯繫三傑益康生技</p>
+      <h2 class="motto-lines">{SITE.motto.map((m) => <span>{m}</span>)}</h2>
+      <p class="lead">日常保健 × 節慶送禮 × 通路合作</p>
+      <ContactButtons />
+    </div>
+  </section>
+</Base>

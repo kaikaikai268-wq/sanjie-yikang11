@@ -1,0 +1,53 @@
+# push main → 檢查＋建置 → 部署到 GitHub Pages（暫時網址 https://kaikaikai268-wq.github.io/sanjie-yikang11/）。
+# 暫時站維持 noindex（PUBLIC_SITE_STAGE 不設 production），canonical 已指向正式網域，不會跟正式站搶收錄。
+# 切到正式網域 3jwellness.com 的步驟見 CLAUDE.md「環境與上線」。
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write      # deploy-pages
+  id-token: write   # deploy-pages 的 OIDC
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false   # 部署到一半被砍會留下半套產出
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TZ: Asia/Taipei
+      PUBLIC_SITE_URL: https://kaikaikai268-wq.github.io
+      PUBLIC_BASE_PATH: /sanjie-yikang11
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6          # 版本讀 package.json 的 packageManager
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '26'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: 檢查與建置（型別、字級、配色、連結、收錄設定）
+        run: pnpm verify
+      - uses: actions/upload-pages-artifact@v5
+        if: github.event_name != 'pull_request'
+        with:
+          path: dist
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v5
+        id: deploy

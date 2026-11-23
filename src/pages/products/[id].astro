@@ -1,0 +1,59 @@
+---
+import { u } from '../../lib/url';
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import ContactButtons from '../../components/ContactButtons.astro';
+import { PRODUCTS, BRANDS, type Product } from '../../data/products';
+import { PROCESS } from '../../data/site';
+import { productImage } from '../../lib/images';
+
+export function getStaticPaths() {
+  return PRODUCTS.map((product) => ({ params: { id: product.id }, props: { product } }));
+}
+const { product: p } = Astro.props as { product: Product };
+const brand = BRANDS[p.brand];
+const related = PRODUCTS.filter((x) => x.category === p.category && x.id !== p.id).slice(0, 3);
+const img = productImage(p.id);
+const description = `${p.name}（${brand.name}・${p.category}）：${p.points.join('、')}。適合${p.audience}。${brand.note}`;
+---
+<Base title={p.name} description={description} ogImage={img}>
+  <section class="section">
+    <div class="wrap">
+      <nav class="breadcrumb" aria-label="麵包屑">
+        <a href={u('/')}>首頁</a> / <a href={u('/products/')}>保健商品</a> / <a href={u(`/products/?category=${encodeURIComponent(p.category)}`)}>{p.category}</a>
+      </nav>
+      <div class="product-detail">
+        <div class="product-detail-media">
+          <Image src={img} alt={`${p.name}商品介紹圖`} widths={[480, 720, 960]} sizes="(max-width: 900px) 100vw, 560px" loading="eager" />
+          {p.extraImage && <Image src={productImage(p.extraImage)} alt={`${p.name}袋裝商品圖`} width={240} />}
+        </div>
+        <div class="product-detail-copy">
+          <span class="tag">{p.category}</span>
+          <h1 class="section-title">{p.name}</h1>
+          <p class="audience"><span>適合誰？</span>{p.audience}</p>
+          <ul class="points">{p.points.map((t) => <li>{t}</li>)}</ul>
+          <dl class="facts">
+            <div><dt>品牌</dt><dd>{brand.name}</dd></div>
+            <div><dt>商品資訊來源</dt><dd>{brand.name}原廠公開資料</dd></div>
+            <div><dt>供貨狀態</dt><dd>請洽詢確認</dd></div>
+          </dl>
+          <p class="note">{brand.note}</p>
+          <p><a class="btn btn-outline" href={brand.officialUrl} target="_blank" rel="noopener noreferrer" data-ga-official={p.id}>{brand.officialLabel} ↗</a></p>
+          <h2 class="subhead">洽詢這項商品</h2>
+          <p>{PROCESS[1].desc}</p>
+          <ContactButtons />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {related.length > 0 && (
+    <section class="section section-sage">
+      <div class="wrap">
+        <h2 class="section-title">同系列商品</h2>
+        <div class="product-grid">{related.map((r) => <ProductCard product={r} />)}</div>
+      </div>
+    </section>
+  )}
+</Base>

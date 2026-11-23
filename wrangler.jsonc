@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  // 純靜態網站：沒有 Worker 程式，只發佈 dist/ 的靜態資產。帳號與 chl-pro.com、toycar.bid 相同。
+  "name": "sanjie-yikang11",
+  "account_id": "9d9e58b5e0d1657b8f74bd2cbfc91ee3",
+  "compatibility_date": "2026-11-01",
+  // 有 routes 時 wrangler 預設關掉 workers.dev，明確打開保留預覽網址
+  "workers_dev": true,
+  // custom_domain 需要 3jwellness.com 這個 zone 在同一個 Cloudflare 帳號（NS 指向 Cloudflare），否則部署會失敗
+  "routes": [
+    { "pattern": "3jwellness.com", "custom_domain": true },
+    { "pattern": "www.3jwellness.com", "custom_domain": true }
+  ],
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}

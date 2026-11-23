@@ -1,0 +1,128 @@
+---
+import { u } from '../lib/url';
+import '../styles/tokens.css';
+import '../styles/site.css';
+import { Image, getImage } from 'astro:assets';
+import { SITE, NAV, CONTACT, DISCLAIMER } from '../data/site';
+import { IS_PRODUCTION, GA_ID, GSC_TOKEN } from '../lib/env';
+import { siteImage } from '../lib/images';
+
+interface Props {
+  title?: string;           // 不含站名；首頁留空
+  description?: string;
+  ogImage?: ImageMetadata;
+  jsonLd?: Record<string, unknown>;
+}
+const { title, description = SITE.description, ogImage, jsonLd } = Astro.props;
+const fullTitle = title ? `${title}｜${SITE.name}` : `${SITE.name} | ${SITE.nameEn} · ${SITE.motto.join('；')}`;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const og = await getImage({ src: ogImage ?? siteImage('logo-full'), width: 1200, format: 'jpg' });
+const ogUrl = new URL(og.src, Astro.site).href;
+const path = Astro.url.pathname;
+const current = (href: string) => (path.startsWith(u(href)) ? 'page' : undefined);
+---
+<!doctype html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {!IS_PRODUCTION && <meta name="robots" content="noindex,nofollow" />}
+    {GSC_TOKEN && <meta name="google-site-verification" content={GSC_TOKEN} />}
+    <link rel="icon" type="image/png" href={u('/favicon.png')} />
+    <link rel="apple-touch-icon" href={u('/apple-touch-icon.png')} />
+    <link rel="sitemap" href={u('/sitemap-index.xml')} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="zh_TW" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogUrl} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet" />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+    {IS_PRODUCTION && GA_ID && (
+      <>
+        <script async is:inline src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}></script>
+        <script is:inline define:vars={{ GA_ID }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          window.gtag = gtag;
+          gtag('js', new Date());
+          gtag('config', GA_ID);
+        </script>
+      </>
+    )}
+  </head>
+  <body>
+    <a class="skip" href="#main">跳到主要內容</a>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="brand" href={u('/')} aria-label={`${SITE.name} 首頁`}>
+          <Image src={siteImage('logo-mark')} alt="" width={52} height={45} loading="eager" />
+          <span>{SITE.name}</span>
+        </a>
+        <nav class="nav" aria-label="主選單">
+          {NAV.map((n) => <a href={u(n.href)} aria-current={current(n.href)}>{n.label}</a>)}
+          <a class="btn btn-primary" href={u('/contact/')} aria-current={current('/contact/')}>聯絡我們</a>
+        </nav>
+        <details class="nav-mobile">
+          <summary>選單</summary>
+          <nav aria-label="行動版選單">
+            {NAV.map((n) => <a href={u(n.href)}>{n.label}</a>)}
+            <a href={u('/contact/')}>聯絡我們</a>
+          </nav>
+        </details>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap footer-inner">
+        <div>
+          <Image src={siteImage('logo-full')} alt={`${SITE.name} ${SITE.nameEn}`} width={140} />
+          <p class="motto">{SITE.motto.join('；')}</p>
+        </div>
+        <div class="footer-cols">
+          <nav aria-label="頁尾選單">
+            <a href={u('/')}>首頁</a>
+            {NAV.map((n) => <a href={u(n.href)}>{n.label}</a>)}
+            <a href={u('/contact/')}>聯絡我們</a>
+          </nav>
+          <div class="footer-contact">
+            <a href={CONTACT.phone.href} data-ga-contact={CONTACT.phone.ga}>電話 {CONTACT.phone.label}</a>
+            <a href={CONTACT.email.href} data-ga-contact={CONTACT.email.ga}>{CONTACT.email.label}</a>
+            <a href={CONTACT.facebook.href} target="_blank" rel="noopener noreferrer" data-ga-contact={CONTACT.facebook.ga}>Facebook</a>
+            <a href={CONTACT.instagram.href} target="_blank" rel="noopener noreferrer" data-ga-contact={CONTACT.instagram.ga}>Instagram</a>
+          </div>
+        </div>
+      </div>
+      <div class="wrap footer-legal">
+        <p>{DISCLAIMER}</p>
+        <p>© {new Date().getFullYear()} {SITE.name} {SITE.nameEn}</p>
+      </div>
+    </footer>
+
+    <script>
+      // GA4 事件：聯絡管道點擊（contact_click）、原廠連結點擊（official_click）。
+      // 沒載入 GA（本機、預覽）時什麼都不做。事件名與參數改了會讓報表前後不連續。
+      document.addEventListener('click', (e) => {
+        const a = (e.target as Element).closest('a');
+        const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag;
+        if (!a || !gtag) return;
+        if (a.dataset.gaContact) gtag('event', 'contact_click', { channel: a.dataset.gaContact, page_path: location.pathname });
+        if (a.dataset.gaOfficial) gtag('event', 'official_click', { product_id: a.dataset.gaOfficial, link_url: a.href });
+      });
+      // 點選行動版選單連結後收起
+      document.querySelectorAll<HTMLDetailsElement>('.nav-mobile').forEach((d) =>
+        d.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => (d.open = false))));
+    </script>
+  </body>
+</html>

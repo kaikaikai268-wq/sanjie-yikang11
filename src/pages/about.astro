@@ -1,0 +1,57 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/SectionHead.astro';
+import { SITE, SELECTION, PLATFORMS, TEAM, ADVISOR } from '../data/site';
+import { siteImage } from '../lib/images';
+---
+<Base title="關於三傑" description={`${SITE.name}的選品理念、銷售與合作方向、團隊與特約健康食品顧問。`}>
+  <section class="section">
+    <div class="wrap">
+      <SectionHead level="h1" eyebrow="ABOUT 3J" title="關於三傑益康" lead={SITE.description} />
+      <h2 class="subhead">{SELECTION.title}</h2>
+      <p>{SELECTION.lead}</p>
+      <ol class="steps-inline">{SELECTION.steps.map((s) => <li>{s}</li>)}</ol>
+    </div>
+  </section>
+
+  <section class="section section-sage">
+    <div class="wrap">
+      <SectionHead eyebrow="SALES & PARTNERSHIPS" title="一起把關心，傳得更遠。" lead="以保健商品為核心，串連網站展示、團購代售與企業採購需求。" />
+      <div class="card-grid">
+        {PLATFORMS.map((p) => (
+          <article class="card">
+            <p class="eyebrow">{p.phase}</p>
+            <h3>{p.name}</h3>
+            <p class="tag">{p.use}</p>
+            <ul class="points">{p.points.map((t) => <li>{t}</li>)}</ul>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <aside class="advisor" aria-labelledby="advisor-title">
+        <Image src={siteImage('advisor-luo-yang')} alt={`${ADVISOR.name}，${SITE.name}${ADVISOR.title}`} widths={[360, 560]} sizes="(max-width: 900px) 100vw, 360px" />
+        <div>
+          <p class="eyebrow">{SITE.name}</p>
+          <h2 id="advisor-title" class="section-title">{ADVISOR.name}<small>{ADVISOR.title}</small></h2>
+          <p class="tag">{ADVISOR.background}</p>
+          <p>{ADVISOR.bio}</p>
+          <h3 class="subhead">專長領域</h3>
+          <ul class="points two-col">{ADVISOR.expertise.map((t) => <li>{t}</li>)}</ul>
+          <p><a href={ADVISOR.url} target="_blank" rel="noopener noreferrer">認識顧問與閱讀文章 ↗</a></p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section section-sage">
+    <div class="wrap">
+      <SectionHead title="三傑益康團隊" lead="結合行銷、內容與通路資源，傳遞日常保健的好選擇。" />
+      <ul class="team">{TEAM.map((m) => <li><span>{m.en}</span>{m.name}</li>)}</ul>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,23 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [{ "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/scripts/cloud-setup.sh", "timeout": 300 }]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(pnpm install:*)",
+      "Bash(pnpm build)",
+      "Bash(pnpm check)",
+      "Bash(pnpm test)",
+      "Bash(pnpm verify)",
+      "Bash(pnpm catalog)",
+      "Bash(pnpm seo:*)",
+      "Bash(pnpm dev)",
+      "Bash(pnpm preview:*)"
+    ]
+  }
+}

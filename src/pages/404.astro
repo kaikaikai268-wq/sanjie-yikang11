@@ -1,0 +1,13 @@
+---
+import { u } from '../lib/url';
+import Base from '../layouts/Base.astro';
+---
+<Base title="找不到頁面">
+  <section class="section">
+    <div class="wrap center">
+      <h1 class="section-title">找不到這個頁面</h1>
+      <p class="lead">網址可能已經變更。</p>
+      <p><a class="btn btn-primary" href={u('/')}>回首頁</a> <a class="btn btn-outline" href={u('/products/')}>看保健商品</a></p>
+    </div>
+  </section>
+</Base>
