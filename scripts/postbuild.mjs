@@ -3,6 +3,7 @@ import path from 'node:path';
 import { createIndex } from 'pagefind';
 import { loadContent } from './lib/content-files.mjs';
 import { contentSlug, isPublicFrontmatter } from '../src/lib/content-core.mjs';
+import { writeBuildManifest } from './lib/build-manifest.mjs';
 
 const root = process.cwd();
 const dist = path.join(root, 'dist');
@@ -49,3 +50,4 @@ try {
   if (output.errors.length) throw new Error(output.errors.join('; '));
   console.log(`Pagefind 搜尋索引完成：${paths.length} 個公開內容頁。`);
 } finally { await index.deleteIndex(); }
+await writeBuildManifest({ root, dist });

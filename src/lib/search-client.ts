@@ -94,8 +94,9 @@ export function mountContentSearch(root: HTMLElement, loadIndex: (url: string) =
     }
   });
   const initial = new URLSearchParams(location.search).get('q');
+  if (initial) input.value = initial.slice(0, 200);
   if (indexCount === 0) status.textContent = '目前尚無公開文章，可稍後再試。';
-  else if (initial) { input.value = initial.slice(0, 200); void search(); }
+  else if (initial) void search();
 }
 const root = document.querySelector<HTMLElement>('[data-content-search]');
 if (root) mountContentSearch(root);

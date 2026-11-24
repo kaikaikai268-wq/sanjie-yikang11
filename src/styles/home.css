@@ -1,0 +1,28 @@
+.home-intro { background: var(--bg-sage); padding-block: clamp(2.5rem, 6vw, 5rem); }
+.home-intro h1 { font-size: clamp(var(--text-xl), 5vw, var(--text-2xl)); max-width: 50rem; }
+.home-lead { max-width: 47rem; color: var(--text-secondary); margin-block: 1.3rem 1.8rem; }
+.home-search { max-width: 47rem; }
+.home-search label { display: block; font-size: var(--text-sm); font-weight: 700; margin-bottom: 0.7rem; }
+.home-search > div { display: flex; flex-wrap: wrap; gap: 0.7rem; }
+.home-search input { flex: 1 1 18rem; min-width: 0; width: 100%; font: inherit; font-size: var(--text-sm); border: 1px solid var(--line); border-radius: 0.75rem; padding: 0.75rem 1rem; background: var(--bg-page); color: var(--text-primary); }
+.home-search button { font-family: inherit; cursor: pointer; }
+.home-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem 1.5rem; font-size: var(--text-xs); margin-top: 1.3rem; }
+.home-actions a { min-height: 2.75rem; display: inline-flex; align-items: center; }
+.home-section-head { display: flex; align-items: end; justify-content: space-between; flex-wrap: wrap; gap: 1rem 2rem; margin-bottom: 1.6rem; }
+.home-section-head h2 { font-size: var(--text-xl); }
+.home-section-head p:not(.eyebrow) { font-size: var(--text-sm); color: var(--text-secondary); max-width: 42rem; margin-top: 0.7rem; margin-bottom: 0; }
+.home-section-head > a { font-size: var(--text-xs); min-height: 2.75rem; display: inline-flex; align-items: center; }
+.home-link-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: 1.2rem; }
+.home-link-card { min-width: 0; border: 1px solid var(--line); border-radius: var(--radius); padding: 1.5rem; background: var(--bg-page); }
+.home-link-card h3, .content-empty h3 { font-size: var(--text-lg); }
+.home-link-card p { font-size: var(--text-sm); color: var(--text-secondary); }
+.home-link-card p:last-child { margin-bottom: 0; }
+.home-categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 1rem; }
+.home-categories a { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem 1rem; border: 1px solid var(--line); border-radius: 0.75rem; padding: 1rem 1.2rem; text-decoration: none; }
+.home-categories a span:first-child { font-size: var(--text-sm); font-weight: 700; }
+.home-categories a span:last-child { font-size: var(--text-xs); color: var(--text-secondary); }
+.home-principles { padding-top: 0.5rem; }
+.home-business { background: var(--bg-sage); padding-block: 2.5rem; }
+.home-business h2 { font-size: var(--text-lg); }
+.home-business p { max-width: 44rem; font-size: var(--text-sm); color: var(--text-secondary); }
+.home-business .home-motto { font-size: var(--text-xs); margin: 1.5rem 0 0; }

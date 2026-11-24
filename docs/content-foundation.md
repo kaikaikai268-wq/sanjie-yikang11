@@ -16,9 +16,11 @@
 | 閱讀與購物點擊 | `src/lib/reading-client.ts`、`src/layouts/Base.astro` | 事件測試與正式 GA4 即時報表 |
 | 搜尋／閱讀成效回饋 | `scripts/insights.mjs` | `pnpm insights` 或 `--input` 離線快照 |
 | Writer 站端接稿 | `scripts/content.mjs import` | `pnpm writer:import <file.json> --dry-run` |
+| 編輯送審、發布與排程 | `scripts/editorial.mjs` | `pnpm editorial list`、`pnpm editorial readiness <slug>` |
+| 發布產物與線上驗收 | `scripts/release-check.mjs`、`dist/build-info.json` | `pnpm release:check`、`pnpm release:launch` |
 | 編輯與關係說明 | `/editorial-policy/`、`/disclosure/`、`/privacy/` | 依實際營運變動同步修正 |
 
-內容流程見 [content-publishing.md](content-publishing.md)，前台見 [content-pages.md](content-pages.md)，搜尋、分析與事件見 [analytics-content.md](analytics-content.md)。
+內容流程見 [content-publishing.md](content-publishing.md)，編輯發布見 [editorial-workflow.md](editorial-workflow.md)，前台見 [content-pages.md](content-pages.md)，搜尋、分析與事件見 [analytics-content.md](analytics-content.md)，發布驗收見 [release-runbook.md](release-runbook.md)。
 
 ## 建置與發布
 
@@ -40,6 +42,8 @@ GitHub Actions 沿用 main push／PR 檢查，另在每小時第 17 分鐘排程
 
 以 `PUBLIC_SHOP_URL` 設定獨立購物站的完整 HTTPS 網址；未設定就不顯示購物入口。外連附帶三傑來源與文章 slug 的 UTM，保留原有 query/hash。文章需指定 `relatedProducts` 才顯示文章內商品資訊與購物入口。
 
+個別商品可以在 `src/data/products.ts` 設 `shopUrl` 指向該商品的購物頁，優先於全站購物入口。商品頁會反向列出實際關聯的公開文章，資料來源仍集中在文章的 `relatedProducts`，不另外維護第二份關聯表。
+
 `shop_click` 代表點擊購物入口；訂單與營收必須另接購物站的交易量測，不能用點擊數代替。跨網域 GA4 設定與個別商品購物網址，待購物平台確定再接。
 
 ## 移植依據與界線
@@ -49,4 +53,5 @@ GitHub Actions 沿用 main push／PR 檢查，另在每小時第 17 分鐘排程
 - 本日有據：`docs/architecture.md` 的文章／專題／搜尋／閱讀互動架構，`src/utils/schema-org.ts` 的穩定實體 ID 與可見內容一致原則，`ReadingEngagement.svelte` 的有效閱讀與讀完判準。
 - APPI：`src/utils/visibility.mjs` 的單一公開判斷模式（參考 blob `fa2eb52ab9f5cf44531207a09eb5b43dfedcab27`），`src/content.config.ts` 的文章／作者／專題模型，`scripts/precheck.mjs` 與 `scripts/lib/publish-pipeline.mjs` 的寫入端先預檢，及成長分析以實數與證據為基礎的原則。
 - 不搬其他站的識別碼、憑證、署名、審閱宣稱或全域寫作設定。Writer 僅完成三傑站端契約與匯入，Writer 服務端連線、親民文風設定及自動推稿另外串接。
-- 不啟用前台管理後台、會員、LINE 個人化推薦或自動改稿產線。首頁、主導覽與最終主題分類的全面改版另依選定架構實作。
+- 首頁與主導覽以文章、專題與搜尋為主要入口；分類依公開文章動態產生，尚未鎖定最終編輯分類。場地與活動資源維持原有方案資料，集中在 `/resources/`。
+- 不啟用前台管理後台、會員、LINE 個人化推薦或自動改稿產線；編輯工作可先由 Writer 接稿及本機 CLI 完成。視覺美術與最終內容分類另依回饋調整。

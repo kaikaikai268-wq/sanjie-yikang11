@@ -31,6 +31,7 @@ export interface Product {
   audience: string;    // 「適合誰？」
   points: string[];    // 卡片上的重點（原廠公開的成分／規格）
   extraImage?: string; // 商品頁額外圖片，檔名放 src/assets/products/
+  shopUrl?: string;    // 該商品的一頁式購物網址；未設定時使用全站購物入口
 }
 
 export const PRODUCTS: Product[] = [

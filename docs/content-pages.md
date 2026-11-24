@@ -1,5 +1,13 @@
 # 內容頁面維護
 
+## 內容首頁
+
+首頁 `src/pages/index.astro` 以健康生活與營養內容為入口，依序提供搜尋、精選文章、不重複的最新文章、已發布分類、公開專題，以及作者與編輯方式。商品與品牌合作僅在末段提供資訊入口，不再作為首頁主視覺。
+
+所有候選來自共用 `getPublishedArticles()`、`getPublishedTopics()` 及 `getAuthors()`。`src/lib/home-content.mjs` 以相同公開判斷防止草稿及未來文章進入首頁；精選以 `featured` 優先並按發布日期補足，其餘最新列表排除精選 slug；分類名稱與件數從實際公開文章計算。專題只顯示有公開文章的啟用中主題，作者以實際公開署名為主。
+
+空內容庫顯示準備中訊息與編輯原則、內容團隊等真實入口，不放測試文章或虛構篇數。搜尋使用 GET 表單導到 `/search/?q=...`，所有站內連結都經 `u()` 支援子路徑。首頁只加入反映可見文章的 CollectionPage，機構實體圖由 Base 統一提供。
+
 ## 路由與資料
 
 - `/articles/`：公開文章首頁；分頁大小由 `src/lib/content-view.ts` 的 `ARTICLE_PAGE_SIZE` 決定。

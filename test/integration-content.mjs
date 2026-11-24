@@ -36,7 +36,7 @@ try {
   await create(`src/content/topics/${prefix}.md`, serializeDocument({ title: '基礎建設驗證專題', description: '只用於自動驗證的專題。', status: 'active', articles: publishedSlugs, sections: [{ title: '先理解問題', summary: '測試分段導讀。', articles: publishedSlugs.slice(0, 2) }] }, ''));
   for (let i = 0; i < publishedSlugs.length; i++) {
     const slug = publishedSlugs[i];
-    const data = { title: `基礎建設驗證文章 ${i + 1}`, description: `第 ${i + 1} 篇完整管線驗證資料。`, slug, category: '健康生活', status: i === 12 ? 'scheduled' : 'published', publishDate: '2000-01-01', updatedDate: '2000-01-02', author: '3j-editorial', topics: [prefix], tags: ['管線驗證'], highlights: ['此為測試內容，不會作為健康文章發布。'], faq: [{ question: '這是什麼資料？', answer: '這是暫存的自動驗證資料。' }], references: [{ title: '測試來源', url: 'https://example.com/' }], ...(i === 0 ? { coverImage: `/content/${prefix}.png`, coverAlt: '測試用單色圖片' } : {}) };
+    const data = { title: `基礎建設驗證文章 ${i + 1}`, description: `第 ${i + 1} 篇完整管線驗證資料。`, slug, category: '健康生活', status: i === 12 ? 'scheduled' : 'published', featured: i === 12, publishDate: '2000-01-01', updatedDate: '2000-01-02', author: '3j-editorial', topics: [prefix], tags: ['管線驗證'], relatedProducts: i === 0 ? ['probiotic'] : [], highlights: ['此為測試內容，不會作為健康文章發布。'], faq: [{ question: '這是什麼資料？', answer: '這是暫存的自動驗證資料。' }], references: [{ title: '測試來源', url: 'https://example.com/' }], ...(i === 0 ? { coverImage: `/content/${prefix}.png`, coverAlt: '測試用單色圖片' } : {}) };
     const body = `## 測試內容\n\n紅豆驗證文本。此為測試資料。\n\n[另一篇文章](/articles/${publishedSlugs[(i + 1) % 13]}/)\n\n## 圖片與閱讀\n\n這段用來測試文章目錄、圖片和閱讀結構。${i === 0 ? `\n\n![測試用圖片](/content/${prefix}.png)` : ''}\n\n## 繼續閱讀\n\n[主題指南](/topics/${prefix}/)\n`;
     await create(`src/content/articles/${i === 0 ? `${prefix}-filename-alias` : slug}.md`, serializeDocument(data, body));
   }
@@ -45,14 +45,22 @@ try {
     await create(`src/content/articles/${slug}.md`, serializeDocument({ title: `機密草稿驗證 ${kind}`, description: `NEVER_PUBLIC_${kind}`, slug, status: kind.startsWith('future') ? kind.endsWith('scheduled') ? 'scheduled' : 'published' : kind, publishDate: kind.startsWith('future') ? '2099-01-01' : '2000-01-01', references: [{ title: '測試來源', url: 'https://example.com/' }] }, `NEVER_PUBLIC_${kind}`));
   }
   for (const base of ['', '/foundation-test']) {
-    const env = { PUBLIC_SITE_STAGE: 'production', PUBLIC_BASE_PATH: base, CONTENT_BUILD_TIME: new Date().toISOString() };
+    const env = { PUBLIC_SITE_STAGE: 'production', PUBLIC_BASE_PATH: base, PUBLIC_SHOP_URL: 'https://shop.example/checkout?offer=foundation', CONTENT_BUILD_TIME: new Date().toISOString() };
     run('scripts/content.mjs', ['check'], env);
     run('scripts/prepare-media.mjs', [], env);
     run('node_modules/astro/bin/astro.mjs', ['build'], env);
     run('scripts/postbuild.mjs', [], env);
+    run('scripts/release-check.mjs', ['--strict-launch'], env);
     run('--test', ['test/dist.test.mjs'], env);
     const dist = path.join(root, 'dist');
     const html = await readFile(path.join(dist, `articles/${publishedSlugs[0]}/index.html`), 'utf8');
+    const home = await readFile(path.join(dist, 'index.html'), 'utf8');
+    assert.ok(home.includes('從生活裡的問題') && home.includes(`action="${base}/search/"`), '內容首頁與搜尋入口');
+    const headerNav = /<nav class="nav"[\s\S]*?<\/nav>/.exec(home)?.[0] ?? '';
+    assert.ok(headerNav.includes(`${base}/articles/`) && headerNav.includes(`${base}/topics/`) && !headerNav.includes(`${base}/products/`), '主導覽以內容為核心');
+    assert.ok(home.includes('data-shop-placement="header"'), '有設定購物網址才顯示導購入口');
+    const product = await readFile(path.join(dist, 'products/probiotic/index.html'), 'utf8');
+    assert.ok(product.includes(`${base}/articles/${publishedSlugs[0]}/`) && product.includes('data-shop-placement="product-detail"'), '商品頁反向連公開文章與獨立購物入口');
     assert.match(html, /data-reading-article/);
     assert.match(html, /srcset="[^"]*media\/content/);
     assert.ok(html.includes(`href="${base}/articles/${publishedSlugs[1]}/"`), 'Markdown 站內連結支援 base');
@@ -86,7 +94,7 @@ try {
 } finally {
   for (const file of created.reverse()) await unlink(file);
   // Do not leave fixture-bearing HTML available after the test.
-  const cleanupEnv = { PUBLIC_BASE_PATH: '', PUBLIC_SITE_STAGE: '', CONTENT_BUILD_TIME: new Date().toISOString() };
+  const cleanupEnv = { PUBLIC_BASE_PATH: '', PUBLIC_SITE_STAGE: '', PUBLIC_SHOP_URL: '', CONTENT_BUILD_TIME: new Date().toISOString() };
   run('scripts/prepare-media.mjs', [], cleanupEnv);
   run('node_modules/astro/bin/astro.mjs', ['build'], cleanupEnv);
   run('scripts/postbuild.mjs', [], cleanupEnv);

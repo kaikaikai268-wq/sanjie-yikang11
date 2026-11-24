@@ -5,8 +5,12 @@ import Base from '../../layouts/Base.astro';
 import ProductCard from '../../components/ProductCard.astro';
 import ContactButtons from '../../components/ContactButtons.astro';
 import { PRODUCTS, BRANDS, type Product } from '../../data/products';
-import { PROCESS } from '../../data/site';
 import { productImage } from '../../lib/images';
+import { SHOP_URL } from '../../lib/env';
+import { productShoppingLink } from '../../lib/commerce.mjs';
+import { getPublishedArticles } from '../../lib/content';
+import ArticleCard from '../../components/content/ArticleCard.astro';
+import '../../styles/content.css';
 
 export function getStaticPaths() {
   return PRODUCTS.map((product) => ({ params: { id: product.id }, props: { product } }));
@@ -15,6 +19,8 @@ const { product: p } = Astro.props as { product: Product };
 const brand = BRANDS[p.brand];
 const related = PRODUCTS.filter((x) => x.category === p.category && x.id !== p.id).slice(0, 3);
 const img = productImage(p.id);
+const shopHref = productShoppingLink(p, SHOP_URL);
+const articles = (await getPublishedArticles()).filter((entry) => entry.data.relatedProducts.includes(p.id)).slice(0, 3);
 const description = `${p.name}（${brand.name}・${p.category}）：${p.points.join('、')}。適合${p.audience}。${brand.note}`;
 ---
 <Base title={p.name} description={description} ogImage={img}>
@@ -40,13 +46,16 @@ const description = `${p.name}（${brand.name}・${p.category}）：${p.points.j
           </dl>
           <p class="note">{brand.note}</p>
           <p><a class="btn btn-outline" href={brand.officialUrl} target="_blank" rel="noopener noreferrer" data-ga-official={p.id}>{brand.officialLabel} ↗</a></p>
-          <h2 class="subhead">洽詢這項商品</h2>
-          <p>{PROCESS[1].desc}</p>
+          {shopHref && <p><a class="btn btn-primary" href={shopHref} data-ga-shop={p.id} data-shop-placement="product-detail" target="_blank" rel="noopener noreferrer">{p.shopUrl ? '前往此商品購物頁' : '前往購物網站'}</a></p>}
+          <h2 class="subhead">詢問商品資訊</h2>
+          <p>希望確認成分、規格或供貨資訊，歡迎聯絡我們。</p>
           <ContactButtons />
         </div>
       </div>
     </div>
   </section>
+
+  {articles.length > 0 && <section class="section section-sage"><div class="wrap"><h2 class="section-title">相關健康文章</h2><p class="lead">從相關的日常問題，進一步了解營養與保健資訊。</p><div class="content-grid">{articles.map((article) => <ArticleCard article={article} />)}</div></div></section>}
 
   {related.length > 0 && (
     <section class="section section-sage">

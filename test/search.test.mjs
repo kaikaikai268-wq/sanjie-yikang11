@@ -59,7 +59,7 @@ function harness({ count = 13, search = async () => ({ results: [] }), load, ini
     return { search: (query) => { queries.push(query); return search(query); } };
   });
   return {
-    status, list, more, submit, queries, analytics,
+    status, list, more, submit, input, queries, analytics,
     get imports() { return imports; },
     async search(query) { input.value = query; form.dispatch('submit'); await settle(); },
     async loadMore() { await Promise.all(more.dispatch('click')); },
@@ -70,6 +70,7 @@ const hit = (id, extra = {}) => ({ data: async () => ({ url: `/base/articles/${i
 
 test('empty index does not import Pagefind or search initial or submitted queries', async () => {
   const state = harness({ count: 0, initial: '?q=sensitive-health-query' });
+  assert.equal(state.input.value, 'sensitive-health-query');
   await state.search('健康搜尋詞');
   assert.equal(state.imports, 0);
   assert.equal(state.queries.length, 0);

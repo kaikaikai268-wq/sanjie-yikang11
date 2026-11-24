@@ -2,14 +2,15 @@
 import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import SectionHead from '../components/SectionHead.astro';
-import { PARTNER_BRANDS, VENUE } from '../data/site';
+import { PARTNER_BRANDS } from '../data/site';
 import { BRANDS } from '../data/products';
 import { siteImage } from '../lib/images';
+import { u } from '../lib/url';
 ---
-<Base title="合作夥伴" description={VENUE.intro}>
+<Base title="品牌合作" description="三傑益康的合作品牌、商品資訊及內容合作聯絡入口。">
   <section class="section">
     <div class="wrap">
-      <SectionHead level="h1" eyebrow="商品 × 場地 × 活動資源" title="合作夥伴" lead={VENUE.intro} />
+      <SectionHead level="h1" eyebrow="BRAND PARTNERSHIPS" title="品牌合作" lead="認識合作品牌與商品資訊，進一步了解合作方式。" />
       <div class="partner-list">
         {PARTNER_BRANDS.map((b) => (
           <article class="partner">
@@ -31,21 +32,5 @@ import { siteImage } from '../lib/images';
     </div>
   </section>
 
-  <section class="section section-sage">
-    <div class="wrap">
-      <SectionHead eyebrow="知域國際" title="場地與活動資源" />
-      <div class="card-grid two">
-        {VENUE.offers.map((o) => (
-          <article class="card venue">
-            <Image src={siteImage(o.image)} alt={o.imageAlt} widths={[480, 720]} sizes="(max-width: 900px) 100vw, 540px" />
-            <span class="tag">{o.badge}</span>
-            <h3>{o.title}</h3>
-            <p>{o.desc}</p>
-            <ul class="chips">{o.tags.map((t) => <li>{t}</li>)}</ul>
-            <a class="btn btn-primary" href={o.cta.href} target="_blank" rel="noopener noreferrer" data-ga-contact={o.cta.ga}>{o.cta.label}</a>
-          </article>
-        ))}
-      </div>
-    </div>
-  </section>
+  <section class="section section-sage"><div class="wrap"><SectionHead title="內容與品牌合作" lead="希望討論主題、品牌或通路合作，歡迎先說明你的需求。" /><div class="contact-buttons"><a class="btn btn-primary" href={u('/contact/')}>聯絡合作</a><a class="btn btn-outline" href={u('/resources/')}>場地與活動資源</a></div></div></section>
 </Base>

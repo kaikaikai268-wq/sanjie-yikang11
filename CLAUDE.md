@@ -1,11 +1,11 @@
 # 三傑益康生技 3J Wellness Biotech 品牌網站
 
-保健商品展示＋洽詢導流網站。不賣東西、不收單：所有轉換都是導到 FB／IG／電話／LINE，以及原廠商品頁。
+健康生活與營養內容站。首頁、文章、專題與搜尋承接閱讀；商品保留成分與規格資訊，交易由設定的獨立購物網站承接。本站不收單、不處理付款。
 原始雛形（單檔 HTML，圖片 base64 內嵌）保留在 `docs/prototype/`，只當參考，不再修改。
 
 Astro 7 純靜態輸出。部署在 GitHub Pages，正式網域 `https://3jwellness.com`，見「環境與上線」。無後端、無 UI 框架，互動是頁面內 `<script>`。
 
-內容網站基礎建設維護入口：`docs/content-foundation.md`。內容資料契約、發布與 Writer 接稿看 `docs/content-publishing.md`；頁型看 `docs/content-pages.md`；搜尋、事件與成效回饋看 `docs/analytics-content.md`。首頁與主導覽的全面改版另依使用者選定架構實作。
+內容網站基礎建設維護入口：`docs/content-foundation.md`。內容資料與 Writer 接稿看 `docs/content-publishing.md`；編輯送審／發布看 `docs/editorial-workflow.md`；頁型看 `docs/content-pages.md`；搜尋、事件與成效回饋看 `docs/analytics-content.md`；產物與線上驗收看 `docs/release-runbook.md`。美術與最終主題分類另依使用者回饋調整。
 
 ## 收手前一定要跑
 
@@ -43,7 +43,7 @@ pnpm verify      # astro check → build → 測試（字級、配色、inline s
 | 版面 | `src/layouts/Base.astro`（header／footer／GA／SEO meta）、`src/pages/*.astro`、`src/components/` |
 | 樣式與品牌色 | `src/styles/site.css`（`tokens.css` 是上游副本，不要直接改） |
 
-頁面：`/`、`/products/`（篩選＋搜尋，`?category=` 可帶分類）、`/products/<id>/`（每個商品一頁）、`/about/`、`/partners/`、`/contact/`、`/404`。
+頁面：`/`（內容首頁）、`/articles/`（分類與分頁）、`/topics/`、`/authors/`、`/search/`、`/products/`（商品資料）、`/products/<id>/`、`/about/`、`/partners/`（品牌合作）、`/resources/`（場地活動）、`/contact/`、編輯／關係／隱私說明與 `/404`。公開輸出另有 RSS、LLM 純文字與 reader-index，維護方式見內容文件。
 
 - 商品 `id` 就是網址，建立後不要改：改了會讓 GSC／GA 的歷史資料斷掉。真要改，在 `astro.config.mjs` 加 `redirects`（舊網址 → 新網址）再改。
 - 商品文案只寫原廠公開的成分與規格，**不寫功效宣稱**（食品廣告法規）；完整資訊導回原廠。

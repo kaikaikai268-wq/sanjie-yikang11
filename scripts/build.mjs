@@ -18,5 +18,6 @@ if (flags.has('--verify') || flags.has('--check-only')) run(['node_modules/astro
 if (!flags.has('--check-only')) {
   run(['node_modules/astro/bin/astro.mjs', 'build']);
   run(['scripts/postbuild.mjs']);
+  run(['scripts/release-check.mjs']);
   if (flags.has('--verify')) run(['--test', 'test/**/*.test.mjs']);
 }

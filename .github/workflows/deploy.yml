@@ -27,6 +27,11 @@ jobs:
     env:
       TZ: Asia/Taipei
       PUBLIC_SITE_STAGE: production
+      PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL }}
+      PUBLIC_BASE_PATH: ${{ vars.PUBLIC_BASE_PATH }}
+      PUBLIC_SHOP_URL: ${{ vars.PUBLIC_SHOP_URL }}
+      PUBLIC_GA_ID: ${{ vars.PUBLIC_GA_ID }}
+      PUBLIC_GSC_TOKEN: ${{ vars.PUBLIC_GSC_TOKEN }}
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6          # 版本讀 package.json 的 packageManager
@@ -41,12 +46,12 @@ jobs:
       - name: 檢查與建置（型別、字級、配色、連結、收錄設定）
         run: pnpm verify
       - uses: actions/upload-pages-artifact@v5
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         with:
           path: dist
 
   deploy:
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     environment:

@@ -2,7 +2,7 @@
 
 ## 搜尋
 
-搜尋頁為 `/search/`。Pagefind 在靜態建置後建立索引；用 `pnpm build`、`pnpm preview` 驗證實際搜尋，`pnpm dev` 不會自動產索引。搜尋頁不收錄，搜尋結果由公開頁面的索引產生。索引必須排除草稿、排程中內容及頁首／頁尾。搜尋詞只在瀏覽器執行。Base 在搜尋頁完全不載入 GA，避免 GA 增強型評估自動蒐集健康搜尋詞；其他頁的 page_location 去除 query/hash。
+搜尋頁為 `/search/`。Pagefind 在靜態建置後建立索引；用 `pnpm build`、`pnpm preview` 驗證實際搜尋，`pnpm dev` 不會自動產索引。搜尋頁不收錄，搜尋結果由公開頁面的索引產生。索引必須排除草稿、排程中內容及頁首／頁尾。搜尋詞只在瀏覽器執行。Base 在搜尋頁完全不載入 GA，避免 GA 增強型評估自動蒐集健康搜尋詞；其他頁的 page_location 與 page_referrer 皆去除 query/hash，避免搜尋詞隨下一頁來源網址回傳。
 
 `src/lib/search-client.ts` 按需載入 Pagefind，使用 `u('/pagefind/pagefind.js')` 支援子路徑；結果以 DOM textContent 填寫。搜尋失敗提供文章／專題入口；結果逐批載入，狀態以 aria-live 宣告。
 

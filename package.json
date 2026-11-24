@@ -19,7 +19,10 @@
     "writer:import": "node scripts/content.mjs import",
     "media:prepare": "node scripts/prepare-media.mjs",
     "insights": "node --env-file-if-exists=.env scripts/insights.mjs",
-    "verify:content": "node test/integration-content.mjs"
+    "verify:content": "node test/integration-content.mjs",
+    "editorial": "node scripts/editorial.mjs",
+    "release:check": "node scripts/release-check.mjs",
+    "release:launch": "node scripts/release-check.mjs --strict-launch"
   },
   "packageManager": "pnpm@10.32.1",
   "dependencies": {

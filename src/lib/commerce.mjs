@@ -10,3 +10,8 @@ export function shoppingLink(configured, articleSlug) {
   if (articleSlug) url.searchParams.set('utm_content', articleSlug);
   return url.href;
 }
+
+/** A product-specific destination takes precedence; a global destination stays a general shop link. */
+export function productShoppingLink(product, configured, articleSlug) {
+  return shoppingLink(product.shopUrl || configured, articleSlug || `product-${product.id}`);
+}

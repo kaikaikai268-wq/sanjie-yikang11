@@ -2,56 +2,35 @@
 import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import SectionHead from '../components/SectionHead.astro';
-import { SITE, SELECTION, PLATFORMS, TEAM, ADVISOR } from '../data/site';
+import { SITE, TEAM, ADVISOR } from '../data/site';
 import { siteImage } from '../lib/images';
+import { u } from '../lib/url';
 ---
-<Base title="關於三傑" description={`${SITE.name}的選品理念、銷售與合作方向、團隊與特約健康食品顧問。`}>
-  <section class="section">
-    <div class="wrap">
-      <SectionHead level="h1" eyebrow="ABOUT 3J" title="關於三傑益康" lead={SITE.description} />
-      <h2 class="subhead">{SELECTION.title}</h2>
-      <p>{SELECTION.lead}</p>
-      <ol class="steps-inline">{SELECTION.steps.map((s) => <li>{s}</li>)}</ol>
+<Base title="關於三傑" description="認識三傑益康的健康生活內容、編輯方式、團隊與顧問。">
+  <section class="section"><div class="wrap">
+    <SectionHead level="h1" eyebrow="ABOUT 3J" title="關於三傑益康" lead={SITE.description} />
+    <h2 class="subhead">從你在意的日常問題開始</h2>
+    <p>健康資訊經常從一個很生活的問題開始：某個營養名詞是什麼、保健品標示怎麼看，或家人正在關心哪些生活習慣。三傑益康希望把資料整理得清楚，讓讀者知道說法從哪裡來，也知道它適用的範圍。</p>
+    <div class="contact-buttons"><a class="btn btn-primary" href={u('/articles/')}>閱讀健康文章</a><a class="btn btn-outline" href={u('/topics/')}>瀏覽主題指南</a></div>
+  </div></section>
+  <section class="section section-sage"><div class="wrap">
+    <SectionHead title="內容如何整理" lead="先回答問題，再讓讀者沿著來源與專題繼續了解。" />
+    <div class="card-grid">
+      <article class="card"><h3>說清楚來源</h3><p>涉及研究、數據與官方資訊時，提供可以回頭核對的資料，交代適用情境與限制。</p></article>
+      <article class="card"><h3>讓內容相互連結</h3><p>單篇文章回答具體問題，主題指南把相關內容串起來，幫助讀者建立完整理解。</p></article>
+      <article class="card"><h3>交代相關關係</h3><p>三傑同時提供商品資訊與合作服務，相關品牌及商業關係會透過文章與揭露頁說明。</p></article>
     </div>
-  </section>
-
-  <section class="section section-sage">
-    <div class="wrap">
-      <SectionHead eyebrow="SALES & PARTNERSHIPS" title="一起把關心，傳得更遠。" lead="以保健商品為核心，串連網站展示、團購代售與企業採購需求。" />
-      <div class="card-grid">
-        {PLATFORMS.map((p) => (
-          <article class="card">
-            <p class="eyebrow">{p.phase}</p>
-            <h3>{p.name}</h3>
-            <p class="tag">{p.use}</p>
-            <ul class="points">{p.points.map((t) => <li>{t}</li>)}</ul>
-          </article>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="wrap">
-      <aside class="advisor" aria-labelledby="advisor-title">
-        <Image src={siteImage('advisor-luo-yang')} alt={`${ADVISOR.name}，${SITE.name}${ADVISOR.title}`} widths={[360, 560]} sizes="(max-width: 900px) 100vw, 360px" />
-        <div>
-          <p class="eyebrow">{SITE.name}</p>
-          <h2 id="advisor-title" class="section-title">{ADVISOR.name}<small>{ADVISOR.title}</small></h2>
-          <p class="tag">{ADVISOR.background}</p>
-          <p>{ADVISOR.bio}</p>
-          <h3 class="subhead">專長領域</h3>
-          <ul class="points two-col">{ADVISOR.expertise.map((t) => <li>{t}</li>)}</ul>
-          <p><a href={ADVISOR.url} target="_blank" rel="noopener noreferrer">認識顧問與閱讀文章 ↗</a></p>
-        </div>
-      </aside>
-    </div>
-  </section>
-
-  <section class="section section-sage">
-    <div class="wrap">
-      <SectionHead title="三傑益康團隊" lead="結合行銷、內容與通路資源，傳遞日常保健的好選擇。" />
-      <ul class="team">{TEAM.map((m) => <li><span>{m.en}</span>{m.name}</li>)}</ul>
-    </div>
-  </section>
+    <div class="contact-buttons"><a href={u('/authors/')}>內容團隊</a><a href={u('/editorial-policy/')}>編輯原則</a><a href={u('/disclosure/')}>關係揭露</a></div>
+  </div></section>
+  <section class="section"><div class="wrap">
+    <aside class="advisor" aria-labelledby="advisor-title">
+      <Image src={siteImage('advisor-luo-yang')} alt={`${ADVISOR.name}，${SITE.name}${ADVISOR.title}`} widths={[360, 560]} sizes="(max-width: 900px) 100vw, 360px" />
+      <div><p class="eyebrow">{SITE.name}</p><h2 id="advisor-title" class="section-title">{ADVISOR.name}<small>{ADVISOR.title}</small></h2><p class="tag">{ADVISOR.background}</p><p>{ADVISOR.bio}</p><h3 class="subhead">專長領域</h3><ul class="points two-col">{ADVISOR.expertise.map((t) => <li>{t}</li>)}</ul><p>個別文章的作者與資料來源會列在文中。</p><p><a href={ADVISOR.url} target="_blank" rel="noopener noreferrer">認識顧問與閱讀文章</a></p></div>
+    </aside>
+  </div></section>
+  <section class="section section-sage"><div class="wrap">
+    <SectionHead title="三傑益康團隊" lead="結合內容、行銷與通路資源，關心家庭日常的健康選擇。" />
+    <ul class="team">{TEAM.map((m) => <li><span>{m.en}</span>{m.name}</li>)}</ul>
+    <div class="contact-buttons"><a href={u('/partners/')}>了解品牌合作</a><a href={u('/contact/')}>聯絡我們</a></div>
+  </div></section>
 </Base>
