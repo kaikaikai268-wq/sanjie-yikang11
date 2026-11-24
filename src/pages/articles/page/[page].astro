@@ -1,0 +1,23 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Breadcrumb from '../../../components/content/Breadcrumb.astro';
+import ArticleList from '../../../components/content/ArticleList.astro';
+import { getPublishedArticles, articleSlug } from '../../../lib/content';
+import { ARTICLE_PAGE_SIZE, listSchema, breadcrumbSchema } from '../../../lib/content-view';
+import '../../../styles/content.css';
+export async function getStaticPaths() {
+  const all = await getPublishedArticles();
+  const totalPages = Math.ceil(all.length / ARTICLE_PAGE_SIZE);
+  return Array.from({ length: Math.max(0, totalPages - 1) }, (_, i) => ({ params: { page: String(i + 2) }, props: { articles: all.slice((i + 1) * ARTICLE_PAGE_SIZE, (i + 2) * ARTICLE_PAGE_SIZE), currentPage: i + 2, totalPages } }));
+}
+const { articles, currentPage, totalPages } = Astro.props;
+const path = `/articles/page/${currentPage}/`;
+const schema = [listSchema(`健康文章 第 ${currentPage} 頁`, path, articles.map((article) => ({ title: article.data.title, path: `/articles/${articleSlug(article)}/` })), Astro.site), breadcrumbSchema([{ label: '首頁', path: '/' }, { label: '健康文章', path: '/articles/' }, { label: `第 ${currentPage} 頁`, path }], Astro.site)];
+---
+<Base title={`健康文章｜第 ${currentPage} 頁`} description="瀏覽三傑益康的健康、營養與日常保健文章。" jsonLd={schema}>
+  <section class="section"><div class="wrap content-wrap">
+    <Breadcrumb items={[{ label: '首頁', href: '/' }, { label: '健康文章', href: '/articles/' }, { label: `第 ${currentPage} 頁` }]} />
+    <header class="content-intro"><h1>健康文章 · 第 {currentPage} 頁</h1></header>
+    <ArticleList articles={articles} currentPage={currentPage} totalPages={totalPages} />
+  </div></section>
+</Base>

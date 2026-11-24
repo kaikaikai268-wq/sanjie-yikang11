@@ -1,0 +1,10 @@
+---
+import manifest from '../../data/content-images.json';
+import { u } from '../../lib/url';
+interface Props { src: string; alt: string; eager?: boolean; class?: string; }
+const { src, alt, eager = false, class: className } = Astro.props;
+type Optimized = { src: string; width: number; height: number; variants: { src: string; width: number }[] };
+const image = (manifest as Record<string, Optimized>)[src];
+if (!image) throw new Error(`圖片尚未處理：${src}。請先跑 pnpm media:prepare。`);
+---
+<img class={className} src={u(image.src)} srcset={image.variants.map((v) => `${u(v.src)} ${v.width}w`).join(', ')} sizes="(max-width: 760px) 100vw, 800px" width={image.width} height={image.height} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" fetchpriority={eager ? 'high' : 'auto'} />

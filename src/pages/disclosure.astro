@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+import { u } from '../lib/url';
+---
+<Base title="關係揭露" description="三傑益康內容、商品資訊與品牌合作關係的說明。">
+  <section class="section"><div class="wrap policy-copy">
+    <h1 class="section-title">關係揭露</h1>
+    <p class="lead">三傑益康經營健康生活內容，也提供保健商品資訊與合作服務。</p>
+    <h2 class="subhead">商品與品牌</h2><p>站內的<a href={u('/products/')}>商品資料</a>包含陽明生醫及樂地滋等合作品牌。商品介紹與購物入口屬於商業資訊，文章引用的研究不代表特定商品具有同樣效果。</p>
+    <h2 class="subhead">文章中的相關關係</h2><p>涉及自家商品、合作品牌、贊助或其他可能影響讀者判斷的關係時，應在該篇內容標示。未標示實際審閱者的文章，不應被理解為已經個別專業審閱。</p>
+    <h2 class="subhead">購物與聯絡</h2><p>購買、付款與配送條件，以承接交易的購物頁或窗口說明為準。關係揭露如有需要補充之處，請<a href={u('/contact/')}>聯絡我們</a>。</p>
+  </div></section>
+</Base>
+<style>.policy-copy { max-width: 48rem; overflow-wrap: anywhere; }</style>

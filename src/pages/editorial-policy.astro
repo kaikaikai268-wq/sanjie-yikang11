@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import { u } from '../lib/url';
+---
+<Base title="編輯原則" description="三傑益康健康生活內容的來源、署名、更新與更正原則。">
+  <section class="section"><div class="wrap policy-copy">
+    <h1 class="section-title">編輯原則</h1>
+    <p class="lead">從日常問題出發，把健康與營養資訊整理成容易理解、可以核對的內容。</p>
+    <h2 class="subhead">來源與說明</h2><p>涉及研究、數據或官方資訊時，文章應提供支持該項說法的來源。不同研究的適用情境與限制需要交代，讀者可以從參考資料回到原始內容。</p>
+    <h2 class="subhead">署名與內容製作</h2><p>每篇文章標示負責作者或團隊。AI 可以協助整理與撰稿，公開內容仍由署名者確認。只有實際參與的專業審閱，才會以審閱身分標示。</p>
+    <h2 class="subhead">更新與更正</h2><p>文章標示發布日期，實質更新另標更新日期。如發現來源失效、資訊有誤或需要補充，請附文章網址與具體問題，透過<a href={u('/contact/')}>聯絡我們</a>反映。</p>
+    <h2 class="subhead">商業關係</h2><p>三傑益康同時提供商品資訊與合作服務。與內容相關的品牌、商品或合作關係應清楚揭露；相關資訊見<a href={u('/disclosure/')}>關係揭露</a>。</p>
+  </div></section>
+</Base>
+<style>.policy-copy { max-width: 48rem; overflow-wrap: anywhere; }</style>

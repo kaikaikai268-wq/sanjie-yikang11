@@ -4,3 +4,5 @@ export const IS_PRODUCTION = import.meta.env.PUBLIC_SITE_STAGE === 'production';
 // GA4 評估 ID 會出現在網頁原始碼，本來就公開，直接寫預設值；只在 production 階段載入。
 export const GA_ID: string = import.meta.env.PUBLIC_GA_ID || 'G-K1GS5Q1QEN';
 export const GSC_TOKEN: string = import.meta.env.PUBLIC_GSC_TOKEN ?? '';
+// 未設定購物站網址時，不顯示購物入口。
+export const SHOP_URL: string = import.meta.env.PUBLIC_SHOP_URL ?? '';

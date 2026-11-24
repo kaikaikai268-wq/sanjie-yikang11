@@ -1,0 +1,18 @@
+---
+import { u } from '../../lib/url';
+import ContentImage from './ContentImage.astro';
+import { articleSlug, type ArticleEntry } from '../../lib/content';
+import { contentTypeLabel, displayDate, readingMinutes } from '../../lib/content-view';
+interface Props { article: ArticleEntry; related?: boolean }
+const { article, related = false } = Astro.props;
+const d = article.data;
+---
+<article class="content-card">
+  {d.coverImage && <a class="content-card-image" href={u(`/articles/${articleSlug(article)}/`)} tabindex="-1" aria-hidden="true"><ContentImage src={d.coverImage} alt="" /></a>}
+  <div class="content-card-copy">
+    <p class="content-kicker">{d.category} · {contentTypeLabel(d.contentType)}</p>
+    <h2><a href={u(`/articles/${articleSlug(article)}/`)} data-related-article={related || undefined}>{d.title}</a></h2>
+    <p>{d.description}</p>
+    <p class="content-meta"><time datetime={d.publishDate?.toISOString()}>{displayDate(d.publishDate)}</time><span>約 {readingMinutes(article.body)} 分鐘</span></p>
+  </div>
+</article>

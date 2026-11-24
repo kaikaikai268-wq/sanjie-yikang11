@@ -4,22 +4,34 @@ import '../styles/tokens.css';
 import '../styles/site.css';
 import { Image, getImage } from 'astro:assets';
 import { SITE, NAV, CONTACT, DISCLAIMER } from '../data/site';
-import { IS_PRODUCTION, GA_ID, GSC_TOKEN } from '../lib/env';
+import { IS_PRODUCTION, GA_ID, GSC_TOKEN, SHOP_URL } from '../lib/env';
+import { shoppingLink } from '../lib/commerce.mjs';
 import { siteImage } from '../lib/images';
+import { absolute, jsonScript, siteGraph } from '../lib/seo';
+import media from '../data/content-images.json';
 
 interface Props {
   title?: string;           // 不含站名；首頁留空
   description?: string;
-  ogImage?: ImageMetadata;
-  jsonLd?: Record<string, unknown>;
+  ogImage?: ImageMetadata | string;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  noindex?: boolean;
+  ogType?: 'website' | 'article';
+  publishedTime?: Date | string;
+  modifiedTime?: Date | string;
 }
-const { title, description = SITE.description, ogImage, jsonLd } = Astro.props;
+const { title, description = SITE.description, ogImage, jsonLd, noindex = false, ogType = 'website', publishedTime, modifiedTime } = Astro.props;
 const fullTitle = title ? `${title}｜${SITE.name}` : `${SITE.name} | ${SITE.nameEn} · ${SITE.motto.join('；')}`;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
-const og = await getImage({ src: ogImage ?? siteImage('logo-full'), width: 1200, format: 'jpg' });
-const ogUrl = new URL(og.src, Astro.site).href;
+const og = typeof ogImage === 'string' ? null : ogImage ? await getImage({ src: ogImage, width: 1200, format: 'jpg' }) : null;
+const optimizedOg = typeof ogImage === 'string' ? (media as Record<string, {src: string}>)[ogImage]?.src ?? ogImage : undefined;
+const ogPath = optimizedOg ? (optimizedOg.startsWith('/') ? u(optimizedOg) : optimizedOg) : og?.src ?? u('/og/default.png');
+const ogUrl = absolute(ogPath, Astro.site);
+const nodes = [...siteGraph(Astro.site), ...(!jsonLd ? [] : Array.isArray(jsonLd) ? jsonLd : [jsonLd])];
+const isoDate = (value: Date | string | undefined) => value ? new Date(value).toISOString() : undefined;
 const path = Astro.url.pathname;
 const current = (href: string) => (path.startsWith(u(href)) ? 'page' : undefined);
+const shopHref = shoppingLink(SHOP_URL);
 ---
 <!doctype html>
 <html lang="zh-TW">
@@ -29,23 +41,31 @@ const current = (href: string) => (path.startsWith(u(href)) ? 'page' : undefined
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    {!IS_PRODUCTION && <meta name="robots" content="noindex,nofollow" />}
+    {(!IS_PRODUCTION || noindex) && <meta name="robots" content={IS_PRODUCTION ? 'noindex,follow' : 'noindex,nofollow'} />}
     {GSC_TOKEN && <meta name="google-site-verification" content={GSC_TOKEN} />}
     <link rel="icon" type="image/png" href={u('/favicon.png')} />
     <link rel="apple-touch-icon" href={u('/apple-touch-icon.png')} />
     <link rel="sitemap" href={u('/sitemap-index.xml')} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:locale" content="zh_TW" />
     <meta property="og:site_name" content={SITE.name} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:alt" content={title ?? SITE.name} />
+    {publishedTime && <meta property="article:published_time" content={isoDate(publishedTime)} />}
+    {modifiedTime && <meta property="article:modified_time" content={isoDate(modifiedTime)} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogUrl} />
+    <link rel="alternate" type="application/rss+xml" title={`${SITE.name}最新文章`} href={u('/rss.xml')} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet" />
-    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
-    {IS_PRODUCTION && GA_ID && (
+    <script type="application/ld+json" set:html={jsonScript({ '@context': 'https://schema.org', '@graph': nodes })} />
+    {IS_PRODUCTION && GA_ID && Astro.url.pathname !== u('/search/') && (
       <>
         <script async is:inline src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}></script>
         <script is:inline define:vars={{ GA_ID }}>
@@ -53,14 +73,14 @@ const current = (href: string) => (path.startsWith(u(href)) ? 'page' : undefined
           function gtag() { dataLayer.push(arguments); }
           window.gtag = gtag;
           gtag('js', new Date());
-          gtag('config', GA_ID);
+          gtag('config', GA_ID, { page_location: location.origin + location.pathname, page_path: location.pathname });
         </script>
       </>
     )}
   </head>
   <body>
     <a class="skip" href="#main">跳到主要內容</a>
-    <header class="site-header">
+    <header class="site-header" data-pagefind-ignore>
       <div class="wrap header-inner">
         <a class="brand" href={u('/')} aria-label={`${SITE.name} 首頁`}>
           <Image src={siteImage('logo-mark')} alt="" width={52} height={45} loading="eager" />
@@ -84,7 +104,7 @@ const current = (href: string) => (path.startsWith(u(href)) ? 'page' : undefined
       <slot />
     </main>
 
-    <footer class="site-footer">
+    <footer class="site-footer" data-pagefind-ignore>
       <div class="wrap footer-inner">
         <div>
           <Image src={siteImage('logo-full')} alt={`${SITE.name} ${SITE.nameEn}`} width={140} />
@@ -95,6 +115,15 @@ const current = (href: string) => (path.startsWith(u(href)) ? 'page' : undefined
             <a href={u('/')}>首頁</a>
             {NAV.map((n) => <a href={u(n.href)}>{n.label}</a>)}
             <a href={u('/contact/')}>聯絡我們</a>
+            <a href={u('/articles/')}>健康文章</a>
+            <a href={u('/topics/')}>主題指南</a>
+            <a href={u('/search/')}>搜尋內容</a>
+            <a href={u('/authors/')}>內容團隊</a>
+            <a href={u('/editorial-policy/')}>編輯原則</a>
+            <a href={u('/disclosure/')}>關係揭露</a>
+            <a href={u('/privacy/')}>隱私權</a>
+            <a href={u('/rss.xml')}>RSS 訂閱</a>
+            {shopHref && <a href={shopHref} data-ga-shop="" data-shop-placement="footer" target="_blank" rel="noopener noreferrer">前往購物網站</a>}
           </nav>
           <div class="footer-contact">
             <a href={CONTACT.phone.href} data-ga-contact={CONTACT.phone.ga}>電話 {CONTACT.phone.label}</a>
@@ -119,6 +148,10 @@ const current = (href: string) => (path.startsWith(u(href)) ? 'page' : undefined
         if (!a || !gtag) return;
         if (a.dataset.gaContact) gtag('event', 'contact_click', { channel: a.dataset.gaContact, page_path: location.pathname });
         if (a.dataset.gaOfficial) gtag('event', 'official_click', { product_id: a.dataset.gaOfficial, link_url: a.href });
+        if (a.hasAttribute('data-ga-shop')) {
+          const article = document.querySelector<HTMLElement>('[data-reading-article]');
+          gtag('event', 'shop_click', { product_id: a.dataset.gaShop || undefined, article_slug: article?.dataset.articleSlug, link_domain: new URL(a.href).hostname, placement: a.dataset.shopPlacement || 'content' });
+        }
       });
       // 點選行動版選單連結後收起
       document.querySelectorAll<HTMLDetailsElement>('.nav-mobile').forEach((d) =>

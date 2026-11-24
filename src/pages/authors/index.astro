@@ -1,0 +1,19 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/content/Breadcrumb.astro';
+import { getAuthors, getPublishedArticles } from '../../lib/content';
+import { listSchema, breadcrumbSchema } from '../../lib/content-view';
+import { u } from '../../lib/url';
+import '../../styles/content.css';
+const authors = await getAuthors();
+const articles = await getPublishedArticles();
+const schema = [listSchema('作者與編輯團隊', '/authors/', authors.map((author) => ({ title: author.data.name, path: `/authors/${author.id}/` })), Astro.site), breadcrumbSchema([{ label: '首頁', path: '/' }, { label: '作者與編輯團隊', path: '/authors/' }], Astro.site)];
+---
+<Base title="作者與編輯團隊" description="認識三傑益康的內容整理與編輯團隊，了解文章背後的作者與資料處理方式。" noindex={articles.length === 0} jsonLd={schema}>
+  <section class="section"><div class="wrap content-wrap">
+    <Breadcrumb items={[{ label: '首頁', href: '/' }, { label: '作者與編輯團隊' }]} />
+    <header class="content-intro"><h1>作者與編輯團隊</h1><p>每篇文章都標示整理內容的作者與使用的資料來源。</p></header>
+    <div class="content-grid">{authors.map((author) => <article class="content-card"><div class="content-card-copy"><h2><a href={u(`/authors/${author.id}/`)}>{author.data.name}</a></h2><p>{author.data.bioShort}</p></div></article>)}</div>
+    <p class="more"><a href={u('/editorial-policy/')}>了解我們的內容編輯方式</a></p>
+  </div></section>
+</Base>

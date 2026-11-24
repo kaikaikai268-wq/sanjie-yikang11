@@ -1,0 +1,13 @@
+.content-search { max-width: 52rem; }
+.content-search-form { margin-block: 2rem 1rem; }
+.content-search-form label { display: block; font-size: var(--text-sm); font-weight: 700; margin-bottom: 0.5rem; }
+.content-search-controls { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.content-search-controls input { min-width: 0; flex: 1 1 15rem; padding: 0.75rem 1rem; border: 1px solid var(--line); border-radius: 0.5rem; color: var(--text-primary); background: var(--bg-page); font: inherit; font-size: var(--text-sm); }
+.content-search-status { min-height: 2em; color: var(--text-secondary); font-size: var(--text-xs); }
+.content-search-results { list-style: none; padding: 0; margin-block: 1rem 2rem; display: grid; gap: 1.25rem; }
+.content-search-results li { border-bottom: 1px solid var(--line); padding-bottom: 1.25rem; overflow-wrap: anywhere; }
+.content-search-results h2 { font-size: var(--text-lg); }
+.content-search-results p { color: var(--text-secondary); font-size: var(--text-sm); margin-bottom: 0; }
+.content-search-more[hidden] { display: none; }
+.content-search-fallback { display: flex; flex-wrap: wrap; gap: 1rem; margin-block: 2rem 0; font-size: var(--text-xs); }
+.content-search button:disabled { cursor: wait; opacity: 0.65; }

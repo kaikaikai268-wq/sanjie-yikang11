@@ -1,0 +1,22 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/content/Breadcrumb.astro';
+import ContentImage from '../../components/content/ContentImage.astro';
+import { getPublishedTopics, getPublishedArticles, articlesForTopic } from '../../lib/content';
+import { listSchema, breadcrumbSchema } from '../../lib/content-view';
+import { u } from '../../lib/url';
+import '../../styles/content.css';
+const topics = await getPublishedTopics();
+const articles = await getPublishedArticles();
+const schema = [listSchema('主題指南', '/topics/', topics.map((topic) => ({ title: topic.data.title, path: `/topics/${topic.id}/` })), Astro.site), breadcrumbSchema([{ label: '首頁', path: '/' }, { label: '主題指南', path: '/topics/' }], Astro.site)];
+---
+<Base title="主題指南" description="把同一個健康問題的文章整理在一起，循著問題逐步看懂營養與日常保健。" noindex={topics.length === 0} jsonLd={schema}>
+  <section class="section"><div class="wrap content-wrap">
+    <Breadcrumb items={[{ label: '首頁', href: '/' }, { label: '主題指南' }]} />
+    <header class="content-intro"><p class="eyebrow">EXPLORE BY TOPIC</p><h1>主題指南</h1><p>從一個問題開始，把相關的觀念、成分與選擇方式一起看懂。</p></header>
+    {topics.length ? <div class="content-grid">{topics.map((topic) => <article class="content-card">
+      {topic.data.coverImage && <a class="content-card-image" href={u(`/topics/${topic.id}/`)} tabindex="-1" aria-hidden="true"><ContentImage src={topic.data.coverImage} alt="" /></a>}
+      <div class="content-card-copy"><h2><a href={u(`/topics/${topic.id}/`)}>{topic.data.title}</a></h2><p>{topic.data.description}</p><p class="content-meta">{articlesForTopic(topic, articles).length} 篇文章</p></div>
+    </article>)}</div> : <div class="content-empty"><h2>讓問題有一條閱讀路線</h2><p>相關文章發布後，我們會依讀者關心的問題整理成專題指南。</p><a href={u('/articles/')}>瀏覽健康文章</a></div>}
+  </div></section>
+</Base>

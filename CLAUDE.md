@@ -5,6 +5,8 @@
 
 Astro 7 純靜態輸出。部署在 GitHub Pages，正式網域 `https://3jwellness.com`，見「環境與上線」。無後端、無 UI 框架，互動是頁面內 `<script>`。
 
+內容網站基礎建設維護入口：`docs/content-foundation.md`。內容資料契約、發布與 Writer 接稿看 `docs/content-publishing.md`；頁型看 `docs/content-pages.md`；搜尋、事件與成效回饋看 `docs/analytics-content.md`。首頁與主導覽的全面改版另依使用者選定架構實作。
+
 ## 收手前一定要跑
 
 ```

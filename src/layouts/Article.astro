@@ -1,0 +1,76 @@
+---
+import Base from './Base.astro';
+import Breadcrumb from '../components/content/Breadcrumb.astro';
+import ArticleCard from '../components/content/ArticleCard.astro';
+import Share from '../components/content/Share.astro';
+import ContentImage from '../components/content/ContentImage.astro';
+import { articleSlug, getAuthor, getPublishedTopics, relatedArticles, type ArticleEntry } from '../lib/content';
+import { displayDate, contentTypeLabel, contentAsset, readingMinutes, breadcrumbSchema } from '../lib/content-view';
+import { absolute } from '../lib/seo';
+import { u } from '../lib/url';
+import { PRODUCTS } from '../data/products';
+import { SHOP_URL } from '../lib/env';
+import { shoppingLink } from '../lib/commerce.mjs';
+import '../styles/content.css';
+interface Props { article: ArticleEntry; headings: { depth: number; slug: string; text: string }[] }
+const { article, headings } = Astro.props;
+const data = article.data;
+const slug = articleSlug(article);
+const author = await getAuthor(data.author);
+const related = await relatedArticles(article);
+const topics = (await getPublishedTopics()).filter((topic) => data.topics.includes(topic.id));
+const products = PRODUCTS.filter((product) => data.relatedProducts.includes(product.id));
+const path = `/articles/${slug}/`;
+const url = absolute(u(path), Astro.site);
+const shopHref = shoppingLink(SHOP_URL, slug);
+const home = absolute(u('/'), Astro.site);
+const date = data.publishDate!;
+const minutes = readingMinutes(article.body);
+const authorPath = `/authors/${data.author}/`;
+const toc = headings.filter((heading) => heading.depth === 2);
+const authorNode = author ? { '@type': author.data.isOrganization ? 'Organization' : 'Person', '@id': `${absolute(u(authorPath), Astro.site)}#author`, name: author.data.name, url: absolute(u(authorPath), Astro.site), sameAs: author.data.sameAs } : { '@id': `${home}#organization` };
+const jsonLd = [
+  { '@context': 'https://schema.org', '@type': 'Article', '@id': `${url}#article`, headline: data.title, description: data.description, url, mainEntityOfPage: url, datePublished: date.toISOString(), dateModified: (data.updatedDate ?? date).toISOString(), inLanguage: 'zh-Hant-TW', author: authorNode, publisher: { '@id': `${home}#organization` }, isPartOf: { '@id': `${home}#website` }, articleSection: data.category, keywords: data.tags, image: absolute(contentAsset(data.coverImage ?? '/og/default.png'), Astro.site), citation: data.references.map((reference) => ({ '@type': 'CreativeWork', name: reference.title, url: reference.url, ...(reference.publisher ? { publisher: { '@type': 'Organization', name: reference.publisher } } : {}) })) },
+  breadcrumbSchema([{ label: '首頁', path: '/' }, { label: '健康文章', path: '/articles/' }, { label: data.title, path }], Astro.site),
+  ...(data.faq.length ? [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: data.faq.map((faq) => ({ '@type': 'Question', name: faq.question, acceptedAnswer: { '@type': 'Answer', text: faq.answer } })) }] : []),
+];
+---
+<Base title={data.title} description={data.description} ogImage={data.coverImage} ogType="article" publishedTime={date.toISOString()} modifiedTime={(data.updatedDate ?? date).toISOString()} jsonLd={jsonLd}>
+  <section class="section"><div class="wrap article-shell">
+    <Breadcrumb items={[{ label: '首頁', href: '/' }, { label: '健康文章', href: '/articles/' }, { label: data.title }]} />
+    <article data-reading-article data-article-slug={slug} data-article-category={data.category} data-reading-minutes={minutes}>
+      <header class="article-header">
+        <p class="content-kicker"><a href={u(`/articles/category/${encodeURIComponent(data.category)}/`)}>{data.category}</a> · {contentTypeLabel(data.contentType)}</p>
+        <h1 data-pagefind-meta="title">{data.title}</h1>
+        <p class="article-deck" data-pagefind-meta="description">{data.description}</p>
+        <p class="content-meta">
+          {author && <a href={u(authorPath)}>{author.data.name}</a>}
+          <span>發布 <time datetime={date.toISOString()}>{displayDate(date)}</time></span>
+          {data.updatedDate && <span>更新 <time datetime={data.updatedDate.toISOString()}>{displayDate(data.updatedDate)}</time></span>}
+          <span>約 {minutes} 分鐘</span>
+          <a href={u(`/articles/${slug}.txt`)} type="text/plain" rel="alternate">純文字版</a>
+        </p>
+        {data.coverImage && <figure class="article-cover"><ContentImage src={data.coverImage} alt={data.coverAlt ?? ''} eager />{data.coverCredit && <figcaption>{data.coverCredit}</figcaption>}</figure>}
+      </header>
+      <div class="article-columns">
+        <div class="article-reading">
+          {data.highlights.length > 0 && <aside class="article-summary" aria-label="文章重點"><h2>先看重點</h2><ul>{data.highlights.map((highlight) => <li>{highlight}</li>)}</ul></aside>}
+          <div class="article-body" data-article-body data-pagefind-body><slot /></div>
+          {data.faq.length > 0 && <section class="article-faq" aria-labelledby="faq-heading"><h2 id="faq-heading">常見問題</h2>{data.faq.map((faq) => <details><summary>{faq.question}</summary><p>{faq.answer}</p></details>)}</section>}
+          <section class="article-references" data-reference-list data-reading-end aria-labelledby="references-heading"><h2 id="references-heading">資料來源</h2>{data.references.length > 0 ? <ol>{data.references.map((reference) => <li><a href={reference.url} target="_blank" rel="noopener noreferrer">{reference.title}</a>{reference.publisher && <span>{reference.publisher}</span>}{reference.note && <span>{reference.note}</span>}</li>)}</ol> : <p>本篇為編輯團隊的內容整理。</p>}</section>
+          {data.disclosure && <aside class="article-disclosure"><p><strong>內容關係揭露</strong></p><p>{data.disclosure}</p><a href={u('/disclosure/')}>了解三傑的內容與商業關係</a></aside>}
+          {author && <aside class="article-author"><h2>關於作者</h2><p><a href={u(authorPath)}>{author.data.name}</a></p><p>{author.data.bioShort}</p><a href={u('/editorial-policy/')}>我們如何整理內容</a></aside>}
+          {topics.length > 0 && <nav class="content-filters" aria-label="所屬專題">{topics.map((topic) => <a href={u(`/topics/${topic.id}/`)}>{topic.data.title}</a>)}</nav>}
+          <Share url={url} title={data.title} />
+          {products.length > 0 && <aside class="article-products"><h2>相關商品資訊</h2><p>可進一步查看商品的原廠成分與規格資訊。</p><ul>{products.map((product) => <li><a href={u(`/products/${product.id}/`)}>{product.name}</a></li>)}</ul>{shopHref && <a class="btn btn-outline" href={shopHref} data-ga-shop="" data-shop-placement="article-products" target="_blank" rel="noopener noreferrer">前往購物網站</a>}</aside>}
+        </div>
+        {toc.length > 1 && <nav class="article-toc" aria-label="文章目錄"><h2>這篇會談到</h2><ol>{toc.map((heading) => <li><a href={`#${heading.slug}`}>{heading.text}</a></li>)}</ol></nav>}
+      </div>
+    </article>
+    {related.length > 0 && <section class="content-related" aria-labelledby="related-heading"><h2 id="related-heading">接著閱讀</h2><div class="content-grid">{related.map((entry) => <ArticleCard article={entry} related />)}</div></section>}
+  </div></section>
+</Base>
+<script>
+  import '../lib/reading-client';
+  import '../lib/article-navigation';
+</script>

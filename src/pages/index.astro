@@ -25,6 +25,7 @@ const needHref = (c: string | null) => u(c ? `/products/?category=${encodeURICom
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
+  '@id': new URL(`${u('/')}#organization`, Astro.site).href,
   name: SITE.name,
   alternateName: SITE.nameEn,
   url: Astro.site?.href,
