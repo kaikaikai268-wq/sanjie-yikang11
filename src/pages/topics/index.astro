@@ -2,21 +2,40 @@
 import Base from '../../layouts/Base.astro';
 import Breadcrumb from '../../components/content/Breadcrumb.astro';
 import ContentImage from '../../components/content/ContentImage.astro';
+import WellnessIcon from '../../components/WellnessIcon.astro';
 import { getPublishedTopics, getPublishedArticles, articlesForTopic } from '../../lib/content';
 import { listSchema, breadcrumbSchema } from '../../lib/content-view';
 import { u } from '../../lib/url';
 import '../../styles/content.css';
+import '../../styles/listing-visual.css';
 const topics = await getPublishedTopics();
 const articles = await getPublishedArticles();
 const schema = [listSchema('主題指南', '/topics/', topics.map((topic) => ({ title: topic.data.title, path: `/topics/${topic.id}/` })), Astro.site), breadcrumbSchema([{ label: '首頁', path: '/' }, { label: '主題指南', path: '/topics/' }], Astro.site)];
 ---
 <Base title="主題指南" description="把同一個健康問題的文章整理在一起，循著問題逐步看懂營養與日常保健。" noindex={topics.length === 0} jsonLd={schema}>
-  <section class="section"><div class="wrap content-wrap">
+  <section class="listing-page"><div class="wrap content-wrap">
     <Breadcrumb items={[{ label: '首頁', href: '/' }, { label: '主題指南' }]} />
-    <header class="content-intro"><p class="eyebrow">EXPLORE BY TOPIC</p><h1>主題指南</h1><p>從一個問題開始，把相關的觀念、成分與選擇方式一起看懂。</p></header>
-    {topics.length ? <div class="content-grid">{topics.map((topic) => <article class="content-card">
-      {topic.data.coverImage && <a class="content-card-image" href={u(`/topics/${topic.id}/`)} tabindex="-1" aria-hidden="true"><ContentImage src={topic.data.coverImage} alt="" /></a>}
-      <div class="content-card-copy"><h2><a href={u(`/topics/${topic.id}/`)}>{topic.data.title}</a></h2><p>{topic.data.description}</p><p class="content-meta">{articlesForTopic(topic, articles).length} 篇文章</p></div>
-    </article>)}</div> : <div class="content-empty"><h2>讓問題有一條閱讀路線</h2><p>相關文章發布後，我們會依讀者關心的問題整理成專題指南。</p><a href={u('/articles/')}>瀏覽健康文章</a></div>}
+    <header class="listing-hero listing-hero-topics">
+      <div class="listing-hero-copy">
+        <p class="listing-eyebrow"><WellnessIcon name="book" /> EXPLORE BY TOPIC</p>
+        <h1>主題指南</h1>
+        <p class="listing-hero-deck">從一個問題開始，<br />把理解慢慢連起來。</p>
+        <p class="listing-hero-description">把相關的觀念、成分與常見疑問整理在一起。不必一次讀完，循著你在意的問題，找到下一步想了解的事。</p>
+        <nav class="listing-hero-actions" aria-label="專題閱讀入口"><a class="btn btn-primary" href="#topic-guides"><WellnessIcon name="leaf" /> 探索主題</a><a class="listing-text-link" href={u('/articles/')}>瀏覽所有文章</a></nav>
+        <p class="listing-reading-note"><WellnessIcon name="moon" /><span>讀一點，想一想。健康知識也可以有自己的步調。</span></p>
+      </div>
+      <figure class="listing-photo listing-photo-evening">
+        <img src={u('/images/editorial/evening-calm.webp')} srcset={`${u('/images/editorial/evening-calm-640.webp')} 640w, ${u('/images/editorial/evening-calm.webp')} 1280w`} sizes="(max-width: 860px) 100vw, 50vw" width="1280" height="853" alt="" loading="eager" decoding="async" fetchpriority="high" />
+        <figcaption><WellnessIcon name="moon" /><span>讓閱讀，成為照顧自己的片刻。</span></figcaption>
+      </figure>
+    </header>
+    <section class="listing-content" id="topic-guides" aria-labelledby="topic-guides-heading">
+      <header class="listing-section-head"><div><p class="listing-eyebrow">CONNECTED READING</p><h2 id="topic-guides-heading">沿著問題，繼續探索。</h2></div>{topics.length > 0 && <p class="listing-count">{topics.length} 個主題指南</p>}</header>
+      {topics.length ? <div class="content-grid listing-topic-grid">{topics.map((topic) => <article class="content-card">
+        {topic.data.coverImage ? <a class="content-card-image" href={u(`/topics/${topic.id}/`)} tabindex="-1" aria-hidden="true"><ContentImage src={topic.data.coverImage} alt="" /></a> : <div class="listing-topic-symbol" aria-hidden="true"><WellnessIcon name="leaf" /></div>}
+        <div class="content-card-copy"><p class="content-kicker">主題閱讀</p><h2><a href={u(`/topics/${topic.id}/`)}>{topic.data.title}</a></h2><p>{topic.data.description}</p><p class="content-meta">{articlesForTopic(topic, articles).length} 篇文章</p></div>
+      </article>)}</div> : <div class="listing-empty"><span class="listing-empty-icon" aria-hidden="true"><WellnessIcon name="book" /></span><div><h3>讓問題，有一條閱讀路線。</h3><p>我們正在累積健康生活內容。相關文章發布後，會依讀者關心的問題整理成專題指南。</p><a class="listing-text-link" href={u('/articles/')}>先從健康文章開始</a></div></div>}
+    </section>
+    <aside class="listing-footer-note"><WellnessIcon name="search" /><div><h2>已經有想問的問題？</h2><p>可以直接搜尋關鍵字，也可以先看看三傑如何整理與呈現內容。</p><nav aria-label="搜尋與編輯資訊"><a href={u('/search/')}>搜尋內容</a><a href={u('/editorial-policy/')}>內容編輯方式</a></nav></div></aside>
   </div></section>
 </Base>

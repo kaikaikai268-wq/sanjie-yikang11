@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import ArticleCard from '../components/content/ArticleCard.astro';
+import WellnessIcon from '../components/WellnessIcon.astro';
 import { getPublishedArticles, getPublishedTopics, getAuthors, articleSlug, articlesForTopic } from '../lib/content';
 import { selectHomeContent } from '../lib/home-content.mjs';
 import { listSchema } from '../lib/content-view';
@@ -16,20 +17,39 @@ const authorIds = new Set(articles.map((entry) => entry.data.author));
 const authors = (authorIds.size ? allAuthors.filter((entry) => authorIds.has(entry.id)) : allAuthors).slice(0, 4);
 const visibleArticles = [...featured, ...latest];
 const jsonLd = listSchema('健康生活與營養文章', '/', visibleArticles.map((entry) => ({ title: entry.data.title, path: `/articles/${articleSlug(entry)}/` })), Astro.site);
+const readingPaths = [
+  { image: 'daily-nutrition', icon: 'leaf' as const, label: 'EAT WELL', title: '吃得明白', description: '從餐桌到營養補充，先看懂自己關心的問題。', href: '/articles/', action: '探索健康文章' },
+  { image: 'evening-calm', icon: 'moon' as const, label: 'LIVE WELL', title: '過好日常', description: '把零散的健康疑問，整理成容易跟上的閱讀路線。', href: '/topics/', action: '認識主題指南' },
+  { image: 'thoughtful-reading', icon: 'book' as const, label: 'READ WITH CARE', title: '讀懂資訊', description: '除了結論，也了解文章的來源與編輯方式。', href: '/editorial-policy/', action: '了解內容原則' },
+];
 ---
-<Base title="健康生活與營養知識" description="三傑益康從日常生活的問題出發，整理健康、營養與保健選擇的文章、來源與主題指南，陪你把健康資訊讀懂。" jsonLd={jsonLd}>
+<Base title="健康生活與營養知識" description="三傑益康從日常生活的問題出發，整理健康、營養與保健選擇的文章、來源與主題指南，陪你把健康資訊讀懂。" ogImage="/images/editorial/daily-nutrition.webp" jsonLd={jsonLd}>
   <section class="home-intro">
-    <div class="wrap content-wrap">
-      <p class="eyebrow">{SITE.nameEn}</p>
-      <h1>從生活裡的問題，<br />把健康與營養讀懂。</h1>
-      <p class="home-lead">身體的日常、家人的照顧、保健品的選擇。把想知道的問題看清楚，也把資料的來源說明白。</p>
+    <div class="wrap home-hero-grid">
+      <div class="home-hero-copy">
+      <p class="eyebrow home-edition"><WellnessIcon name="leaf" /> 健康，從日常讀起</p>
+      <h1>把健康讀懂，<br />把日子過好。</h1>
+      <p class="home-lead">從一餐、一夜好眠，到照顧家人的每個選擇。陪你讀懂健康與營養，也把資訊的來源說明白。</p>
+      <nav class="home-actions" aria-label="開始閱讀"><a href={u('/articles/')} class="btn btn-primary">開始閱讀 <WellnessIcon name="arrow" /></a><a href={u('/topics/')} class="btn btn-ghost">探索主題指南</a></nav>
+      </div>
+      <figure class="home-hero-photo">
+        <img src={u('/images/editorial/daily-nutrition.webp')} srcset={`${u('/images/editorial/daily-nutrition-640.webp')} 640w, ${u('/images/editorial/daily-nutrition.webp')} 1280w`} sizes="(max-width: 850px) 100vw, 50vw" width="1280" height="853" alt="窗邊餐桌上的燕麥、水果、優格與飲水，灑落溫暖晨光" loading="eager" fetchpriority="high" decoding="async" />
+        <figcaption><span>THE EVERYDAY WELLNESS JOURNAL</span>好好生活，從多懂一點開始。</figcaption>
+      </figure>
       <form class="home-search" action={u('/search/')} method="get" role="search" aria-label="搜尋健康生活內容">
-        <label for="home-query">你想了解什麼？</label>
-        <div><input id="home-query" name="q" type="search" placeholder="輸入你關心的健康或營養問題" required /><button class="btn btn-primary" type="submit">搜尋內容</button></div>
+        <label for="home-query"><WellnessIcon name="search" /> 今天，想了解什麼？</label>
+        <div><input id="home-query" name="q" type="search" placeholder="搜尋健康或營養問題" required /><button class="btn btn-primary" type="submit">搜尋內容</button></div>
       </form>
-      <nav class="home-actions" aria-label="開始閱讀"><a href={u('/articles/')} class="btn btn-outline">瀏覽健康文章</a><a href={u('/topics/')} class="btn btn-ghost">主題指南</a></nav>
     </div>
   </section>
+
+  <section class="section home-paths-section" aria-labelledby="home-paths-heading"><div class="wrap">
+    <header class="home-section-head"><div><p class="eyebrow">A LITTLE MORE UNDERSTANDING</p><h2 id="home-paths-heading">讓照顧自己，從日常開始</h2></div><p>從你關心的生活片刻，找到閱讀的起點。</p></header>
+    <div class="home-paths">{readingPaths.map((item) => <a class="home-path" href={u(item.href)}>
+      <div class="home-path-photo"><img src={u(`/images/editorial/${item.image}.webp`)} srcset={`${u(`/images/editorial/${item.image}-640.webp`)} 640w, ${u(`/images/editorial/${item.image}.webp`)} 1280w`} sizes="(max-width: 700px) 100vw, 33vw" width="1280" height="853" alt="" loading="lazy" decoding="async" /></div>
+      <div class="home-path-copy"><p class="eyebrow">{item.label}</p><h3><WellnessIcon name={item.icon} />{item.title}</h3><p>{item.description}</p><span class="home-path-action">{item.action}<WellnessIcon name="arrow" /></span></div>
+    </a>)}</div>
+  </div></section>
 
   <section class="section" aria-labelledby="home-featured-heading">
     <div class="wrap content-wrap">
@@ -53,7 +73,7 @@ const jsonLd = listSchema('健康生活與營養文章', '/', visibleArticles.ma
     {topics.length > 0 ? <div class="home-link-grid">{topics.map((topic) => <article class="home-link-card"><h3><a href={u(`/topics/${topic.id}/`)}>{topic.data.title}</a></h3><p>{topic.data.description}</p><p class="content-meta">{articlesForTopic(topic, articles).length} 篇文章</p></article>)}</div> : <div class="content-empty"><h3>把問題整理成閱讀路線</h3><p>相關文章發布後，我們會整理成專題，讓你從基礎觀念、常見疑問一路讀到實際選擇。</p><a href={u('/articles/')}>瀏覽健康文章</a></div>}
   </div></section>
 
-  <section class="section" aria-labelledby="home-editors-heading"><div class="wrap content-wrap">
+  <section class="section home-editors" aria-labelledby="home-editors-heading"><div class="wrap content-wrap">
     <header class="home-section-head"><div><h2 id="home-editors-heading">認識內容背後的人</h2><p>文章標示負責作者與參考資料，方便你了解觀點從哪裡來。</p></div><a href={u('/authors/')}>內容團隊</a></header>
     {authors.length > 0 && <div class="home-link-grid">{authors.map((author) => <article class="home-link-card"><h3><a href={u(`/authors/${author.id}/`)}>{author.data.name}</a></h3><p>{author.data.bioShort}</p></article>)}</div>}
     <nav class="home-actions home-principles" aria-label="內容原則"><a href={u('/editorial-policy/')}>內容編輯方式</a><a href={u('/disclosure/')}>內容與商業關係揭露</a><a href={u('/rss.xml')}>RSS 訂閱</a></nav>
