@@ -19,7 +19,7 @@ const schema = [listSchema(topic.data.title, path, articles.map((entry) => ({ ti
 <Base title={topic.data.title} description={topic.data.description} ogImage={topic.data.coverImage} jsonLd={schema}>
   <section class="section"><div class="wrap content-wrap">
     <Breadcrumb items={[{ label: '首頁', href: '/' }, { label: '主題指南', href: '/topics/' }, { label: topic.data.title }]} />
-    <header class="content-intro" data-pagefind-body><p class="eyebrow">TOPIC GUIDE</p><h1 data-pagefind-meta="title">{topic.data.title}</h1><p data-pagefind-meta="description">{topic.data.description}</p><p class="content-meta">{articles.length} 篇文章</p></header>
+    <header class="content-intro" data-pagefind-body><h1 data-pagefind-meta="title">{topic.data.title}</h1><p data-pagefind-meta="description">{topic.data.description}</p><p class="content-meta">{articles.length} 篇文章</p></header>
     {sections.map((section) => <section class="topic-section"><h2>{section.title}</h2>{section.summary && <p>{section.summary}</p>}<div class="content-grid">{section.entries.map((entry) => <ArticleCard article={entry} />)}</div></section>)}
     {remaining.length > 0 && <section class="topic-section">{sections.length > 0 && <h2>繼續探索</h2>}<div class="content-grid">{remaining.map((entry) => <ArticleCard article={entry} />)}</div></section>}
   </div></section>

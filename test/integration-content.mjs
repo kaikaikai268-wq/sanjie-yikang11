@@ -45,7 +45,8 @@ try {
     await create(`src/content/articles/${slug}.md`, serializeDocument({ title: `機密草稿驗證 ${kind}`, description: `NEVER_PUBLIC_${kind}`, slug, status: kind.startsWith('future') ? kind.endsWith('scheduled') ? 'scheduled' : 'published' : kind, publishDate: kind.startsWith('future') ? '2099-01-01' : '2000-01-01', references: [{ title: '測試來源', url: 'https://example.com/' }] }, `NEVER_PUBLIC_${kind}`));
   }
   for (const base of ['', '/foundation-test']) {
-    const env = { PUBLIC_SITE_STAGE: 'production', PUBLIC_BASE_PATH: base, PUBLIC_SHOP_URL: 'https://shop.example/checkout?offer=foundation', CONTENT_BUILD_TIME: new Date().toISOString() };
+    // The first half-hour in Taipei catches YAML date-only values being shifted to UTC midnight.
+    const env = { PUBLIC_SITE_STAGE: 'production', PUBLIC_BASE_PATH: base, PUBLIC_SHOP_URL: 'https://shop.example/checkout?offer=foundation', CONTENT_BUILD_TIME: '2000-01-01T00:30:00+08:00' };
     run('scripts/content.mjs', ['check'], env);
     run('scripts/prepare-media.mjs', [], env);
     run('node_modules/astro/bin/astro.mjs', ['build'], env);
@@ -55,7 +56,7 @@ try {
     const dist = path.join(root, 'dist');
     const html = await readFile(path.join(dist, `articles/${publishedSlugs[0]}/index.html`), 'utf8');
     const home = await readFile(path.join(dist, 'index.html'), 'utf8');
-    assert.ok(home.includes('從生活裡的問題') && home.includes(`action="${base}/search/"`), '內容首頁與搜尋入口');
+    assert.ok(home.includes('aria-label="編輯選讀"') && home.includes(`action="${base}/search/"`), '內容首頁有文章選讀與可提交的搜尋入口');
     const headerNav = /<nav class="nav"[\s\S]*?<\/nav>/.exec(home)?.[0] ?? '';
     assert.ok(headerNav.includes(`${base}/articles/`) && headerNav.includes(`${base}/topics/`) && !headerNav.includes(`${base}/products/`), '主導覽以內容為核心');
     assert.ok(home.includes('data-shop-placement="header"'), '有設定購物網址才顯示導購入口');

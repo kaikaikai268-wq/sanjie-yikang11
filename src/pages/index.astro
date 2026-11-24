@@ -1,87 +1,60 @@
 ---
 import Base from '../layouts/Base.astro';
-import ArticleCard from '../components/content/ArticleCard.astro';
-import WellnessIcon from '../components/WellnessIcon.astro';
-import { getPublishedArticles, getPublishedTopics, getAuthors, articleSlug, articlesForTopic } from '../lib/content';
+import ContentImage from '../components/content/ContentImage.astro';
+import { getPublishedArticles, getPublishedTopics, articleSlug, articlesForTopic, type ArticleEntry } from '../lib/content';
 import { selectHomeContent } from '../lib/home-content.mjs';
-import { listSchema } from '../lib/content-view';
-import { SITE } from '../data/site';
+import { listSchema, displayDate } from '../lib/content-view';
 import { u } from '../lib/url';
+import { HOME_READING_ORDER } from '../data/editorial';
 import '../styles/content.css';
 import '../styles/home.css';
-
-const { featured, latest, categories, articles } = selectHomeContent(await getPublishedArticles());
-const topics = (await getPublishedTopics()).slice(0, 6);
-const allAuthors = await getAuthors();
-const authorIds = new Set(articles.map((entry) => entry.data.author));
-const authors = (authorIds.size ? allAuthors.filter((entry) => authorIds.has(entry.id)) : allAuthors).slice(0, 4);
-const visibleArticles = [...featured, ...latest];
-const jsonLd = listSchema('健康生活與營養文章', '/', visibleArticles.map((entry) => ({ title: entry.data.title, path: `/articles/${articleSlug(entry)}/` })), Astro.site);
-const readingPaths = [
-  { image: 'daily-nutrition', icon: 'leaf' as const, label: 'EAT WELL', title: '吃得明白', description: '從餐桌到營養補充，先看懂自己關心的問題。', href: '/articles/', action: '探索健康文章' },
-  { image: 'evening-calm', icon: 'moon' as const, label: 'LIVE WELL', title: '過好日常', description: '把零散的健康疑問，整理成容易跟上的閱讀路線。', href: '/topics/', action: '認識主題指南' },
-  { image: 'thoughtful-reading', icon: 'book' as const, label: 'READ WITH CARE', title: '讀懂資訊', description: '除了結論，也了解文章的來源與編輯方式。', href: '/editorial-policy/', action: '了解內容原則' },
-];
+const { featured, latest, articles, categories } = selectHomeContent(await getPublishedArticles(), { featuredLimit: 1, latestLimit: 8 });
+const lead = featured[0] as ArticleEntry | undefined;
+const secondary = articles.filter((article) => !lead || articleSlug(article) !== articleSlug(lead)).sort((a, b) => {
+  const rank = (article: ArticleEntry) => { const index = HOME_READING_ORDER.indexOf(articleSlug(article)); return index < 0 ? HOME_READING_ORDER.length : index; };
+  return rank(a) - rank(b);
+}).slice(0, 2) as ArticleEntry[];
+const secondarySlugs = new Set(secondary.map(articleSlug));
+const remaining = latest.filter((article) => !secondarySlugs.has(articleSlug(article))) as ArticleEntry[];
+const topics = (await getPublishedTopics()).slice(0, 3);
+const articlePath = (article: ArticleEntry) => `/articles/${articleSlug(article)}/`;
+const visibleArticles = [lead, ...secondary, ...remaining].filter((entry): entry is ArticleEntry => Boolean(entry));
+const schema = listSchema('健康生活與營養', '/', visibleArticles.map((article) => ({ title: article.data.title, path: articlePath(article) })), Astro.site);
+const orderedTopicArticles = (topic: (typeof topics)[number]) => {
+  const members = articlesForTopic(topic, articles);
+  const order = [...new Set([...topic.data.sections.flatMap((section) => section.articles), ...topic.data.articles])];
+  return [...members].sort((a, b) => {
+    const rank = (article: ArticleEntry) => { const index = order.indexOf(articleSlug(article)); return index < 0 ? order.length : index; };
+    return rank(a) - rank(b);
+  });
+};
 ---
-<Base title="健康生活與營養知識" description="三傑益康從日常生活的問題出發，整理健康、營養與保健選擇的文章、來源與主題指南，陪你把健康資訊讀懂。" ogImage="/images/editorial/daily-nutrition.webp" jsonLd={jsonLd}>
-  <section class="home-intro">
-    <div class="wrap home-hero-grid">
-      <div class="home-hero-copy">
-      <p class="eyebrow home-edition"><WellnessIcon name="leaf" /> 健康，從日常讀起</p>
-      <h1>把健康讀懂，<br />把日子過好。</h1>
-      <p class="home-lead">從一餐、一夜好眠，到照顧家人的每個選擇。陪你讀懂健康與營養，也把資訊的來源說明白。</p>
-      <nav class="home-actions" aria-label="開始閱讀"><a href={u('/articles/')} class="btn btn-primary">開始閱讀 <WellnessIcon name="arrow" /></a><a href={u('/topics/')} class="btn btn-ghost">探索主題指南</a></nav>
-      </div>
-      <figure class="home-hero-photo">
-        <img src={u('/images/editorial/daily-nutrition.webp')} srcset={`${u('/images/editorial/daily-nutrition-640.webp')} 640w, ${u('/images/editorial/daily-nutrition.webp')} 1280w`} sizes="(max-width: 850px) 100vw, 50vw" width="1280" height="853" alt="窗邊餐桌上的燕麥、水果、優格與飲水，灑落溫暖晨光" loading="eager" fetchpriority="high" decoding="async" />
-        <figcaption><span>THE EVERYDAY WELLNESS JOURNAL</span>好好生活，從多懂一點開始。</figcaption>
-      </figure>
-      <form class="home-search" action={u('/search/')} method="get" role="search" aria-label="搜尋健康生活內容">
-        <label for="home-query"><WellnessIcon name="search" /> 今天，想了解什麼？</label>
-        <div><input id="home-query" name="q" type="search" placeholder="搜尋健康或營養問題" required /><button class="btn btn-primary" type="submit">搜尋內容</button></div>
-      </form>
+<Base title="健康生活、營養與保健品判讀" description="三傑益康編輯團隊整理飲食營養、保健品標示與生活習慣。閱讀有來源的實用文章，從具體問題開始了解。" ogImage={lead?.data.coverImage} jsonLd={schema}>
+  <div class="wrap frontpage">
+    <header class="frontpage-heading"><h1>健康生活與營養</h1><p>三傑益康編輯團隊</p></header>
+    {lead ? <section class="front-opening" aria-label="編輯選讀">
+      <article class="front-lead">
+        <p class="front-kicker">編輯選讀<span>{lead.data.category}</span></p>
+        <h2><a href={u(articlePath(lead))}>{lead.data.title}</a></h2>
+        {lead.data.coverImage && <a class="front-lead-image" href={u(articlePath(lead))} tabindex="-1" aria-hidden="true"><ContentImage src={lead.data.coverImage} alt="" eager /></a>}
+        <p class="front-deck">{lead.data.description}</p>
+        <p class="front-byline"><time datetime={lead.data.publishDate?.toISOString()}>{displayDate(lead.data.publishDate)}</time><a href={u('/authors/3j-editorial/')}>三傑益康編輯團隊</a></p>
+      </article>
+      <aside class="front-secondary" aria-labelledby="front-secondary-title">
+        <h2 class="front-column-title" id="front-secondary-title">接著讀</h2>
+        {secondary.map((article) => <article class="front-side-story"><p class="front-kicker">{article.data.category}</p><h3><a href={u(articlePath(article))}>{article.data.title}</a></h3><div class="front-side-detail">{article.data.coverImage && <a href={u(articlePath(article))} tabindex="-1" aria-hidden="true"><ContentImage src={article.data.coverImage} alt="" /></a>}<p>{article.data.description}</p></div></article>)}
+        <div class="front-desk-note"><h3>讀者須知</h3><p>本站由三傑益康編輯團隊整理內容。資料來源與圖片說明列於文中；商品與合作關係另有說明。</p><a href={u('/editorial-policy/')}>編輯與更正原則</a></div>
+      </aside>
+    </section> : <section class="front-empty"><h2>文章準備中</h2><p>本站整理飲食營養、保健品判讀與生活習慣。公開文章會列在這裡。</p><a href={u('/editorial-policy/')}>編輯與更正原則</a></section>}
+    <div class="front-lower">
+      <section class="front-latest" aria-labelledby="front-latest-title"><header class="front-section-heading"><h2 id="front-latest-title">最新文章</h2><a href={u('/articles/')}>全部文章</a></header>
+        {remaining.length > 0 ? remaining.map((article) => <article class="front-list-story">{article.data.coverImage && <a class="front-list-image" href={u(articlePath(article))} tabindex="-1" aria-hidden="true"><ContentImage src={article.data.coverImage} alt="" /></a>}<div><p class="front-kicker">{article.data.category}</p><h3><a href={u(articlePath(article))}>{article.data.title}</a></h3><p class="front-list-description">{article.data.description}</p><p class="front-byline"><time datetime={article.data.publishDate?.toISOString()}>{displayDate(article.data.publishDate)}</time></p></div></article>) : <p class="front-small-note">新文章會依發布時間排列。上方可閱讀目前的編輯選讀。</p>}
+      </section>
+      <aside class="front-topics" aria-labelledby="front-topics-title"><header class="front-section-heading"><h2 id="front-topics-title">閱讀專題</h2><a href={u('/topics/')}>專題目錄</a></header>
+        {topics.length > 0 ? topics.map((topic) => <article class="front-topic"><h3><a href={u(`/topics/${topic.id}/`)}>{topic.data.title}</a></h3><p>{topic.data.description}</p><ol>{orderedTopicArticles(topic).slice(0, 3).map((article) => <li><a href={u(articlePath(article))}>{article.data.title}</a></li>)}</ol></article>) : <p class="front-small-note">相關文章公開後，會依問題整理為閱讀專題。</p>}
+      </aside>
     </div>
-  </section>
-
-  <section class="section home-paths-section" aria-labelledby="home-paths-heading"><div class="wrap">
-    <header class="home-section-head"><div><p class="eyebrow">A LITTLE MORE UNDERSTANDING</p><h2 id="home-paths-heading">讓照顧自己，從日常開始</h2></div><p>從你關心的生活片刻，找到閱讀的起點。</p></header>
-    <div class="home-paths">{readingPaths.map((item) => <a class="home-path" href={u(item.href)}>
-      <div class="home-path-photo"><img src={u(`/images/editorial/${item.image}.webp`)} srcset={`${u(`/images/editorial/${item.image}-640.webp`)} 640w, ${u(`/images/editorial/${item.image}.webp`)} 1280w`} sizes="(max-width: 700px) 100vw, 33vw" width="1280" height="853" alt="" loading="lazy" decoding="async" /></div>
-      <div class="home-path-copy"><p class="eyebrow">{item.label}</p><h3><WellnessIcon name={item.icon} />{item.title}</h3><p>{item.description}</p><span class="home-path-action">{item.action}<WellnessIcon name="arrow" /></span></div>
-    </a>)}</div>
-  </div></section>
-
-  <section class="section" aria-labelledby="home-featured-heading">
-    <div class="wrap content-wrap">
-      <header class="home-section-head"><div><p class="eyebrow">START READING</p><h2 id="home-featured-heading">從這裡開始讀</h2></div>{featured.length > 0 && <a href={u('/articles/')}>所有文章</a>}</header>
-      {featured.length > 0 ? <div class="content-grid">{featured.map((article) => <ArticleCard article={article} />)}</div> : <div class="content-empty"><h3>健康生活內容，正在整理中</h3><p>我們會從生活中的健康、營養與保健問題出發，逐篇整理文章與資料來源。文章發布後，會在這裡顯示。</p><div class="home-actions"><a href={u('/editorial-policy/')}>先了解我們如何整理內容</a><a href={u('/authors/')}>認識內容團隊</a></div></div>}
-    </div>
-  </section>
-
-  {latest.length > 0 && <section class="section section-sage" aria-labelledby="home-latest-heading"><div class="wrap content-wrap">
-    <header class="home-section-head"><h2 id="home-latest-heading">最新文章</h2><a href={u('/articles/')}>瀏覽全部文章</a></header>
-    <div class="content-grid">{latest.map((article) => <ArticleCard article={article} />)}</div>
-  </div></section>}
-
-  {categories.length > 0 && <section class="section" aria-labelledby="home-categories-heading"><div class="wrap content-wrap">
-    <header class="home-section-head"><div><h2 id="home-categories-heading">找到你關心的方向</h2><p>依已發布內容分類，從一個問題繼續探索。</p></div></header>
-    <nav class="home-categories" aria-label="健康文章分類">{categories.map(({ name, count }) => <a href={u(`/articles/category/${encodeURIComponent(name)}/`)}><span>{name}</span><span>{count} 篇文章</span></a>)}</nav>
-  </div></section>}
-
-  <section class="section section-sage" aria-labelledby="home-topics-heading"><div class="wrap content-wrap">
-    <header class="home-section-head"><div><h2 id="home-topics-heading">主題指南</h2><p>把同一個問題的文章放在一起，循著問題逐步理解。</p></div>{topics.length > 0 && <a href={u('/topics/')}>所有主題指南</a>}</header>
-    {topics.length > 0 ? <div class="home-link-grid">{topics.map((topic) => <article class="home-link-card"><h3><a href={u(`/topics/${topic.id}/`)}>{topic.data.title}</a></h3><p>{topic.data.description}</p><p class="content-meta">{articlesForTopic(topic, articles).length} 篇文章</p></article>)}</div> : <div class="content-empty"><h3>把問題整理成閱讀路線</h3><p>相關文章發布後，我們會整理成專題，讓你從基礎觀念、常見疑問一路讀到實際選擇。</p><a href={u('/articles/')}>瀏覽健康文章</a></div>}
-  </div></section>
-
-  <section class="section home-editors" aria-labelledby="home-editors-heading"><div class="wrap content-wrap">
-    <header class="home-section-head"><div><h2 id="home-editors-heading">認識內容背後的人</h2><p>文章標示負責作者與參考資料，方便你了解觀點從哪裡來。</p></div><a href={u('/authors/')}>內容團隊</a></header>
-    {authors.length > 0 && <div class="home-link-grid">{authors.map((author) => <article class="home-link-card"><h3><a href={u(`/authors/${author.id}/`)}>{author.data.name}</a></h3><p>{author.data.bioShort}</p></article>)}</div>}
-    <nav class="home-actions home-principles" aria-label="內容原則"><a href={u('/editorial-policy/')}>內容編輯方式</a><a href={u('/disclosure/')}>內容與商業關係揭露</a><a href={u('/rss.xml')}>RSS 訂閱</a></nav>
-  </div></section>
-
-  <section class="home-business" aria-labelledby="home-business-heading"><div class="wrap content-wrap">
-    <h2 id="home-business-heading">關於三傑益康</h2><p>除了健康生活內容，你也可以認識三傑團隊、查看商品資料，或與我們討論合作。</p>
-    <nav class="home-actions" aria-label="三傑資訊與合作"><a href={u('/about/')}>認識三傑</a><a href={u('/products/')}>商品資訊</a><a href={u('/partners/')}>品牌與合作資源</a><a href={u('/contact/')}>聯絡我們</a></nav>
-    <p class="home-motto">{SITE.motto.join('；')}</p>
-  </div></section>
+    {categories.length > 0 && <nav class="front-directory" aria-label="文章欄目"><h2>文章欄目</h2>{categories.map(({ name, count }) => <a href={u(`/articles/category/${encodeURIComponent(name)}/`)}>{name}<span>{count} 篇</span></a>)}</nav>}
+    <section class="front-editorial" aria-labelledby="front-editorial-title"><h2 id="front-editorial-title">關於這份內容</h2><div><p>從生活裡的問題出發，查閱官方資料與研究，再以一般讀者能理解的方式整理。文章供健康資訊參考，不能取代個人醫療評估。</p><nav aria-label="內容說明"><a href={u('/authors/')}>編輯團隊</a><a href={u('/disclosure/')}>商品與合作關係</a><a href={u('/contact/')}>提供更正與意見</a><a href={u('/rss.xml')}>RSS 訂閱</a></nav></div></section>
+  </div>
 </Base>

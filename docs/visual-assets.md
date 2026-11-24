@@ -1,35 +1,19 @@
-# 內容站視覺素材
+# 內容圖片與圖解
 
-首頁以自然光生活情境、暖白、森林綠與襯線標題建立閱讀入口；文章與主題列表沿用圖文雙欄、金色細線與同組圖示。響應式版面在窄螢幕改為單欄，保留大字級與鍵盤焦點。
+圖片以說明文章、辨認主題為用途。原本的暖光餐桌、盆栽與空白筆記情境圖不作為網站入口。封面欄位、替代文字與署名統一保留在文章 frontmatter。
 
-## 來源與用途
+## 編輯圖解
 
-`public/images/editorial/` 的照片由內建 `image_gen` 依下方提示生成，屬 AI 情境配圖，並非三傑團隊、產品、辦公室或研究紀錄的實拍。請勿用作功效證據或人物見證。輸出為 WebP，含桌面與行動裝置尺寸；圖片的尺寸、載入優先順序與 srcset 在引用處明確設定。
+`public/images/guides/` 中的 `label-reading`、`probiotic-label`、`consultation-notes`、`sleep-diary` 是專案原創 SVG 圖解，保留向量原稿及同名 PNG。SVG 用程式精確排版，文章引用 PNG，再由既有媒體流程輸出 WebP 與 srcset，維持接稿系統不接受 SVG 的安全邊界。需要重繪時可用 Sharp 將 SVG 轉回 PNG，再執行 `pnpm media:prepare`。
 
-| 檔名（含同名 -640 版本） | 用途 |
-|---|---|
-| `daily-nutrition.webp` | 首頁主視覺、健康文章入口、飲食閱讀入口 |
-| `evening-calm.webp` | 主題指南與日常閱讀入口 |
-| `thoughtful-reading.webp` | 編輯方式閱讀入口 |
+圖解不是商品標示、人體構造研究、療效比較或真實個案。各篇圖說清楚標示示意用途；縮圖保留完整比例，不裁掉文字。
 
-圖示取自 [Lucide](https://github.com/lucide-icons/lucide)，由 `src/components/WellnessIcon.astro` 輸出 SVG；授權保留於 `public/licenses/lucide.txt`。版面研究參考 [AstroWind](https://github.com/arthelokyo/astrowind) 的組合式圖文區塊，以及 [Starlight](https://github.com/withastro/starlight) 對清楚閱讀層次與可及性的重視；未引入其框架或主題。
+## 食物配圖
 
-## 生成提示（內建工具，非 API CLI）
+`fiber-foods.webp` 與 `calcium-foods.webp` 由內建 `image_gen` 生成，前者用於辨識全穀、豆類與蔬果，後者說明植物飲、豆腐及鈣質判讀的文章。完整生成提示與工具模式保留在 `docs/editorial-image-prompts.json`。
 
-### daily-nutrition
+食物圖不是產品實拍、檢測報告或固定菜單；圖說標註 AI 生成，也說明無法從照片判斷營養含量。不可把影像當成數值或功效證據。
 
-```text
-Use case: photorealistic-natural. Asset type: landscape editorial hero photograph for Taiwanese wellness reading website 三傑益康. Primary request: a beautiful quiet everyday morning breakfast still life by a large window, oatmeal in a handmade cream bowl with berries, a small plate of sliced guava, unsweetened yogurt in a clear glass, a glass of water, folded linen napkin and a small leafy branch. Medium: premium authentic magazine photography, realistic food and tactile textures. Composition: landscape 3:2 photograph, medium close crop, objects thoughtfully arranged across the lower center and right, gentle negative space upper left; all objects fully believable, no people. Lighting: soft warm morning sunlight with real diagonal window shadows, refined olive-sage green and ivory palette, subtle film grain. Background: warm limestone tabletop, soft green garden bokeh. No text, no logo, no watermark, no pills, no packaging, no health charts. This is mood imagery, not a medical illustration.
-```
+## 上稿
 
-### evening-calm
-
-```text
-Use case: photorealistic-natural. Asset type: editorial lifestyle banner photograph for a warm, accessible Taiwanese wellness content magazine. Subject: a peaceful evening reading corner with a closed blank cloth-bound book, ceramic mug of warm water, linen cushion, small olive plant, sculptural table lamp, light sheer curtain, no people. Composition: wide 3:2 horizontal still life, book and mug at lower center, generous soft atmospheric background. Medium: premium realistic interiors editorial photography, tactile ivory linen, muted sage green and warm honey lamplight, soft blue dusk through window. Calm authentic lived-in space, sophisticated natural imperfect textures, gentle shadows. No text, no branding, no watermark, no medicine, no claims or charts. Image will illustrate everyday routines and rest, not be presented as evidence.
-```
-
-### thoughtful-reading
-
-```text
-Use case: photorealistic-natural. Asset type: landscape 3:2 editorial photograph for Taiwanese wellness magazine about making sense of nutrition information. Scene: an inviting light oak desk beside a window, open notebook with entirely blank ivory pages, simple pencil, round thin gold reading glasses, small white ceramic dish of raw almonds and a pear, translucent glass of water, small plant at edge. Premium tactile editorial still life photography, not a product ad. Camera slightly overhead at 45 degrees, balanced composition with notebook as central subject, natural soft afternoon light and leaf shadows, ivory, sage, light wood and restrained golden palette. No people, no text, no numbers, no labels, no packaging, no branding, no watermark, no pills or medical diagrams.
-```
+封面填 `coverImage`、`coverAlt`、`coverCredit`；先執行 `pnpm content:check` 及 `pnpm media:prepare`。渲染一律使用 `ContentImage.astro`，支援子路徑與響應式圖片。圖解 PNG 使用 `data-editorial-graphic` 區分，保持完整構圖；一般攝影縮圖可裁切，但不能改變文章原意。沒有合適圖片時可以使用純文字列表，不強迫每則內容都放裝飾圖片。

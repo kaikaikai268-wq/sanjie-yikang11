@@ -5,27 +5,39 @@ import { getPublishedArticles, getPublishedTopics } from '../lib/content';
 import '../styles/search.css';
 const [articles, topics] = await Promise.all([getPublishedArticles(), getPublishedTopics()]);
 const indexCount = articles.length + topics.length;
+const categories = [...new Set(articles.map((article) => article.data.category))].sort((a, b) => a.localeCompare(b, 'zh-Hant'));
 ---
-<Base title="搜尋健康文章" description="搜尋三傑益康的健康文章與主題指南。" noindex>
+<Base title="搜尋文章" description="用成分名稱、營養標示或生活中的問題，搜尋三傑益康的文章與主題指南。" noindex>
   <section class="section" data-pagefind-ignore>
     <div class="wrap content-search" data-content-search data-index-url={u('/pagefind/pagefind.js')} data-index-count={indexCount}>
-      <h1 class="section-title">搜尋健康文章</h1>
-      <p class="lead">輸入你想了解的主題，尋找文章與指南。</p>
-      <form class="content-search-form" role="search">
-        <label for="content-query">搜尋關鍵字</label>
+      <header class="content-search-header">
+        <h1 class="section-title">搜尋</h1>
+        <p>從一個成分、一項標示，或你正在想的問題找起。</p>
+      </header>
+      <div class="content-search-layout">
+      <div class="content-search-main">
+      <form class="content-search-form" role="search" aria-label="搜尋文章">
+        <label for="content-query">想了解什麼？</label>
         <div class="content-search-controls">
-          <input id="content-query" name="q" type="search" maxlength="200" autocomplete="off" required />
+          <input id="content-query" name="q" type="search" maxlength="200" autocomplete="off" placeholder="成分名稱或文章關鍵字" aria-describedby="search-help" required />
           <button class="btn btn-primary" type="submit">搜尋</button>
         </div>
       </form>
+      <p id="search-help" class="content-search-help">先用一兩個關鍵字，例如成分名稱或標示用語。</p>
       <p class="content-search-status" role="status" aria-live="polite" aria-atomic="true">{indexCount > 0 ? '輸入關鍵字後按搜尋。' : '目前尚無公開文章，可稍後再試。'}</p>
       <ol class="content-search-results" aria-label="搜尋結果"></ol>
       <button class="btn btn-outline content-search-more" type="button" hidden>載入更多結果</button>
-      <noscript><p>全文搜尋需要 JavaScript。你也可以直接瀏覽文章與主題指南。</p></noscript>
-      <nav class="content-search-fallback" aria-label="其他閱讀入口">
-        <a href={u('/articles/')}>瀏覽健康文章</a>
-        <a href={u('/topics/')}>瀏覽主題指南</a>
-      </nav>
+      <noscript><p>開啟 JavaScript 後即可搜尋，也可以從文章分類與主題指南瀏覽。</p></noscript>
+      </div>
+      <aside class="content-search-browse" aria-label="瀏覽文章">
+        <h2>依分類閱讀</h2>
+        {categories.length > 0 && <nav class="content-search-categories" aria-label="依文章分類瀏覽">{categories.map((category) => <a href={u(`/articles/category/${encodeURIComponent(category)}/`)}>{category}</a>)}</nav>}
+        <nav class="content-search-fallback" aria-label="閱讀入口">
+          <a href={u('/articles/')}>全部文章</a>
+          <a href={u('/topics/')}>主題指南</a>
+        </nav>
+      </aside>
+      </div>
     </div>
   </section>
 </Base>

@@ -1,15 +1,14 @@
 import { existsSync, readFileSync, readdirSync, realpathSync, lstatSync } from 'node:fs';
 import path from 'node:path';
-import { load, dump, JSON_SCHEMA } from 'js-yaml';
+import { dump } from 'js-yaml';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { articleSchema, authorSchema, topicSchema, slugSchema } from '../../src/content.schemas.mjs';
 import { contentSlug, isPublicFrontmatter, isSafeLocalImage, normalizedText, publicationNow } from '../../src/lib/content-core.mjs';
+import { parseRawDocument } from '../../src/lib/markdown-document.mjs';
 
 export function parseDocument(raw, schema) {
-  const match = raw.replace(/^\uFEFF/, '').match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)([\s\S]*)$/);
-  if (!match) throw new Error('缺少 YAML frontmatter');
-  const data = schema.parse(load(match[1], { schema: JSON_SCHEMA }));
-  return { data, body: match[2].trim() };
+  const { data, body } = parseRawDocument(raw);
+  return { data: schema.parse(data), body };
 }
 
 export function serializeDocument(data, body) {

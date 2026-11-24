@@ -2,7 +2,6 @@
 import Base from '../../layouts/Base.astro';
 import Breadcrumb from '../../components/content/Breadcrumb.astro';
 import ArticleList from '../../components/content/ArticleList.astro';
-import WellnessIcon from '../../components/WellnessIcon.astro';
 import { getPublishedArticles, articleSlug } from '../../lib/content';
 import { ARTICLE_PAGE_SIZE, listSchema, breadcrumbSchema } from '../../lib/content-view';
 import { u } from '../../lib/url';
@@ -17,24 +16,13 @@ const schema = [listSchema('健康文章', '/articles/', articles.map((article) 
 <Base title="健康文章" description="從生活中的健康問題出發，閱讀營養、成分與日常保健的整理文章。" noindex={all.length === 0} jsonLd={schema}>
   <section class="listing-page"><div class="wrap content-wrap">
     <Breadcrumb items={[{ label: '首頁', href: '/' }, { label: '健康文章' }]} />
-    <header class="listing-hero">
-      <div class="listing-hero-copy">
-        <p class="listing-eyebrow"><WellnessIcon name="leaf" /> HEALTH & EVERYDAY LIFE</p>
-        <h1>健康文章</h1>
-        <p class="listing-hero-deck">從日常的疑問，<br />讀懂自己的健康選擇。</p>
-        <p class="listing-hero-description">營養怎麼補、成分怎麼看、生活習慣怎麼理解。把值得關心的問題說清楚，陪你慢慢找到適合自己的方式。</p>
-        <nav class="listing-hero-actions" aria-label="文章閱讀入口"><a class="btn btn-primary" href="#article-list"><WellnessIcon name="book" /> 開始閱讀</a><a class="listing-text-link" href={u('/topics/')}>從主題指南開始</a></nav>
-        <p class="listing-reading-note"><WellnessIcon name="shield" /><span>每篇文章，都留下一條可以回到資料來源的路。</span></p>
-      </div>
-      <figure class="listing-photo listing-photo-nutrition">
-        <img src={u('/images/editorial/daily-nutrition.webp')} srcset={`${u('/images/editorial/daily-nutrition-640.webp')} 640w, ${u('/images/editorial/daily-nutrition.webp')} 1280w`} sizes="(max-width: 860px) 100vw, 50vw" width="1280" height="853" alt="" loading="eager" decoding="async" fetchpriority="high" />
-        <figcaption><WellnessIcon name="sun" /><span>把理解，放進每天的生活。</span></figcaption>
-      </figure>
+    <header class="listing-header">
+      <div><h1>健康文章</h1><p>飲食、保健品與日常生活的知識整理。每篇保留參考來源，方便你回查。</p></div>
+      {all.length > 0 && <p class="listing-count">共 {all.length} 篇</p>}
     </header>
-    <section class="listing-content" id="article-list" aria-labelledby="article-list-heading">
-      <header class="listing-section-head"><div><p class="listing-eyebrow">THE READING ROOM</p><h2 id="article-list-heading">留一點時間，讀一個問題。</h2></div>{all.length > 0 && <p class="listing-count">{all.length} 篇公開文章</p>}</header>
+    <section class="listing-content" id="article-list" aria-label="健康文章列表">
       <ArticleList articles={articles} categories={categories} totalPages={totalPages} />
     </section>
-    <aside class="listing-footer-note"><WellnessIcon name="book" /><div><h2>知道內容從哪裡來，也是一種安心。</h2><p>認識我們的資料整理與編輯方式，或用關鍵字找到你正在關心的問題。</p><nav aria-label="了解文章與搜尋"><a href={u('/editorial-policy/')}>內容編輯方式</a><a href={u('/search/')}>搜尋文章</a></nav></div></aside>
+    <nav class="listing-reference-links" aria-label="其他閱讀入口"><a href={u('/search/')}>搜尋文章</a><a href={u('/topics/')}>專題目錄</a><a href={u('/editorial-policy/')}>編輯原則</a></nav>
   </div></section>
 </Base>

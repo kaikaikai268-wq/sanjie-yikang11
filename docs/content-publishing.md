@@ -3,7 +3,7 @@
 ## 資料入口
 
 文章：`src/content/articles/<slug>.md`；作者：`src/content/authors/<id>.md`；專題：`src/content/topics/<id>.md`。
-網址使用小寫英數與連字號，建立後保持穩定。最終內容分類尚待品牌架構討論，`category` 是自由文字；`contentType` 支援 `guide`、`ingredient`、`question`、`research`。
+網址使用小寫英數與連字號，建立後保持穩定。內容欄目使用飲食營養、保健品判讀與生活習慣；`category` 仍是可擴充的自由文字，新增前先確認欄目邊界；`contentType` 支援 `guide`、`ingredient`、`question`、`research`。
 
 共用欄位正本是 `src/content.schemas.mjs`，Astro 與 Node 接稿預檢都引用它。這套模型參考 APPI 的文章／作者／專題分工，採 Astro 的 glob loader；公開判斷參考 APPI 的單一實作模式，並收緊為不輸出任何草稿或送審預覽。
 
@@ -16,6 +16,8 @@
 - 靜態站需要在日期到達後重建，才會上線。定時重建由部署 workflow 承接；不把未到期稿的內容預先輸出到網址。
 - 一次正式建置會設定 `CONTENT_BUILD_TIME`，媒體、路由與各種索引使用同一時點判斷，避免建置中途跨過排程時間；自行設定時需使用帶時區 ISO 日期時間，格式錯誤會中止。
 - 列表、單篇頁、搜尋、專題、RSS、純文字與 sitemap 均使用同一份公開判斷，不能自行以 `!draft` 代替。
+
+Astro loader 與 CLI 共用 `src/lib/markdown-document.mjs` 的原始 YAML parser，保留日期字串到 schema 才解讀。`src/lib/content-loader.mjs` 包裝官方 glob 的 schema 輸入，並遷移舊日期快取；不要回復為先將 date-only 轉成 UTC Date 的預設解析方式，也不要對所有 Date 一律減八小時。明確 UTC／offset 時間必須維持原語義。`test/content-loader.test.mjs` 與凌晨時點的整合測試驗證兩端一致。
 
 查文章狀態用 `pnpm content stats --json`，檢查資料用 `pnpm content:check --json`。文件不記錄會隨發布改變的篇數或排程存量。
 

@@ -5,7 +5,7 @@ export const SITE = {
   name: '三傑益康生技',
   nameEn: '3J Wellness Biotech',
   motto: ['三傑嚴選，健康相伴', '三節送禮，首選益康'],
-  description: '三傑益康生技 3J Wellness Biotech，從日常問題出發，整理健康生活、營養與保健選擇的資訊，陪你看懂資料，找到適合自己的日常做法。',
+  description: '三傑益康生技的健康內容網站，由三傑益康編輯團隊整理飲食營養、保健品標示與生活習慣，附上資料來源與實用閱讀指引。',
   slogan: 'Join · Journey · Joy',
 };
 

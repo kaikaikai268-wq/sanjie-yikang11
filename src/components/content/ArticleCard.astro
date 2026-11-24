@@ -7,7 +7,7 @@ interface Props { article: ArticleEntry; related?: boolean }
 const { article, related = false } = Astro.props;
 const d = article.data;
 ---
-<article class="content-card">
+<article class:list={['content-card', { 'content-card-has-image': Boolean(d.coverImage) }]}>
   {d.coverImage && <a class="content-card-image" href={u(`/articles/${articleSlug(article)}/`)} tabindex="-1" aria-hidden="true"><ContentImage src={d.coverImage} alt="" /></a>}
   <div class="content-card-copy">
     <p class="content-kicker">{d.category} · {contentTypeLabel(d.contentType)}</p>

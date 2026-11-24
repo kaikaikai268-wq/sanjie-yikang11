@@ -7,7 +7,7 @@
 | 能力 | 位置 | 驗證 |
 |---|---|---|
 | 文章、作者、專題共用資料契約 | `src/content.schemas.mjs`、`src/content.config.ts` | `pnpm content:check` |
-| 台北日期、草稿與排程公開範圍 | `src/lib/content-core.mjs`、`src/lib/content.ts` | `pnpm test`、`pnpm verify:content` |
+| 台北日期、原始 YAML 與排程公開範圍 | `src/lib/content-core.mjs`、`src/lib/content-loader.mjs`、`src/lib/markdown-document.mjs`、`src/lib/content.ts` | `pnpm test`、`pnpm verify:content` |
 | 文章、分類、分頁、專題、作者頁 | `src/pages/{articles,topics,authors}`、`src/layouts/Article.astro` | `pnpm verify`、`pnpm verify:content` |
 | 全文搜尋 | `src/pages/search.astro`、`scripts/postbuild.mjs` | 建置後在 `/search/` 實際搜尋 |
 | Canonical、實體圖、文章 JSON-LD、OG | `src/layouts/Base.astro`、`src/lib/seo.ts`、文章版型 | 型別與建置測試、檢查 HTML |
@@ -20,7 +20,7 @@
 | 發布產物與線上驗收 | `scripts/release-check.mjs`、`dist/build-info.json` | `pnpm release:check`、`pnpm release:launch` |
 | 編輯與關係說明 | `/editorial-policy/`、`/disclosure/`、`/privacy/` | 依實際營運變動同步修正 |
 
-內容流程見 [content-publishing.md](content-publishing.md)，編輯發布見 [editorial-workflow.md](editorial-workflow.md)，前台見 [content-pages.md](content-pages.md)，搜尋、分析與事件見 [analytics-content.md](analytics-content.md)，發布驗收見 [release-runbook.md](release-runbook.md)。
+內容流程見 [content-publishing.md](content-publishing.md)，編輯發布見 [editorial-workflow.md](editorial-workflow.md)，前台見 [content-pages.md](content-pages.md)，視覺與編排見 [visual-redesign.md](visual-redesign.md)，搜尋、分析與事件見 [analytics-content.md](analytics-content.md)，發布驗收見 [release-runbook.md](release-runbook.md)。
 
 ## 建置與發布
 

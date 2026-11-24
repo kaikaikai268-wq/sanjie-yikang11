@@ -12,8 +12,27 @@ const schema = [listSchema('作者與編輯團隊', '/authors/', authors.map((au
 <Base title="作者與編輯團隊" description="認識三傑益康的內容整理與編輯團隊，了解文章背後的作者與資料處理方式。" noindex={articles.length === 0} jsonLd={schema}>
   <section class="section"><div class="wrap content-wrap">
     <Breadcrumb items={[{ label: '首頁', href: '/' }, { label: '作者與編輯團隊' }]} />
-    <header class="content-intro"><h1>作者與編輯團隊</h1><p>每篇文章都標示整理內容的作者與使用的資料來源。</p></header>
-    <div class="content-grid">{authors.map((author) => <article class="content-card"><div class="content-card-copy"><h2><a href={u(`/authors/${author.id}/`)}>{author.data.name}</a></h2><p>{author.data.bioShort}</p></div></article>)}</div>
-    <p class="more"><a href={u('/editorial-policy/')}>了解我們的內容編輯方式</a></p>
+    <header class="content-intro author-directory-intro"><h1>作者與編輯團隊</h1><p>認識本站的內容署名。各篇文章另列資料來源、發布與更新日期。</p></header>
+    <div class="author-directory">{authors.map((author) => {
+      const written = articles.filter((article) => article.data.author === author.id);
+      return <article class="author-directory-entry">
+        <div><p class="author-directory-role">{author.data.isOrganization ? '團隊署名' : '作者'}</p><h2><a href={u(`/authors/${author.id}/`)}>{author.data.name}</a></h2></div>
+        <div><p>{author.data.bioShort}</p><a class="author-directory-link" href={u(`/authors/${author.id}/`)}>{written.length > 0 ? '閱讀這個署名的文章' : '閱讀署名介紹'}</a></div>
+      </article>;
+    })}</div>
+    <nav class="author-directory-notes" aria-label="內容說明"><a href={u('/editorial-policy/')}>編輯與更正原則</a><a href={u('/disclosure/')}>商品與合作關係</a></nav>
   </div></section>
 </Base>
+<style>
+  .author-directory-intro { margin-bottom: 2.5rem; }
+  .author-directory { max-width: 61rem; border-top: 2px solid var(--brand-strong); }
+  .author-directory-entry { display: grid; grid-template-columns: minmax(12rem, 1fr) minmax(0, 1.5fr); gap: 2.5rem; border-bottom: 1px solid var(--line); padding-block: 2rem; }
+  .author-directory-role { color: var(--text-secondary); font-size: var(--text-xs); margin-bottom: 0.5rem; }
+  .author-directory-entry h2 { font-size: var(--text-lg); }
+  .author-directory-entry h2 a { text-decoration: none; }
+  .author-directory-entry h2 a:hover { text-decoration: underline; }
+  .author-directory-entry p:not(.author-directory-role) { color: var(--text-secondary); font-size: var(--text-sm); }
+  .author-directory-link { font-size: var(--text-xs); }
+  .author-directory-notes { display: flex; flex-wrap: wrap; gap: 0.75rem 1.75rem; font-size: var(--text-xs); margin-top: 2rem; }
+  @media (max-width: 700px) { .author-directory-entry { grid-template-columns: minmax(0, 1fr); gap: 0.75rem; } }
+</style>

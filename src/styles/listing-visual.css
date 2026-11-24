@@ -1,41 +1,30 @@
-/* Editorial list entrances share the existing 3J palette and type scale. */
-.listing-page { padding-block: 2rem clamp(3rem, 6vw, 5rem); }
-.listing-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr); align-items: center; gap: clamp(2rem, 5vw, 4rem); margin-top: 2rem; padding-bottom: clamp(2.5rem, 5vw, 4rem); border-bottom: 1px solid var(--line); }
-.listing-hero-copy { min-width: 0; padding-block: 1rem; }
-.listing-eyebrow { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; color: var(--gold); font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.1em; margin-bottom: 1rem; }
-.listing-eyebrow svg { flex: none; width: 1.5rem; height: 1.5rem; }
-.listing-hero h1 { font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl)); letter-spacing: 0.03em; margin-bottom: 1.2rem; }
-.listing-hero-deck { font-family: var(--font-serif); color: var(--brand-strong); font-size: var(--text-lg); line-height: 1.65; margin-bottom: 1.1rem; }
-.listing-hero-description { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.85; max-width: 35rem; }
-.listing-hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem 1.5rem; margin-top: 1.8rem; }
-.listing-hero-actions .btn svg { flex: none; width: 1.3rem; height: 1.3rem; }
-.listing-text-link { display: inline-flex; align-items: center; min-height: 2.75rem; font-size: var(--text-xs); font-weight: 700; text-decoration-thickness: 1px; }
-.listing-reading-note { display: flex; align-items: start; gap: 0.65rem; font-size: var(--text-xs); color: var(--text-secondary); margin: 2rem 0 0; max-width: 32rem; }
-.listing-reading-note svg { flex: none; width: 1.35rem; height: 1.35rem; color: var(--gold); margin-top: 0.2rem; }
-.listing-photo { position: relative; margin: 0; padding: 0 0 1.2rem 1.2rem; isolation: isolate; }
-.listing-photo::before { content: ''; position: absolute; inset: 1.2rem 1.2rem 0 0; background: var(--bg-sage); border-radius: 1.25rem 4.5rem 1.25rem 1.25rem; z-index: -1; }
-.listing-photo img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 1.25rem 4.5rem 1.25rem 1.25rem; }
-.listing-photo figcaption { position: relative; display: flex; align-items: center; gap: 0.7rem; margin: -1.8rem 1.2rem 0; padding: 0.9rem 1.1rem; background: var(--bg-page); border: 1px solid var(--line); border-radius: 0.7rem; box-shadow: 0 8px 24px var(--shadow); color: var(--brand-strong); font-size: var(--text-xs); }
-.listing-photo figcaption svg { flex: none; width: 1.4rem; height: 1.4rem; color: var(--gold); }
-.listing-photo-evening::before { background: var(--gold-tint); }
-.listing-content { padding-top: clamp(2.5rem, 5vw, 4rem); scroll-margin-top: 6rem; }
-.listing-section-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 0.8rem 2rem; margin-bottom: 2rem; }
-.listing-section-head .listing-eyebrow { margin-bottom: 0.6rem; }
-.listing-section-head h2 { font-size: var(--text-xl); margin-bottom: 0; }
-.listing-count { font-size: var(--text-xs); color: var(--text-secondary); margin-bottom: 0; }
-.listing-content .content-empty { max-width: none; background: var(--bg-page); padding: clamp(1.5rem, 4vw, 2.5rem); border-left: 4px solid var(--brand); }
-.listing-empty { display: flex; align-items: start; gap: 1.5rem; padding: clamp(1.5rem, 4vw, 2.5rem); background: var(--bg-sage); border-radius: var(--radius); }
-.listing-empty-icon { display: flex; align-items: center; justify-content: center; flex: none; width: 4rem; height: 4rem; background: var(--bg-page); border: 1px solid var(--line); border-radius: 50%; color: var(--brand); }
-.listing-empty-icon svg { width: 2rem; height: 2rem; }
-.listing-empty h3 { font-size: var(--text-lg); }
-.listing-empty p { max-width: 40rem; font-size: var(--text-sm); color: var(--text-secondary); }
-.listing-topic-symbol { display: flex; align-items: center; padding: 1.4rem 1.4rem 0; color: var(--gold); }
-.listing-topic-symbol svg { width: 2.5rem; height: 2.5rem; padding: 0.4rem; background: var(--bg-sage); border-radius: 50%; }
-.listing-footer-note { display: flex; align-items: start; gap: 1.2rem; margin-top: clamp(2.5rem, 5vw, 4rem); padding: 2rem 0 0; border-top: 1px solid var(--line); }
-.listing-footer-note > svg { flex: none; width: 2rem; height: 2rem; color: var(--gold); }
-.listing-footer-note h2 { font-size: var(--text-lg); }
-.listing-footer-note p { font-size: var(--text-sm); color: var(--text-secondary); max-width: 48rem; }
-.listing-footer-note nav { display: flex; flex-wrap: wrap; gap: 0.7rem 1.5rem; font-size: var(--text-xs); }
-.listing-footer-note nav a { display: inline-flex; align-items: center; min-height: 2.75rem; }
-@media (max-width: 860px) { .listing-hero { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; } .listing-hero-copy { padding-block: 0; } .listing-photo { max-width: 38rem; width: 100%; } .listing-photo img { aspect-ratio: 16 / 10; } .listing-reading-note { margin-top: 1.4rem; } }
-@media (max-width: 480px) { .listing-hero h1 { font-size: var(--text-2xl); } .listing-empty { flex-direction: column; gap: 1rem; } .listing-footer-note { gap: 0.8rem; } .listing-photo figcaption { margin-inline: 0.65rem; } }
+/* Compact archive headers and a text-first topic directory. */
+.listing-page { padding-block: 1.5rem 4rem; }
+.listing-header { display: flex; align-items: end; justify-content: space-between; gap: 1rem 3rem; padding-bottom: 1.7rem; margin-bottom: 1.5rem; border-bottom: 2px solid var(--brand-strong); }
+.listing-header h1 { font-size: clamp(var(--text-xl), 4vw, var(--text-2xl)); margin-bottom: 0.7rem; }
+.listing-header p:not(.listing-count) { max-width: 42rem; font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.7; margin-bottom: 0; }
+.listing-count { flex: none; font-size: var(--text-xs); color: var(--text-secondary); margin-bottom: 0.2rem; }
+.listing-content { scroll-margin-top: 6rem; }
+.listing-reference-links { display: flex; flex-wrap: wrap; gap: 0.6rem 1.5rem; margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); font-size: var(--text-xs); }
+.listing-reference-links a { display: inline-flex; align-items: center; min-height: 2.75rem; }
+.listing-empty { max-width: 44rem; padding-block: 1.5rem; }
+.listing-empty h2 { font-size: var(--text-lg); }
+.listing-empty p { font-size: var(--text-sm); color: var(--text-secondary); }
+.directory-topic { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr); gap: 3.5rem; padding-block: 1.5rem 2.5rem; border-bottom: 1px solid var(--line); }
+.directory-topic + .directory-topic { padding-top: 2.5rem; }
+.directory-topic-intro { min-width: 0; }
+.directory-topic-intro h2 { font-size: var(--text-xl); line-height: 1.4; margin-bottom: 1rem; }
+.directory-topic-intro h2 a { color: var(--text-primary); text-decoration: none; }
+.directory-topic-intro h2 a:hover { text-decoration: underline; }
+.directory-topic-intro > p:not(.directory-topic-count) { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.75; }
+.directory-topic-count { margin-bottom: 0.65rem; color: var(--brand); font-size: var(--text-xs); }
+.directory-topic-link { display: inline-flex; align-items: center; min-height: 2.75rem; font-size: var(--text-xs); }
+.directory-reading-order { padding: 0 0 0 1.4rem; margin: 0; }
+.directory-reading-order li { padding: 0 0 1.25rem 0.35rem; }
+.directory-reading-order li + li { border-top: 1px solid var(--line); padding-top: 1.25rem; }
+.directory-reading-order li::marker { color: var(--text-secondary); font-size: var(--text-xs); }
+.directory-reading-order h3 { font-size: var(--text-sm); line-height: 1.6; margin-bottom: 0; }
+.directory-reading-order h3 a { color: var(--text-primary); text-decoration: none; }
+.directory-reading-order h3 a:hover { text-decoration: underline; }
+.directory-article-meta { color: var(--text-secondary); font-size: var(--text-xs); margin-bottom: 0.4rem; }
+@media (max-width: 760px) { .listing-header { align-items: start; flex-direction: column; gap: 1rem; } .directory-topic { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; } .directory-reading-order { margin-left: 0.2rem; } }

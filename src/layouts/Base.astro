@@ -3,12 +3,13 @@ import { u } from '../lib/url';
 import '../styles/tokens.css';
 import '../styles/site.css';
 import { Image, getImage } from 'astro:assets';
-import { SITE, NAV, CONTACT, DISCLAIMER } from '../data/site';
+import { SITE, CONTACT, DISCLAIMER } from '../data/site';
 import { IS_PRODUCTION, GA_ID, GSC_TOKEN, SHOP_URL } from '../lib/env';
 import { shoppingLink } from '../lib/commerce.mjs';
 import { siteImage } from '../lib/images';
 import { absolute, jsonScript, siteGraph } from '../lib/seo';
 import media from '../data/content-images.json';
+import { getPublishedArticles } from '../lib/content';
 
 interface Props {
   title?: string;           // 不含站名；首頁留空
@@ -32,6 +33,9 @@ const isoDate = (value: Date | string | undefined) => value ? new Date(value).to
 const path = Astro.url.pathname;
 const current = (href: string) => (path.startsWith(u(href)) ? 'page' : undefined);
 const shopHref = shoppingLink(SHOP_URL);
+const articleCategories = [...new Set((await getPublishedArticles()).map((article) => article.data.category))];
+const categoryOrder = ['飲食營養', '保健品判讀', '生活習慣'];
+const headerCategories = [...categoryOrder.filter((name) => articleCategories.includes(name)), ...articleCategories.filter((name) => !categoryOrder.includes(name))].slice(0, 3);
 ---
 <!doctype html>
 <html lang="zh-TW">
@@ -86,24 +90,23 @@ const shopHref = shoppingLink(SHOP_URL);
   <body>
     <a class="skip" href="#main">跳到主要內容</a>
     <header class="site-header" data-pagefind-ignore>
+      <div class="masthead-utility"><div class="wrap utility-inner"><a href={u('/about/')}>三傑益康生技</a><nav aria-label="網站資訊"><a href={u('/authors/')}>編輯團隊</a><a href={u('/editorial-policy/')}>編輯原則</a><a href={u('/contact/')}>聯絡我們</a></nav></div></div>
       <div class="wrap header-inner">
         <a class="brand" href={u('/')} aria-label={`${SITE.name} 首頁`}>
-          <Image src={siteImage('logo-mark')} alt="" width={52} height={45} loading="eager" />
-          <span>{SITE.name}</span>
+          <Image src={siteImage('logo-mark')} alt="" width={64} height={55} loading="eager" />
+          <span class="brand-title">三傑益康<span class="brand-subtitle">健康生活・營養・保健品判讀</span></span>
         </a>
-        <nav class="nav" aria-label="主選單">
-          {NAV.map((n) => <a href={u(n.href)} aria-current={current(n.href)}>{n.label}</a>)}
-          {shopHref ? <a class="btn btn-primary" href={shopHref} data-ga-shop="" data-shop-placement="header" target="_blank" rel="noopener noreferrer">前往購物</a> : <a class="btn btn-primary" href={u('/contact/')} aria-current={current('/contact/')}>聯絡合作</a>}
-        </nav>
-        <details class="nav-mobile">
-          <summary>選單</summary>
-          <nav aria-label="行動版選單">
-            {NAV.map((n) => <a href={u(n.href)}>{n.label}</a>)}
-            <a href={u('/contact/')}>聯絡合作</a>
-            {shopHref && <a href={shopHref} data-ga-shop="" data-shop-placement="mobile-nav" target="_blank" rel="noopener noreferrer">前往購物</a>}
-          </nav>
-        </details>
+        {path !== u('/search/') && <><form class="masthead-search" role="search" action={u('/search/')} method="get"><label for="site-query">搜尋文章</label><div><input id="site-query" type="search" name="q" placeholder="輸入關鍵字" required /><button type="submit">搜尋</button></div></form><a class="mobile-search-link" href={u('/search/')}>搜尋</a></>}
       </div>
+      <div class="masthead-nav"><div class="wrap">
+        <nav class="nav" aria-label="主選單">
+          <a href={u('/articles/')} aria-current={path === u('/articles/') || path.startsWith(u('/articles/page/')) ? 'page' : undefined}>最新文章</a>
+          {headerCategories.map((name) => <a href={u(`/articles/category/${encodeURIComponent(name)}/`)} aria-current={current(`/articles/category/${encodeURIComponent(name)}/`)}>{name}</a>)}
+          <a href={u('/topics/')} aria-current={current('/topics/')}>閱讀專題</a>
+          <a href={u('/about/')} aria-current={current('/about/')}>關於三傑</a>
+          {shopHref && <a class="nav-shop" href={shopHref} data-ga-shop="" data-shop-placement="header" target="_blank" rel="noopener noreferrer">購物網站 ↗</a>}
+        </nav>
+      </div></div>
     </header>
 
     <main id="main">
@@ -114,14 +117,14 @@ const shopHref = shoppingLink(SHOP_URL);
       <div class="wrap footer-inner">
         <div>
           <Image src={siteImage('logo-full')} alt={`${SITE.name} ${SITE.nameEn}`} width={140} />
-          <p class="motto">{SITE.motto.join('；')}</p>
+          <p class="motto">健康生活、飲食營養與保健品判讀</p>
         </div>
         <div class="footer-cols">
           <nav aria-label="頁尾選單">
-            <h2 class="footer-nav-title">閱讀與訂閱</h2>
+            <h2 class="footer-nav-title">閱讀內容</h2>
             <a href={u('/')}>首頁</a>
             <a href={u('/articles/')}>健康文章</a>
-            <a href={u('/topics/')}>主題指南</a>
+            <a href={u('/topics/')}>閱讀專題</a>
             <a href={u('/search/')}>搜尋內容</a>
             <a href={u('/authors/')}>內容團隊</a>
             <a href={u('/rss.xml')}>RSS 訂閱</a>
@@ -133,8 +136,8 @@ const shopHref = shoppingLink(SHOP_URL);
             <a href={u('/contact/')}>聯絡我們</a>
             <a href={u('/products/')}>商品資訊</a>
             <a href={u('/resources/')}>場地與活動資源</a>
-            <a href={u('/editorial-policy/')}>編輯原則</a>
-            <a href={u('/disclosure/')}>關係揭露</a>
+            <a href={u('/editorial-policy/')}>編輯與更正原則</a>
+            <a href={u('/disclosure/')}>商品與合作關係</a>
             <a href={u('/privacy/')}>隱私權</a>
             {shopHref && <a href={shopHref} data-ga-shop="" data-shop-placement="footer" target="_blank" rel="noopener noreferrer">前往購物網站</a>}
           </nav>

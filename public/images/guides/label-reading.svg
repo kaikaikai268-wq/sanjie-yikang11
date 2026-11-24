@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="750" viewBox="0 0 1200 750">
+<rect width="1200" height="750" fill="#e9eee7"/>
+<g font-family="Microsoft JhengHei, Noto Sans TC, sans-serif" fill="#253e32">
+<rect x="385" y="65" width="430" height="620" fill="#fffefa" stroke="#253e32" stroke-width="4"/>
+<text x="425" y="140" font-size="36">包裝閱讀示意</text><path d="M425 170H775" stroke="#253e32" stroke-width="7"/>
+<text x="425" y="245" font-size="52" font-weight="700">內容與成分</text><path d="M425 275H775M425 300H690" stroke="#b8c1b4" stroke-width="9"/>
+<text x="425" y="380" font-size="52" font-weight="700">每份量</text><path d="M425 410H775" stroke="#b8c1b4" stroke-width="9"/>
+<text x="425" y="490" font-size="52" font-weight="700">食用方式</text><path d="M425 520H720" stroke="#b8c1b4" stroke-width="9"/>
+<text x="425" y="600" font-size="52" font-weight="700">注意事項</text><path d="M425 630H775" stroke="#b8c1b4" stroke-width="9"/>
+<text x="80" y="255" font-size="66" font-weight="700">成分</text><path d="M90 280H330L385 245" stroke="#997139" stroke-width="4" fill="none"/>
+<text x="880" y="365" font-size="60" font-weight="700">每份量</text><path d="M815 375H1100" stroke="#997139" stroke-width="4"/>
+<text x="80" y="505" font-size="66" font-weight="700">用法</text><path d="M90 530H330L385 490" stroke="#997139" stroke-width="4" fill="none"/>
+<text x="880" y="590" font-size="66" font-weight="700">警語</text><path d="M815 600H1100" stroke="#997139" stroke-width="4"/>
+</g></svg>

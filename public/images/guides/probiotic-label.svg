@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="750" viewBox="0 0 1200 750">
+<rect width="1200" height="750" fill="#e9edf1"/>
+<g font-family="Microsoft JhengHei, Noto Sans TC, sans-serif" fill="#243e57">
+<text x="80" y="135" font-size="76" font-weight="700">先找完整名稱</text>
+<rect x="80" y="200" width="1040" height="360" fill="#fffefa"/>
+<path d="M410 235V525M760 235V525" stroke="#bcc6cc" stroke-width="3"/>
+<text x="125" y="300" font-size="40" fill="#826039">01</text><text x="470" y="300" font-size="40" fill="#826039">02</text><text x="820" y="300" font-size="40" fill="#826039">03</text>
+<text x="125" y="420" font-size="80" font-weight="700">菌屬</text><text x="470" y="420" font-size="80" font-weight="700">菌種</text><text x="805" y="420" font-size="64" font-weight="700">菌株編號</text>
+<text x="80" y="655" font-size="48">再核對保存方式與研究的適用情境</text>
+</g></svg>

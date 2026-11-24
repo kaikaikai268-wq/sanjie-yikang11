@@ -12,7 +12,7 @@ const purposes = [
 ---
 <Base title="聯絡我們" description={`${SITE.name}的內容反映、更正、品牌合作與商品資訊聯絡方式。`}>
   <section class="section"><div class="wrap">
-    <SectionHead level="h1" eyebrow="CONTACT" title="聯絡我們" lead="內容有需要補充的地方，或希望討論合作，歡迎透過以下方式聯絡。" />
+    <SectionHead level="h1" title="聯絡我們" lead="內容更正、讀者意見與合作詢問，請透過以下方式聯絡。" />
     <dl class="facts contact-facts"><div><dt>電話</dt><dd><a href={CONTACT.phone.href} data-ga-contact={CONTACT.phone.ga}>{CONTACT.phone.label}</a></dd></div><div><dt>公司 Email</dt><dd><a href={CONTACT.email.href} data-ga-contact={CONTACT.email.ga}>{CONTACT.email.label}</a></dd></div><div><dt>聯絡窗口</dt><dd>{TEAM.map((m) => `${m.en} ${m.name}`).join('、')}</dd></div></dl>
     <ContactButtons />
   </div></section>
