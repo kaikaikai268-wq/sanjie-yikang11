@@ -8,6 +8,7 @@ import { selectHomeContent } from '../lib/home-content.mjs';
 import { listSchema, displayDate } from '../lib/content-view';
 import { u } from '../lib/url';
 import { HOME_READING_ORDER } from '../data/editorial';
+import { CONTACT } from '../data/site';
 import '../styles/content.css';
 import '../styles/home.css';
 const { featured, latest, articles, categories } = selectHomeContent(await getPublishedArticles(), { featuredLimit: 1, latestLimit: 8 });
@@ -59,6 +60,6 @@ const orderedTopicArticles = (topic: (typeof topics)[number]) => {
       </aside>
     </div>
     {categories.length > 0 && <nav class="front-directory" aria-label="文章欄目"><h2>文章欄目</h2>{categories.map(({ name, count }) => <a href={u(`/articles/category/${encodeURIComponent(name)}/`)}>{name}<span>{count} 篇</span></a>)}</nav>}
-    <section class="front-editorial" aria-labelledby="front-editorial-title"><h2 id="front-editorial-title">關於這份內容</h2><div><p>從生活裡的問題出發，查閱官方資料與研究，再以一般讀者能理解的方式整理。文章供健康資訊參考，不能取代個人醫療評估。</p><nav aria-label="內容說明"><a href={u('/authors/')}>編輯團隊</a><a href={u('/disclosure/')}>商品與合作關係</a><a href={u('/contact/')}>提供更正與意見</a><a href={u('/rss.xml')}>RSS 訂閱</a></nav></div></section>
+    <section class="front-editorial" aria-labelledby="front-editorial-title"><h2 id="front-editorial-title">關於這份內容</h2><div><p>從生活裡的問題出發，查閱官方資料與研究，再以一般讀者能理解的方式整理。文章供健康資訊參考，不能取代個人醫療評估。</p><nav aria-label="內容說明"><a href={u('/authors/')}>編輯團隊</a><a href={u('/disclosure/')}>內容與合作關係</a>{CONTACT.length > 0 && <a href={u('/contact/')}>提供更正與意見</a>}<a href={u('/rss.xml')}>RSS 訂閱</a></nav></div></section>
   </div>
 </Base>
