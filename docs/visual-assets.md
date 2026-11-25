@@ -26,4 +26,6 @@
 
 ## 上稿流程
 
+分享圖的可編輯 SVG 放在 `design/brand-sharing/share-card.svg`，經有中文字型的設計環境輸出並目視確認後，提交 `src/assets/brand/share-card.png`。建置只複製這份核准的 PNG，不在 CI 重新排中文字，避免 Linux 字型不足而變成方框。favicon 與 apple-touch-icon 也是固定圖片，不在建置時重新繪字。
+
 封面填 `coverImage`、`coverAlt`、`coverCredit`；先執行 `pnpm content:check` 及 `pnpm media:prepare`。渲染一律使用 `ContentImage.astro`，支援子路徑與響應式圖片。圖解 PNG 使用 `data-editorial-graphic` 區分，保持完整構圖；一般攝影縮圖可裁切，但不能改變文章原意。沒有合適圖片時可以使用純文字列表，不強迫每則內容都放裝飾圖片。
