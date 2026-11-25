@@ -1,8 +1,4 @@
 ---
 import { CONTACT } from '../data/site';
 ---
-<div class="contact-buttons">
-  <a class="btn btn-primary" href={CONTACT.facebook.href} target="_blank" rel="noopener noreferrer" data-ga-contact={CONTACT.facebook.ga}>{CONTACT.facebook.label}</a>
-  <a class="btn btn-outline" href={CONTACT.instagram.href} target="_blank" rel="noopener noreferrer" data-ga-contact={CONTACT.instagram.ga}>{CONTACT.instagram.label}</a>
-  <a class="btn btn-outline" href={CONTACT.phone.href} data-ga-contact={CONTACT.phone.ga}>電話 {CONTACT.phone.label}</a>
-</div>
+{CONTACT.length > 0 && <div class="contact-buttons">{CONTACT.map((channel) => <a class="btn btn-outline" href={channel.href} data-ga-contact={channel.ga}>{channel.label}</a>)}</div>}

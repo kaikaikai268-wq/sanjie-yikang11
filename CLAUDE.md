@@ -1,6 +1,6 @@
-# 三傑益康生技 3J Wellness Biotech 品牌網站
+# 三傑益康內容網站
 
-健康生活與營養內容站。首頁、文章、專題與搜尋承接閱讀；商品保留成分與規格資訊，交易由設定的獨立購物網站承接。本站不收單、不處理付款。
+健康生活與營養內容站。首頁、文章、專題與搜尋承接閱讀。舊商品、人物、聯絡資料、合作品牌及場地報價為示範或非本輪內容，不能直接恢復為正式資料；正式品牌與聯絡資訊由業主補交。場地服務退出主架構，購物網站另案暫緩。資料需求與設計計畫見 `docs/design-intake-and-plan.md`。Writer 接線及既有文章改寫由業主負責。
 原始雛形（單檔 HTML，圖片 base64 內嵌）保留在 `docs/prototype/`，只當參考，不再修改。
 
 Astro 7 純靜態輸出。部署在 GitHub Pages，正式網域 `https://3jwellness.com`，見「環境與上線」。無後端、無 UI 框架，互動是頁面內 `<script>`。
@@ -36,10 +36,10 @@ pnpm verify      # astro check → build → 測試（字級、配色、inline s
 
 | 要改 | 位置 |
 |---|---|
-| 商品（新增、下架、文案） | `src/data/products.ts`；圖片放 `src/assets/products/<id>.(jpg\|png)`，檔名＝id |
+| 正式商品資料（取得核准後） | `src/data/products.ts`；圖片放 `src/assets/published-products/<id>.(jpg\|png)`，檔名＝id |
 | 品牌、原廠連結 | `src/data/products.ts` 的 `BRANDS` |
-| 全站文案、聯絡方式、團隊、顧問、場地方案 | `src/data/site.ts` |
-| 站內其他圖片（logo、顧問照、場地照） | `src/assets/site/`，以檔名（不含副檔名）引用 |
+| 全站文案與正式聯絡方式 | `src/data/site.ts`；未經業主確認的示範資料不補回 |
+| 核准的品牌與人物圖片 | `src/assets/published-site/`；舊 `site/`、`products/` 是停用的示範素材，不匯入建置 |
 | 版面 | `src/layouts/Base.astro`（header／footer／GA／SEO meta）、`src/pages/*.astro`、`src/components/` |
 | 樣式與品牌色 | `src/styles/site.css`（`tokens.css` 是上游副本，不要直接改） |
 

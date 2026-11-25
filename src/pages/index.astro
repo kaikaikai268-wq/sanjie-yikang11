@@ -1,11 +1,14 @@
 ---
 import Base from '../layouts/Base.astro';
 import ContentImage from '../components/content/ContentImage.astro';
+import ReadingFinder from '../components/content/ReadingFinder.astro';
+import Icon from '../components/Icon.astro';
 import { getPublishedArticles, getPublishedTopics, articleSlug, articlesForTopic, type ArticleEntry } from '../lib/content';
 import { selectHomeContent } from '../lib/home-content.mjs';
 import { listSchema, displayDate } from '../lib/content-view';
 import { u } from '../lib/url';
 import { HOME_READING_ORDER } from '../data/editorial';
+import { CONTACT } from '../data/site';
 import '../styles/content.css';
 import '../styles/home.css';
 const { featured, latest, articles, categories } = selectHomeContent(await getPublishedArticles(), { featuredLimit: 1, latestLimit: 8 });
@@ -17,6 +20,7 @@ const secondary = articles.filter((article) => !lead || articleSlug(article) !==
 const secondarySlugs = new Set(secondary.map(articleSlug));
 const remaining = latest.filter((article) => !secondarySlugs.has(articleSlug(article))) as ArticleEntry[];
 const topics = (await getPublishedTopics()).slice(0, 3);
+const leadVisual = lead && articleSlug(lead) === 'supplement-label-checklist' ? topics.find((topic) => topic.id === 'understand-supplements') : undefined;
 const articlePath = (article: ArticleEntry) => `/articles/${articleSlug(article)}/`;
 const visibleArticles = [lead, ...secondary, ...remaining].filter((entry): entry is ArticleEntry => Boolean(entry));
 const schema = listSchema('健康生活與營養', '/', visibleArticles.map((article) => ({ title: article.data.title, path: articlePath(article) })), Astro.site);
@@ -36,7 +40,7 @@ const orderedTopicArticles = (topic: (typeof topics)[number]) => {
       <article class="front-lead">
         <p class="front-kicker">編輯選讀<span>{lead.data.category}</span></p>
         <h2><a href={u(articlePath(lead))}>{lead.data.title}</a></h2>
-        {lead.data.coverImage && <a class="front-lead-image" href={u(articlePath(lead))} tabindex="-1" aria-hidden="true"><ContentImage src={lead.data.coverImage} alt="" eager /></a>}
+        {lead.data.coverImage && <figure class="front-lead-visual"><a class="front-lead-image" href={u(articlePath(lead))} tabindex="-1" aria-hidden="true"><ContentImage src={leadVisual?.data.coverImage ?? lead.data.coverImage} alt="" eager /></a>{leadVisual && <figcaption>包裝閱讀情境示意・AI 生成，非實際商品</figcaption>}</figure>}
         <p class="front-deck">{lead.data.description}</p>
         <p class="front-byline"><time datetime={lead.data.publishDate?.toISOString()}>{displayDate(lead.data.publishDate)}</time><a href={u('/authors/3j-editorial/')}>三傑益康編輯團隊</a></p>
       </article>
@@ -46,15 +50,16 @@ const orderedTopicArticles = (topic: (typeof topics)[number]) => {
         <div class="front-desk-note"><h3>讀者須知</h3><p>本站由三傑益康編輯團隊整理內容。資料來源與圖片說明列於文中；商品與合作關係另有說明。</p><a href={u('/editorial-policy/')}>編輯與更正原則</a></div>
       </aside>
     </section> : <section class="front-empty"><h2>文章準備中</h2><p>本站整理飲食營養、保健品判讀與生活習慣。公開文章會列在這裡。</p><a href={u('/editorial-policy/')}>編輯與更正原則</a></section>}
+    <ReadingFinder articles={articles} />
     <div class="front-lower">
       <section class="front-latest" aria-labelledby="front-latest-title"><header class="front-section-heading"><h2 id="front-latest-title">最新文章</h2><a href={u('/articles/')}>全部文章</a></header>
         {remaining.length > 0 ? remaining.map((article) => <article class="front-list-story">{article.data.coverImage && <a class="front-list-image" href={u(articlePath(article))} tabindex="-1" aria-hidden="true"><ContentImage src={article.data.coverImage} alt="" /></a>}<div><p class="front-kicker">{article.data.category}</p><h3><a href={u(articlePath(article))}>{article.data.title}</a></h3><p class="front-list-description">{article.data.description}</p><p class="front-byline"><time datetime={article.data.publishDate?.toISOString()}>{displayDate(article.data.publishDate)}</time></p></div></article>) : <p class="front-small-note">新文章會依發布時間排列。上方可閱讀目前的編輯選讀。</p>}
       </section>
       <aside class="front-topics" aria-labelledby="front-topics-title"><header class="front-section-heading"><h2 id="front-topics-title">閱讀專題</h2><a href={u('/topics/')}>專題目錄</a></header>
-        {topics.length > 0 ? topics.map((topic) => <article class="front-topic"><h3><a href={u(`/topics/${topic.id}/`)}>{topic.data.title}</a></h3><p>{topic.data.description}</p><ol>{orderedTopicArticles(topic).slice(0, 3).map((article) => <li><a href={u(articlePath(article))}>{article.data.title}</a></li>)}</ol></article>) : <p class="front-small-note">相關文章公開後，會依問題整理為閱讀專題。</p>}
+        {topics.length > 0 ? topics.map((topic) => <article class="front-topic">{topic.data.coverImage && <figure class="front-topic-image"><a href={u(`/topics/${topic.id}/`)} tabindex="-1" aria-hidden="true"><ContentImage src={topic.data.coverImage} alt="" sizes="(max-width: 700px) 100vw, 400px" /></a><figcaption>AI 生成情境示意</figcaption></figure>}<h3><a href={u(`/topics/${topic.id}/`)}>{topic.data.title}<Icon name="external" /></a></h3><p>{topic.data.description}</p><ol>{orderedTopicArticles(topic).slice(0, 3).map((article) => <li><a href={u(articlePath(article))}>{article.data.title}</a></li>)}</ol></article>) : <p class="front-small-note">相關文章公開後，會依問題整理為閱讀專題。</p>}
       </aside>
     </div>
     {categories.length > 0 && <nav class="front-directory" aria-label="文章欄目"><h2>文章欄目</h2>{categories.map(({ name, count }) => <a href={u(`/articles/category/${encodeURIComponent(name)}/`)}>{name}<span>{count} 篇</span></a>)}</nav>}
-    <section class="front-editorial" aria-labelledby="front-editorial-title"><h2 id="front-editorial-title">關於這份內容</h2><div><p>從生活裡的問題出發，查閱官方資料與研究，再以一般讀者能理解的方式整理。文章供健康資訊參考，不能取代個人醫療評估。</p><nav aria-label="內容說明"><a href={u('/authors/')}>編輯團隊</a><a href={u('/disclosure/')}>商品與合作關係</a><a href={u('/contact/')}>提供更正與意見</a><a href={u('/rss.xml')}>RSS 訂閱</a></nav></div></section>
+    <section class="front-editorial" aria-labelledby="front-editorial-title"><h2 id="front-editorial-title">關於這份內容</h2><div><p>從生活裡的問題出發，查閱官方資料與研究，再以一般讀者能理解的方式整理。文章供健康資訊參考，不能取代個人醫療評估。</p><nav aria-label="內容說明"><a href={u('/authors/')}>編輯團隊</a><a href={u('/disclosure/')}>內容與合作關係</a>{CONTACT.length > 0 && <a href={u('/contact/')}>提供更正與意見</a>}<a href={u('/rss.xml')}>RSS 訂閱</a></nav></div></section>
   </div>
 </Base>

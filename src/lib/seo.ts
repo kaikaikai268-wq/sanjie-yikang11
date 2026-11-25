@@ -15,9 +15,9 @@ export function siteGraph(site: URL | undefined) {
   return [
     {
       '@type': 'Organization', '@id': `${home}#organization`,
-      name: SITE.name, alternateName: SITE.nameEn, url: home,
+      name: SITE.name, url: home,
       logo: { '@type': 'ImageObject', url: absolute(u('/apple-touch-icon.png'), site) },
-      sameAs: [CONTACT.facebook.href, CONTACT.instagram.href],
+      ...(CONTACT.some((channel) => ['facebook', 'instagram'].includes(channel.ga)) ? { sameAs: CONTACT.filter((channel) => ['facebook', 'instagram'].includes(channel.ga)).map((channel) => channel.href) } : {}),
       publishingPrinciples: absolute(u('/editorial-policy/'), site),
     },
     {

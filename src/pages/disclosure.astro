@@ -1,14 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
 import { u } from '../lib/url';
-import { BRANDS } from '../data/products';
 ---
-<Base title="商品與合作關係" description="說明三傑益康的商品資料、合作品牌、內容署名與購物入口。">
+<Base title="內容與合作關係" description="三傑益康的內容署名、商業關係揭露與交易範圍說明。">
   <section class="section"><div class="wrap policy-copy">
-    <header><p class="policy-label">關係揭露</p><h1 class="section-title">商品與合作關係</h1><p class="policy-deck">三傑益康經營健康生活內容，也提供商品資料與品牌合作服務。閱讀文章時，可以一併了解這些關係。</p></header>
-    <section><h2>商品資料與合作品牌</h2><p>本站<a href={u('/products/')}>商品資料</a>收錄的品牌包括{Object.values(BRANDS).map((brand) => brand.name).join('、')}。相關品牌資訊見<a href={u('/partners/')}>品牌合作頁</a>。</p><p>商品介紹與購物入口屬於商業資訊。商品的成分、規格及使用說明依原廠資料；文章使用的文獻，另列在各篇的資料來源。</p></section>
+    <header><p class="policy-label">關係揭露</p><h1 class="section-title">內容與合作關係</h1><p class="policy-deck">閱讀健康資訊時，也需要知道內容與商品、品牌或贊助之間的關係。</p></header>
+    <section><h2>品牌與贊助</h2><p>內容涉及商品介紹、品牌合作或贊助時，應在該篇文章中說明。文獻來源與商業關係分別標示，讀者可以據此判斷。</p></section>
     <section><h2>文章中的關係標示</h2><p>文章涉及三傑提供的商品、合作品牌或贊助時，應在該篇內容中標示，供讀者判斷。</p><p>顧問、作者與審閱者依各自參與的工作呈現。個別文章的作者及審閱標示，請以文中資訊為準。</p><a href={u('/editorial-policy/')}>閱讀編輯與更正原則</a></section>
-    <section><h2>購物與交易</h2><p>本站提供內容與商品資料，購買、付款及配送由承接交易的購物頁或窗口處理。從本站前往購物頁時，請確認該頁的售價、供貨、配送與售後說明。</p></section>
+    <section><h2>購物與交易</h2><p>本站以健康生活與營養內容為主，目前不提供購物、付款或配送服務。</p></section>
     <section><h2>補充與更正</h2><p>若你認為某篇文章的關係說明不完整，請提供文章網址與具體原因，透過<a href={u('/contact/')}>聯絡頁</a>告訴我們。</p></section>
   </div></section>
 </Base>

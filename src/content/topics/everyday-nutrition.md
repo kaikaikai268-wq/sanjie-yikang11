@@ -2,6 +2,8 @@
 title: 日常飲食
 description: 從主食、豆類與水果認識膳食纖維，再了解植物飲、豆腐與補充品的鈣質判讀。
 status: active
+coverImage: /images/topics/everyday-table.webp
+coverAlt: 家常餐桌上的雜糧飯、豆腐、魚、青菜與芭樂，AI 生成情境示意
 articles: [fiber-food-diary, calcium-vitamin-d-food-first]
 sections:
   - title: 從餐點找起點

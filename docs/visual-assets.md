@@ -14,6 +14,16 @@
 
 食物圖不是產品實拍、檢測報告或固定菜單；圖說標註 AI 生成，也說明無法從照片判斷營養含量。不可把影像當成數值或功效證據。
 
-## 上稿
+## 專題情境圖與品牌圖示
+
+`public/images/topics/reading-labels.webp`、`everyday-table.webp` 由內建 `image_gen` 製作，完整提示見 `docs/design-image-prompts.json`。前者為虛構補充品包裝，不能作為實際商品圖或可辨讀標示的示範；後者為飲食情境，不能視為營養配餐或份量建議。這兩張圖用於專題、首頁入口，圖說標註 AI 生成。現有文章封面與內文不在本輪改寫範圍。
+
+功能圖示使用本地固定版本 Lucide SVG，來源 revision 見 `docs/lucide-revision.txt`，完整授權置於 `public/licenses/lucide.txt`。`Icon.astro` 統一 24 格線與線寬，圖示作裝飾，由周圍控制項文字提供無障礙名稱；不使用遠端字型圖示或載入整包 JavaScript。
+
+新 Logo 候選稿置於 `design/logo-proposal/`，為本專案直接繪製的向量提案，不是 image_gen 產物。`comparison.png` 左側為舊標誌參考，右側為未採用候選稿。業主已說明舊資訊可撤除；網站先使用純文字字標，候選圖形不直接接入。正式字標、商標辨識與授權在選稿後整理。
+
+舊 `src/assets/site/`、`src/assets/products/` 素材保留於本機來源供追溯，不再由 `images.ts` 匯入或產生公開頁面。正式核准素材改放 `src/assets/published-site/`、`src/assets/published-products/`。不要將舊示範圖片重新接回公開建置。
+
+## 上稿流程
 
 封面填 `coverImage`、`coverAlt`、`coverCredit`；先執行 `pnpm content:check` 及 `pnpm media:prepare`。渲染一律使用 `ContentImage.astro`，支援子路徑與響應式圖片。圖解 PNG 使用 `data-editorial-graphic` 區分，保持完整構圖；一般攝影縮圖可裁切，但不能改變文章原意。沒有合適圖片時可以使用純文字列表，不強迫每則內容都放裝飾圖片。

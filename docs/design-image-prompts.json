@@ -1,0 +1,15 @@
+{
+  "method": "Built-in image_gen",
+  "assets": [
+    {
+      "file": "public/images/topics/reading-labels.webp",
+      "purpose": "Supplement topic and home lead visual; fictional packaging, not a product photo",
+      "prompt": "Use case: photorealistic-natural. Create a landscape 3:2 editorial photograph for a Taiwan health and nutrition publication's supplement-label reading topic. Close documentary still life on a white kitchen table: two unbranded white supplement bottles, one standing with a plain navy and muted green label made of abstract fine horizontal typographic rules, one laid sideways revealing a back nutrition panel, a folded blank note and simple reading glasses. NO legible lettering, NO logos, NO decorative pills scattered around. Side daylight from a real apartment window, quiet cool-white palette, deep ink blue shadows with restrained fresh green accents matching a blue/green biotech brand. Off-center crops with realistic paper and plastic, subtle film texture, crisp details. Objects should feel used in everyday life, not a luxury cosmetics ad. No beige linen, no plants, no hands, no lab coats, no gradients, no abstract molecules. Actual image only, no web mockup, no collage, no added captions."
+    },
+    {
+      "file": "public/images/topics/everyday-table.webp",
+      "purpose": "Everyday nutrition topic; a general meal illustration, not a prescribed meal plan",
+      "prompt": "Use case: photorealistic-natural. Landscape 3:2 editorial photograph for a Taiwanese everyday nutrition publication. A modest real family lunch table, viewed at a gentle 45 degree angle from above: a small stainless plate of steamed leafy green vegetables, ceramic bowl of mixed grain rice, plain tofu with scallions, simple steamed fish on a blue rim porcelain plate and a small plate of sliced guava. Sensible portions, not a stylized abundant feast; every food separate and clearly recognizable. White laminate tabletop with everyday dark blue bowls and green chopstick rest, glimpse of bright ordinary Taiwan apartment kitchen in soft background. Natural midday window light, honest documentary food photography with subtle texture, cool clean white and navy with food green. No people, no hands, no plastic pills, no health claims, no text, no logos, no lettering, no beige linen, no arranged herbs or potted plants, no decorative props, no flat pastel illustration, no layout or collage. Imperfectly arranged as a real meal about to be eaten."
+    }
+  ]
+}

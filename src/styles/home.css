@@ -5,7 +5,9 @@
 .frontpage-heading > p { font-size: var(--text-xs); margin: 0; color: var(--text-secondary); }
 .front-opening { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 2rem; padding-bottom: 2rem; }
 .front-lead { min-width: 0; display: grid; grid-template-areas: 'image' 'kicker' 'title' 'deck' 'byline'; align-content: start; }
-.front-lead-image { grid-area: image; display: block; margin-bottom: 1.1rem; }
+.front-lead-visual { grid-area: image; margin: 0 0 1.1rem; }
+.front-lead-visual figcaption, .front-topic-image figcaption { font-size: var(--text-xs); color: var(--text-secondary); margin-top: 0.4rem; }
+.front-lead-image { display: block; }
 .front-lead-image img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
 .front-kicker { font-size: var(--text-xs); color: var(--brand); font-weight: 700; line-height: 1.5; margin: 0 0 0.5rem; }
 .front-lead > .front-kicker { grid-area: kicker; }
@@ -41,6 +43,9 @@
 .front-topics { border-left: 1px solid var(--line); padding-left: 2rem; min-width: 0; }
 .front-topic + .front-topic { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
 .front-topic h3 { font-size: var(--text-base); line-height: 1.5; }
+.front-topic h3 a { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.front-topic-image { margin: 0 0 0.8rem; }
+.front-topic-image img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
 .front-topic p { font-size: var(--text-xs); color: var(--text-secondary); }
 .front-topic ol { margin: 0; padding-left: 1.4em; font-size: var(--text-xs); }
 .front-topic li + li { margin-top: 0.7rem; }
