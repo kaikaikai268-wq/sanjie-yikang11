@@ -20,7 +20,9 @@
 
 功能圖示使用本地固定版本 Lucide SVG，來源 revision 見 `docs/lucide-revision.txt`，完整授權置於 `public/licenses/lucide.txt`。`Icon.astro` 統一 24 格線與線寬，圖示作裝飾，由周圍控制項文字提供無障礙名稱；不使用遠端字型圖示或載入整包 JavaScript。
 
-新 Logo 候選稿置於 `design/logo-proposal/`，為本專案直接繪製的向量提案，不是 image_gen 產物。`comparison.png` 供業主比較；候選稿不接入網站，既有標誌持續使用。正式字標、商標辨識與授權應在選稿後另行整理。
+新 Logo 候選稿置於 `design/logo-proposal/`，為本專案直接繪製的向量提案，不是 image_gen 產物。`comparison.png` 左側為舊標誌參考，右側為未採用候選稿。業主已說明舊資訊可撤除；網站先使用純文字字標，候選圖形不直接接入。正式字標、商標辨識與授權在選稿後整理。
+
+舊 `src/assets/site/`、`src/assets/products/` 素材保留於本機來源供追溯，不再由 `images.ts` 匯入或產生公開頁面。正式核准素材改放 `src/assets/published-site/`、`src/assets/published-products/`。不要將舊示範圖片重新接回公開建置。
 
 ## 上稿流程
 

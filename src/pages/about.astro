@@ -1,46 +1,32 @@
 ---
 import Base from '../layouts/Base.astro';
-import { SITE, TEAM, ADVISOR } from '../data/site';
+import ContentImage from '../components/content/ContentImage.astro';
+import Icon from '../components/Icon.astro';
 import { u } from '../lib/url';
-import { Image } from 'astro:assets';
-import { siteImage } from '../lib/images';
 ---
-<Base title="關於三傑" description="認識三傑益康的健康生活內容、編輯方式、團隊與顧問。">
+<Base title="關於三傑" description="三傑益康的健康生活、飲食營養與保健品閱讀內容。">
   <section class="section"><div class="wrap about-publication">
-    <header class="about-heading"><p class="about-label">關於本站</p><h1>三傑益康</h1><p class="about-lead">從營養成分、商品標示到家庭日常，整理你在做健康選擇時會遇到的問題。</p></header>
+    <header class="about-heading"><p>關於三傑益康</p><h1>從生活裡的問題，<br />把營養資訊看明白。</h1></header>
     <div class="about-columns">
-      <div class="about-copy">
-        <section aria-labelledby="about-content"><h2 id="about-content">這裡讀得到什麼</h2><p>{SITE.name}經營本站，分享健康生活、營養與保健選擇的內容。一篇文章處理一個問題；主題指南則把同一議題的文章整理在一起。</p><p>文章裡會列出使用的資料來源。想多了解一項說法，可以沿著來源回到原始資料，再看它的研究對象、條件與限制。</p><nav class="about-links" aria-label="開始閱讀"><a href={u('/articles/')}>全部文章</a><a href={u('/topics/')}>主題指南</a><a href={u('/search/')}>搜尋問題</a></nav></section>
-        <section aria-labelledby="about-editing"><h2 id="about-editing">內容與商品資訊</h2><p>三傑益康也提供商品資料與品牌合作服務。內容使用的文獻、文章署名，以及相關商品或合作關係，分別在文章與網站說明中呈現。</p><nav class="about-links" aria-label="了解內容製作"><a href={u('/editorial-policy/')}>編輯與更正原則</a><a href={u('/disclosure/')}>商品與合作關係</a></nav></section>
-      </div>
-      <aside class="about-people" aria-label="團隊與顧問">
-        <section><h2>三傑益康團隊</h2><ul>{TEAM.map((member) => <li>{member.name}</li>)}</ul><a href={u('/authors/')}>查看內容署名</a></section>
-        <section><Image class="about-advisor-photo" src={siteImage('advisor-luo-yang')} alt={`${ADVISOR.name}，${ADVISOR.title}`} width={480} loading="lazy" /><p class="about-label">{ADVISOR.title}</p><h2>{ADVISOR.name}</h2><p class="about-background">{ADVISOR.background}</p><p>{ADVISOR.bio}</p><a href={ADVISOR.url} target="_blank" rel="noopener noreferrer">閱讀顧問在 APPI 的介紹</a></section>
-        <section><h2>與我們聯絡</h2><p>內容更正、文章意見與合作洽詢，請透過本站聯絡方式提出。</p><a href={u('/contact/')}>聯絡三傑益康</a></section>
-      </aside>
+      <figure><ContentImage src="/images/topics/everyday-table.webp" alt="餐桌上的飯、豆腐、魚、青菜與水果，AI 生成情境示意" eager /><figcaption>日常飲食情境示意・AI 生成</figcaption></figure>
+      <div class="about-copy"><h2>從三餐到保健品</h2><p>一餐怎麼選，包裝上寫了什麼，或是想替家人多了解一項營養資訊，都可以從一個具體問題開始。</p><p>三傑益康整理飲食營養、保健品判讀與生活習慣的閱讀內容。文章附上資料來源，同一議題的文章則整理成主題指南。</p><a class="about-link" href={u('/topics/')}>從主題指南開始<Icon name="arrow" /></a></div>
     </div>
+    <section class="about-standards" aria-labelledby="about-standards"><h2 id="about-standards">讓資訊有跡可循</h2><div><p>需要查證一個說法時，可以回到文章的資料來源。內容署名、更新日期及合作關係，也各有對應說明。</p><nav aria-label="網站說明"><a href={u('/authors/')}>內容署名</a><a href={u('/editorial-policy/')}>編輯與更正原則</a><a href={u('/disclosure/')}>內容與合作關係</a></nav></div></section>
   </div></section>
 </Base>
 <style>
   .about-publication { max-width: 72rem; overflow-wrap: anywhere; }
-  .about-heading { max-width: 49rem; margin-bottom: 3rem; }
-  .about-label { color: var(--text-secondary); font-size: var(--text-xs); margin-bottom: 0.65rem; }
-  .about-heading h1 { font-size: clamp(var(--text-xl), 5vw, var(--text-2xl)); margin-bottom: 1.25rem; }
-  .about-lead { font-size: var(--text-lg); line-height: 1.65; }
-  .about-columns { display: grid; grid-template-columns: minmax(0, 1fr) 20rem; gap: 4rem; border-top: 2px solid var(--brand-strong); padding-top: 2rem; }
-  .about-copy section + section { margin-top: 2.75rem; }
-  .about-columns h2 { font-size: var(--text-lg); margin-bottom: 1rem; }
-  .about-copy p { font-size: var(--text-sm); line-height: 1.85; }
-  .about-links { display: flex; flex-wrap: wrap; gap: 0.65rem 1.5rem; font-size: var(--text-xs); margin-top: 1.25rem; }
-  .about-people { border-left: 1px solid var(--line); padding-left: 2rem; }
-  .about-people section + section { margin-top: 2rem; padding-top: 1.75rem; border-top: 1px solid var(--line); }
-  .about-people p, .about-people a, .about-people li { font-size: var(--text-xs); }
-  .about-people p { color: var(--text-secondary); }
-  .about-people ul { list-style: none; padding: 0; margin-bottom: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; }
-  .about-background { margin-bottom: 0.75rem; }
-  .about-advisor-photo { width: 100%; margin-bottom: 1rem; }
-  @media (max-width: 850px) {
-    .about-columns { grid-template-columns: minmax(0, 1fr); gap: 2.5rem; }
-    .about-people { border-left: 0; border-top: 1px solid var(--line); padding: 2rem 0 0; }
-  }
+  .about-heading { max-width: 49rem; margin-bottom: 2.5rem; }
+  .about-heading > p { color: var(--brand); font-size: var(--text-xs); }
+  .about-heading h1 { font-size: clamp(var(--text-xl), 4vw, var(--text-2xl)); line-height: 1.5; }
+  .about-columns { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 3rem; align-items: center; }
+  .about-columns figure { margin: 0; }
+  .about-columns img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
+  .about-columns figcaption { font-size: var(--text-xs); color: var(--text-secondary); margin-top: 0.5rem; }
+  .about-copy h2, .about-standards h2 { font-size: var(--text-lg); }
+  .about-copy p, .about-standards p { font-size: var(--text-sm); line-height: 1.85; }
+  .about-link { display: inline-flex; align-items: center; gap: 0.65rem; font-size: var(--text-xs); min-height: 2.75rem; }
+  .about-standards { display: grid; grid-template-columns: 16rem minmax(0, 1fr); gap: 2rem; border-top: 2px solid var(--navy); padding-top: 2rem; margin-top: 3rem; }
+  .about-standards nav { display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; font-size: var(--text-xs); }
+  @media (max-width: 800px) { .about-columns, .about-standards { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; } }
 </style>

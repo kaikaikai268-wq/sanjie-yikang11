@@ -4,8 +4,9 @@ import type { ImageMetadata } from 'astro';
 const load = (mods: Record<string, { default: ImageMetadata }>) =>
   Object.fromEntries(Object.entries(mods).map(([p, m]) => [p.split('/').pop()!.replace(/\.\w+$/, ''), m.default]));
 
-const PRODUCT_IMAGES = load(import.meta.glob<{ default: ImageMetadata }>('../assets/products/*.{jpg,png}', { eager: true }));
-const SITE_IMAGES = load(import.meta.glob<{ default: ImageMetadata }>('../assets/site/*.{jpg,png}', { eager: true }));
+// Old site/products folders are retained locally as demo source, never imported into public builds.
+const PRODUCT_IMAGES = load(import.meta.glob<{ default: ImageMetadata }>('../assets/published-products/*.{jpg,png}', { eager: true }));
+const SITE_IMAGES = load(import.meta.glob<{ default: ImageMetadata }>('../assets/published-site/*.{jpg,png}', { eager: true }));
 
 function pick(set: Record<string, ImageMetadata>, key: string, dir: string): ImageMetadata {
   const img = set[key];
@@ -13,5 +14,5 @@ function pick(set: Record<string, ImageMetadata>, key: string, dir: string): Ima
   return img;
 }
 
-export const productImage = (id: string) => pick(PRODUCT_IMAGES, id, 'products');
-export const siteImage = (key: string) => pick(SITE_IMAGES, key, 'site');
+export const productImage = (id: string) => pick(PRODUCT_IMAGES, id, 'published-products');
+export const siteImage = (key: string) => pick(SITE_IMAGES, key, 'published-site');

@@ -2,15 +2,15 @@
 import { u } from '../lib/url';
 import '../styles/tokens.css';
 import '../styles/site.css';
-import { Image, getImage } from 'astro:assets';
+import { getImage } from 'astro:assets';
 import { SITE, CONTACT, DISCLAIMER } from '../data/site';
 import { IS_PRODUCTION, GA_ID, GSC_TOKEN, SHOP_URL } from '../lib/env';
 import { shoppingLink } from '../lib/commerce.mjs';
-import { siteImage } from '../lib/images';
 import { absolute, jsonScript, siteGraph } from '../lib/seo';
 import media from '../data/content-images.json';
 import { getPublishedArticles } from '../lib/content';
 import Icon from '../components/Icon.astro';
+import ImageViewer from '../components/content/ImageViewer.astro';
 
 interface Props {
   title?: string;           // 不含站名；首頁留空
@@ -23,7 +23,7 @@ interface Props {
   modifiedTime?: Date | string;
 }
 const { title, description = SITE.description, ogImage, jsonLd, noindex = false, ogType = 'website', publishedTime, modifiedTime } = Astro.props;
-const fullTitle = title ? `${title}｜${SITE.name}` : `${SITE.name} | ${SITE.nameEn} · ${SITE.motto.join('；')}`;
+const fullTitle = title ? `${title}｜${SITE.name}` : SITE.name;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const og = typeof ogImage === 'string' ? null : ogImage ? await getImage({ src: ogImage, width: 1200, format: 'jpg' }) : null;
 const optimizedOg = typeof ogImage === 'string' ? (media as Record<string, {src: string}>)[ogImage]?.src ?? ogImage : undefined;
@@ -91,11 +91,10 @@ const headerCategories = [...categoryOrder.filter((name) => articleCategories.in
   <body>
     <a class="skip" href="#main">跳到主要內容</a>
     <header class="site-header" data-pagefind-ignore>
-      <div class="masthead-utility"><div class="wrap utility-inner"><a href={u('/about/')}>三傑益康生技</a><nav aria-label="網站資訊"><a href={u('/authors/')}>編輯團隊</a><a href={u('/editorial-policy/')}>編輯原則</a><a href={u('/contact/')}>聯絡我們</a></nav></div></div>
+      <div class="masthead-utility"><div class="wrap utility-inner"><a href={u('/about/')}>三傑益康</a><nav aria-label="網站資訊"><a href={u('/authors/')}>編輯團隊</a><a href={u('/editorial-policy/')}>編輯原則</a>{CONTACT.length > 0 && <a href={u('/contact/')}>聯絡我們</a>}</nav></div></div>
       <div class="wrap header-inner">
         <a class="brand" href={u('/')} aria-label={`${SITE.name} 首頁`}>
-          <Image src={siteImage('logo-mark')} alt="" width={64} height={55} loading="eager" />
-          <span class="brand-title">三傑益康<span class="brand-subtitle">3J Wellness Biotech</span></span>
+          <span class="brand-title">三傑益康<span class="brand-subtitle">健康生活・營養・保健品判讀</span></span>
         </a>
         {path !== u('/search/') && <><form class="masthead-search" role="search" action={u('/search/')} method="get"><label for="site-query">搜尋文章</label><div><input id="site-query" type="search" name="q" placeholder="輸入關鍵字" required /><button type="submit"><Icon name="search" />搜尋</button></div></form><a class="mobile-search-link" href={u('/search/')}><Icon name="search" />搜尋</a></>}
       </div>
@@ -113,11 +112,12 @@ const headerCategories = [...categoryOrder.filter((name) => articleCategories.in
     <main id="main">
       <slot />
     </main>
+    <ImageViewer />
 
     <footer class="site-footer" data-pagefind-ignore>
       <div class="wrap footer-inner">
         <div>
-          <a class="brand footer-brand" href={u('/')} aria-label={`${SITE.name} 首頁`}><Image src={siteImage('logo-mark')} alt="" width={64} height={55} /><span class="brand-title">三傑益康<span class="brand-subtitle">3J Wellness Biotech</span></span></a>
+          <a class="brand footer-brand" href={u('/')} aria-label={`${SITE.name} 首頁`}><span class="brand-title">三傑益康<span class="brand-subtitle">健康生活・營養・保健品判讀</span></span></a>
           <p class="motto">健康生活、飲食營養與保健品判讀</p>
         </div>
         <div class="footer-cols">
@@ -133,26 +133,18 @@ const headerCategories = [...categoryOrder.filter((name) => articleCategories.in
           <nav aria-label="關於與服務">
             <h2 class="footer-nav-title">關於與服務</h2>
             <a href={u('/about/')}>關於三傑</a>
-            <a href={u('/partners/')}>品牌合作</a>
-            <a href={u('/contact/')}>聯絡我們</a>
-            <a href={u('/products/')}>商品資訊</a>
-            <a href={u('/resources/')}>場地與活動資源</a>
+            {CONTACT.length > 0 && <a href={u('/contact/')}>聯絡我們</a>}
             <a href={u('/editorial-policy/')}>編輯與更正原則</a>
             <a href={u('/disclosure/')}>商品與合作關係</a>
             <a href={u('/privacy/')}>隱私權</a>
             {shopHref && <a href={shopHref} data-ga-shop="" data-shop-placement="footer" target="_blank" rel="noopener noreferrer">前往購物網站</a>}
           </nav>
-          <div class="footer-contact">
-            <a href={CONTACT.phone.href} data-ga-contact={CONTACT.phone.ga}>電話 {CONTACT.phone.label}</a>
-            <a href={CONTACT.email.href} data-ga-contact={CONTACT.email.ga}>{CONTACT.email.label}</a>
-            <a href={CONTACT.facebook.href} target="_blank" rel="noopener noreferrer" data-ga-contact={CONTACT.facebook.ga}>Facebook</a>
-            <a href={CONTACT.instagram.href} target="_blank" rel="noopener noreferrer" data-ga-contact={CONTACT.instagram.ga}>Instagram</a>
-          </div>
+          {CONTACT.length > 0 && <div class="footer-contact">{CONTACT.map((channel) => <a href={channel.href} data-ga-contact={channel.ga}>{channel.label}</a>)}</div>}
         </div>
       </div>
       <div class="wrap footer-legal">
         <p>{DISCLAIMER}</p>
-        <p>© {new Date().getFullYear()} {SITE.name} {SITE.nameEn}</p>
+        <p>© {new Date().getFullYear()} {SITE.name}</p>
       </div>
     </footer>
 

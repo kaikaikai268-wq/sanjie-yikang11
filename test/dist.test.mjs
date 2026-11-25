@@ -57,3 +57,16 @@ test('收錄設定跟建置階段一致', async () => {
     assert.ok(!home.includes('googletagmanager'), '非正式建置不載 GA');
   }
 });
+
+test('公開頁面不再帶出示範人物、聯絡資訊、場地報價與商品頁', async () => {
+  const retired = ['jlijoejames688', '23714031', '030hzbid', '知域國際', '羅揚', '42,500', '/products/probiotic/'];
+  for (const file of await pages()) {
+    const html = await readFile(file, 'utf8');
+    for (const value of retired) assert.ok(!html.includes(value), `${path.relative(DIST, file)} 洩出示範資訊：${value}`);
+  }
+  for (const route of ['products', 'partners', 'resources', 'contact']) {
+    const html = await readFile(path.join(DIST, route, 'index.html'), 'utf8');
+    assert.match(html, /noindex/, `${route} 未完成正式資料前不收錄`);
+  }
+  assert.equal(await exists(path.join(DIST, 'products/probiotic/index.html')), false);
+});

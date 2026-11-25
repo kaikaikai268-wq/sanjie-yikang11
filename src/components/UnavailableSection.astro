@@ -1,0 +1,10 @@
+---
+import Base from '../layouts/Base.astro';
+import { u } from '../lib/url';
+interface Props { title: string }
+const { title } = Astro.props;
+---
+<Base title={title} description="三傑益康目前以健康生活、飲食營養與保健品閱讀內容為主。" noindex>
+  <section class="section"><div class="wrap unavailable-section"><h1>{title}</h1><p>本站目前以健康與營養內容為主，這個項目暫未公開。</p><p>你可以先從文章或主題指南開始閱讀。</p><nav aria-label="繼續閱讀"><a href={u('/articles/')}>健康文章</a><a href={u('/topics/')}>主題指南</a></nav></div></section>
+</Base>
+<style>.unavailable-section { max-width: 49rem; min-height: 45vh; }.unavailable-section nav { display: flex; gap: 2rem; font-size: var(--text-sm); margin-top: 2rem; }</style>

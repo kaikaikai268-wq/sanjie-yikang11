@@ -44,10 +44,11 @@ for (const name of await readdir(outputDir)) {
 await mkdir(path.join(root, 'src/data'), { recursive: true });
 await writeFile(path.join(root, 'src/data/content-images.json'), JSON.stringify(manifest, null, 2) + '\n');
 
-// Fixed brand sharing card; deterministic rendering, using the existing approved logo.
-const logo = await sharp(path.join(root, 'src/assets/site/logo-mark.png')).resize({ width: 150, height: 150, fit: 'inside' }).png().toBuffer();
-const logoMeta = await sharp(logo).metadata();
-const background = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"><rect width="1200" height="630" fill="#fdfbf8"/><path d="M75 90H1125M75 510H1125" stroke="#253e32" stroke-width="3"/><g font-family="Microsoft JhengHei, Noto Sans TC, sans-serif"><text x="280" y="295" font-size="104" font-weight="700" fill="#243e57">三傑益康</text><text x="85" y="425" font-size="45" fill="#253e32">健康生活・飲食營養・保健品判讀</text><text x="85" y="565" font-size="30" fill="#57655e">3jwellness.com</text></g></svg>');
+// Typographic identity until the owner selects a formal logo. Never reuse demo brand images.
+const background = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"><rect width="1200" height="630" fill="#ffffff"/><path d="M75 90H1125M75 510H1125" stroke="#10476c" stroke-width="3"/><path d="M75 90H240" stroke="#529b2c" stroke-width="8"/><g font-family="Microsoft JhengHei, Noto Sans TC, sans-serif"><text x="80" y="300" font-size="112" font-weight="700" fill="#10476c">三傑益康</text><text x="85" y="425" font-size="45" fill="#17482e">健康生活・飲食營養・保健品判讀</text><text x="85" y="565" font-size="30" fill="#556575">3jwellness.com</text></g></svg>');
 await mkdir(path.join(root, 'public/og'), { recursive: true });
-await sharp(background).composite([{ input: logo, left: 85, top: Math.round(245 - logoMeta.height / 2) }]).png().toFile(path.join(root, 'public/og/default.png'));
+await sharp(background).png().toFile(path.join(root, 'public/og/default.png'));
+const monogram = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180"><rect width="180" height="180" fill="#10476c"/><text x="90" y="125" text-anchor="middle" font-family="Microsoft JhengHei, Noto Sans TC, sans-serif" font-weight="700" font-size="112" fill="#ffffff">三</text></svg>');
+await sharp(monogram).png().toFile(path.join(root, 'public/apple-touch-icon.png'));
+await sharp(monogram).resize(48).png().toFile(path.join(root, 'public/favicon.png'));
 console.log(`內容圖片處理完成：${images.size} 個來源；分享圖已準備。`);
