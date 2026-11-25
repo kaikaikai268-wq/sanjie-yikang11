@@ -1,6 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Breadcrumb from '../../components/content/Breadcrumb.astro';
+import ContentImage from '../../components/content/ContentImage.astro';
+import Icon from '../../components/Icon.astro';
 import { getPublishedTopics, getPublishedArticles, articlesForTopic, articleSlug } from '../../lib/content';
 import { listSchema, breadcrumbSchema, displayDate } from '../../lib/content-view';
 import { u } from '../../lib/url';
@@ -25,7 +27,7 @@ const schema = [listSchema('主題指南', '/topics/', topics.map((topic) => ({ 
     </header>
     <section class="listing-content topic-directory" id="topic-guides" aria-label="專題與閱讀順序">
       {directory.length ? directory.map(({ topic, entries }) => <section class="directory-topic" aria-labelledby={`topic-${topic.id}`}>
-        <header class="directory-topic-intro"><p class="directory-topic-count">{entries.length} 篇文章</p><h2 id={`topic-${topic.id}`}><a href={u(`/topics/${topic.id}/`)}>{topic.data.title}</a></h2><p>{topic.data.description}</p><a class="directory-topic-link" href={u(`/topics/${topic.id}/`)}>閱讀完整專題</a></header>
+        <header class="directory-topic-intro">{topic.data.coverImage && <figure class="directory-topic-visual"><ContentImage src={topic.data.coverImage} alt={topic.data.coverAlt ?? ''} sizes="(max-width: 760px) 100vw, 500px" /><figcaption>AI 生成情境示意</figcaption></figure>}<p class="directory-topic-count">{entries.length} 篇文章</p><h2 id={`topic-${topic.id}`}><a href={u(`/topics/${topic.id}/`)}>{topic.data.title}</a></h2><p>{topic.data.description}</p><a class="directory-topic-link" href={u(`/topics/${topic.id}/`)}>閱讀完整專題<Icon name="arrow" /></a></header>
         <ol class="directory-reading-order" aria-label={`${topic.data.title}閱讀順序`}>{entries.slice(0, 5).map((entry) => <li><div><p class="directory-article-meta">{entry.data.category}<span aria-hidden="true"> · </span><time datetime={entry.data.publishDate?.toISOString()}>{displayDate(entry.data.publishDate)}</time></p><h3><a href={u(`/articles/${articleSlug(entry)}/`)}>{entry.data.title}</a></h3></div></li>)}</ol>
       </section>) : <div class="listing-empty"><h2>尚未發布主題指南</h2><p>專題將依已發布文章整理。你可以先瀏覽全部健康文章。</p><a href={u('/articles/')}>瀏覽健康文章</a></div>}
     </section>

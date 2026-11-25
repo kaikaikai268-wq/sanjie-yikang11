@@ -1,0 +1,76 @@
+---
+import Icon, { type IconName } from '../Icon.astro';
+import { u } from '../../lib/url';
+import { articleSlug, type ArticleEntry } from '../../lib/content';
+interface Props { articles: ArticleEntry[] }
+const { articles } = Astro.props;
+const routes: { category: string; label: string; description: string; icon: IconName }[] = [
+  { category: '飲食營養', label: '三餐怎麼選', description: '從餐桌上的食物，認識纖維與鈣質來源。', icon: 'food' },
+  { category: '保健品判讀', label: '保健品怎麼看', description: '找出包裝上的成分、每份量與使用提醒。', icon: 'label' },
+  { category: '生活習慣', label: '作息怎麼整理', description: '先記下睡眠與白天精神，再整理想問的問題。', icon: 'moon' },
+].map((route) => ({ ...route, icon: route.icon as IconName })).filter((route) => articles.some((article) => article.data.category === route.category));
+---
+{routes.length > 0 && <section class="reading-finder" aria-labelledby="reading-finder-heading" data-reading-finder>
+  <div class="finder-heading"><h2 id="reading-finder-heading">你想先了解什麼？</h2><p>選一個問題，找篇文章讀。</p></div>
+  <div class="finder-options" aria-label="選擇閱讀方向">{routes.map((route) => <a href={`#finder-${routes.indexOf(route)}`} data-finder-option><Icon name={route.icon} /><span>{route.label}</span><Icon name="arrow" /></a>)}</div>
+  {routes.map((route, index) => <div class="finder-panel" id={`finder-${index}`} data-finder-panel>
+    <p class="finder-description">{route.description}</p>
+    <ul>{articles.filter((article) => article.data.category === route.category).slice(0, 3).map((article) => <li><a href={u(`/articles/${articleSlug(article)}/`)}>{article.data.title}<Icon name="arrow" /></a></li>)}</ul>
+    <a class="finder-category" href={u(`/articles/category/${encodeURIComponent(route.category)}/`)}>查看{route.category}文章<Icon name="external" /></a>
+  </div>)}
+</section>}
+<script>
+  document.querySelectorAll<HTMLElement>('[data-reading-finder]').forEach((root) => {
+    const options = [...root.querySelectorAll<HTMLAnchorElement>('[data-finder-option]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[data-finder-panel]')];
+    const list = root.querySelector<HTMLElement>('.finder-options');
+    if (!list || !options.length) return;
+    list.setAttribute('role', 'tablist');
+    const activate = (index: number) => {
+      options.forEach((option, i) => { option.setAttribute('aria-selected', String(i === index)); option.tabIndex = i === index ? 0 : -1; });
+      panels.forEach((panel, i) => { panel.hidden = i !== index; });
+    };
+    options.forEach((option, index) => {
+      option.id = `finder-tab-${index}`;
+      option.setAttribute('role', 'tab');
+      option.setAttribute('aria-controls', panels[index].id);
+      panels[index].setAttribute('role', 'tabpanel');
+      panels[index].setAttribute('aria-labelledby', option.id);
+      panels[index].tabIndex = 0;
+      option.addEventListener('click', (event) => {
+        if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+        event.preventDefault(); activate(index);
+      });
+      option.addEventListener('keydown', (event) => {
+        if (event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) return;
+        const next = event.key === 'ArrowRight' ? (index + 1) % options.length : event.key === 'ArrowLeft' ? (index + options.length - 1) % options.length : event.key === 'Home' ? 0 : event.key === 'End' ? options.length - 1 : null;
+        if (next === null) return;
+        event.preventDefault(); activate(next); options[next].focus();
+      });
+    });
+    activate(0);
+  });
+</script>
+<style>
+  .reading-finder { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); column-gap: 3rem; padding: 2rem 0; border-top: 2px solid var(--navy); border-bottom: 1px solid var(--line); margin-bottom: 2.5rem; }
+  .finder-heading h2 { font-size: var(--text-lg); color: var(--navy); }
+  .finder-heading p { font-size: var(--text-xs); color: var(--text-secondary); margin-bottom: 1rem; }
+  .finder-options { grid-column: 1; display: grid; gap: 0.35rem; align-content: start; }
+  .finder-options a { display: flex; align-items: center; gap: 0.8rem; min-height: 3rem; padding: 0.55rem 0.75rem; font-size: var(--text-sm); text-decoration: none; color: var(--navy); border-left: 3px solid transparent; }
+  .finder-options a > span:last-child { margin-left: auto; }
+  .finder-options a:hover, .finder-options a[aria-selected='true'] { border-left-color: var(--brand); background: var(--brand-tint); }
+  .finder-panel { grid-column: 2; border-left: 1px solid var(--line); padding-left: 2rem; margin-top: 1rem; }
+  .finder-panel[role='tabpanel'] { grid-row: 1 / span 2; margin-top: 0; }
+  .finder-panel[hidden] { display: none; }
+  .finder-description { font-size: var(--text-sm); color: var(--text-secondary); }
+  .finder-panel ul { list-style: none; padding: 0; margin: 0 0 1rem; }
+  .finder-panel li + li { border-top: 1px solid var(--line); }
+  .finder-panel li a { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.65rem 0; font-size: var(--text-sm); color: var(--navy); text-decoration: none; }
+  .finder-panel li a:hover { text-decoration: underline; }
+  .finder-category { display: inline-flex; align-items: center; gap: 0.5rem; font-size: var(--text-xs); min-height: 2.75rem; }
+  @media (max-width: 700px) {
+    .reading-finder { grid-template-columns: minmax(0, 1fr); row-gap: 0.7rem; padding-block: 1.5rem; }
+    .finder-options { grid-column: 1; }
+    .finder-panel, .finder-panel[role='tabpanel'] { grid-column: 1; grid-row: auto; padding: 1rem 0 0; border-left: 0; border-top: 1px solid var(--line); }
+  }
+</style>

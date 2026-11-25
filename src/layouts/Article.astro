@@ -4,6 +4,7 @@ import Breadcrumb from '../components/content/Breadcrumb.astro';
 import ArticleCard from '../components/content/ArticleCard.astro';
 import Share from '../components/content/Share.astro';
 import ContentImage from '../components/content/ContentImage.astro';
+import Icon from '../components/Icon.astro';
 import { articleSlug, getAuthor, getPublishedTopics, relatedArticles, type ArticleEntry } from '../lib/content';
 import { displayDate, contentTypeLabel, contentAsset, readingMinutes, breadcrumbSchema } from '../lib/content-view';
 import { absolute } from '../lib/seo';
@@ -64,7 +65,7 @@ const jsonLd = [
           <Share url={url} title={data.title} />
           {products.length > 0 && <aside class="article-products"><h2>相關商品資訊</h2><p>可進一步查看商品的原廠成分與規格資訊。</p><ul>{products.map((product) => <li><a href={u(`/products/${product.id}/`)}>{product.name}</a></li>)}</ul>{shopHref && <a class="btn btn-outline" href={shopHref} data-ga-shop="" data-shop-placement="article-products" target="_blank" rel="noopener noreferrer">前往購物網站</a>}</aside>}
         </div>
-        {toc.length > 1 && <nav class="article-toc" aria-label="文章目錄"><h2>這篇會談到</h2><ol>{toc.map((heading) => <li><a href={`#${heading.slug}`}>{heading.text}</a></li>)}</ol></nav>}
+        {toc.length > 1 && <nav class="article-toc" aria-label="文章目錄"><h2><Icon name="book" /> 這篇會談到</h2><ol>{toc.map((heading) => <li><a href={`#${heading.slug}`}>{heading.text}</a></li>)}</ol></nav>}
       </div>
     </article>
     {related.length > 0 && <section class="content-related" aria-labelledby="related-heading"><h2 id="related-heading">接著閱讀</h2><div class="content-grid">{related.map((entry) => <ArticleCard article={entry} related />)}</div></section>}

@@ -2,6 +2,8 @@
 import Base from '../layouts/Base.astro';
 import { SITE, TEAM, ADVISOR } from '../data/site';
 import { u } from '../lib/url';
+import { Image } from 'astro:assets';
+import { siteImage } from '../lib/images';
 ---
 <Base title="關於三傑" description="認識三傑益康的健康生活內容、編輯方式、團隊與顧問。">
   <section class="section"><div class="wrap about-publication">
@@ -13,7 +15,7 @@ import { u } from '../lib/url';
       </div>
       <aside class="about-people" aria-label="團隊與顧問">
         <section><h2>三傑益康團隊</h2><ul>{TEAM.map((member) => <li>{member.name}</li>)}</ul><a href={u('/authors/')}>查看內容署名</a></section>
-        <section><p class="about-label">{ADVISOR.title}</p><h2>{ADVISOR.name}</h2><p class="about-background">{ADVISOR.background}</p><p>{ADVISOR.bio}</p><a href={ADVISOR.url} target="_blank" rel="noopener noreferrer">閱讀顧問在 APPI 的介紹</a></section>
+        <section><Image class="about-advisor-photo" src={siteImage('advisor-luo-yang')} alt={`${ADVISOR.name}，${ADVISOR.title}`} width={480} loading="lazy" /><p class="about-label">{ADVISOR.title}</p><h2>{ADVISOR.name}</h2><p class="about-background">{ADVISOR.background}</p><p>{ADVISOR.bio}</p><a href={ADVISOR.url} target="_blank" rel="noopener noreferrer">閱讀顧問在 APPI 的介紹</a></section>
         <section><h2>與我們聯絡</h2><p>內容更正、文章意見與合作洽詢，請透過本站聯絡方式提出。</p><a href={u('/contact/')}>聯絡三傑益康</a></section>
       </aside>
     </div>
@@ -36,6 +38,7 @@ import { u } from '../lib/url';
   .about-people p { color: var(--text-secondary); }
   .about-people ul { list-style: none; padding: 0; margin-bottom: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; }
   .about-background { margin-bottom: 0.75rem; }
+  .about-advisor-photo { width: 100%; margin-bottom: 1rem; }
   @media (max-width: 850px) {
     .about-columns { grid-template-columns: minmax(0, 1fr); gap: 2.5rem; }
     .about-people { border-left: 0; border-top: 1px solid var(--line); padding: 2rem 0 0; }

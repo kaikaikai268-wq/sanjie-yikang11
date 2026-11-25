@@ -2,6 +2,8 @@
 title: 看懂保健品
 description: 從包裝、菌株與使用紀錄開始，把產品資訊和自己的需求分開看，再準備好要向專業人員詢問的問題。
 status: active
+coverImage: /images/topics/reading-labels.webp
+coverAlt: 補充品示意包裝、閱讀眼鏡與筆記，AI 生成情境示意，非實際商品
 articles:
   - supplement-label-checklist
   - probiotic-label-strain-storage

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 160" fill="none">
+  <title>三傑益康 3J 標誌候選 B，未核准</title>
+  <g fill="#10476c">
+    <path d="M24 30h67v22L61 78l30 26v28H20v-23h42L35 85V67l28-16H24z"/>
+    <path d="M110 52h25v62c0 19-14 31-33 31H85v-24h17c5 0 8-3 8-8z"/>
+  </g>
+  <path d="m118 30 27-16m-27 16 30 23" stroke="#529b2c" stroke-width="7"/>
+  <g fill="#529b2c"><circle cx="118" cy="30" r="13"/><circle cx="148" cy="13" r="10"/><circle cx="150" cy="55" r="9"/></g>
+</svg>
