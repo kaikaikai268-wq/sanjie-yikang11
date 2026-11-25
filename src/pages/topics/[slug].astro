@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/content/Breadcrumb.astro';
+import ArticleCard from '../../components/content/ArticleCard.astro';
+import { getPublishedTopics, getPublishedArticles, articlesForTopic, articleSlug } from '../../lib/content';
+import { listSchema, breadcrumbSchema } from '../../lib/content-view';
+import '../../styles/content.css';
+export async function getStaticPaths() {
+  const articles = await getPublishedArticles();
+  return (await getPublishedTopics()).map((topic) => ({ params: { slug: topic.id }, props: { topic, articles: articlesForTopic(topic, articles) } }));
+}
+const { topic, articles } = Astro.props;
+const path = `/topics/${topic.id}/`;
+const sections = topic.data.sections.map((section) => ({ ...section, entries: section.articles.map((slug) => articles.find((entry) => articleSlug(entry) === slug)).filter((entry): entry is NonNullable<typeof entry> => Boolean(entry)) })).filter((section) => section.entries.length > 0);
+const assigned = new Set(sections.flatMap((section) => section.entries.map(articleSlug)));
+const remaining = articles.filter((entry) => !assigned.has(articleSlug(entry)));
+const schema = [listSchema(topic.data.title, path, articles.map((entry) => ({ title: entry.data.title, path: `/articles/${articleSlug(entry)}/` })), Astro.site), breadcrumbSchema([{ label: '首頁', path: '/' }, { label: '主題指南', path: '/topics/' }, { label: topic.data.title, path }], Astro.site)];
+---
+<Base title={topic.data.title} description={topic.data.description} ogImage={topic.data.coverImage} jsonLd={schema}>
+  <section class="section"><div class="wrap content-wrap">
+    <Breadcrumb items={[{ label: '首頁', href: '/' }, { label: '主題指南', href: '/topics/' }, { label: topic.data.title }]} />
+    <header class="content-intro" data-pagefind-body><h1 data-pagefind-meta="title">{topic.data.title}</h1><p data-pagefind-meta="description">{topic.data.description}</p><p class="content-meta">{articles.length} 篇文章</p></header>
+    {sections.map((section) => <section class="topic-section"><h2>{section.title}</h2>{section.summary && <p>{section.summary}</p>}<div class="content-grid">{section.entries.map((entry) => <ArticleCard article={entry} />)}</div></section>)}
+    {remaining.length > 0 && <section class="topic-section">{sections.length > 0 && <h2>繼續探索</h2>}<div class="content-grid">{remaining.map((entry) => <ArticleCard article={entry} />)}</div></section>}
+  </div></section>
+</Base>

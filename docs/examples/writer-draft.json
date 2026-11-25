@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "jobId": "example-draft-v1",
+  "article": {
+    "slug": "example-draft",
+    "title": "Writer 草稿匯入示範",
+    "description": "這份內容只用來示範三傑益康的 Writer 草稿接收格式，不是待發布的健康文章。",
+    "author": "3j-editorial",
+    "category": "健康生活",
+    "contentType": "guide",
+    "status": "draft",
+    "draft": true,
+    "tags": [],
+    "topics": [],
+    "relatedArticles": [],
+    "relatedProducts": [],
+    "highlights": [
+      "這是一份介面示範，匯入後仍是草稿。",
+      "正式使用時應換成自己的標題、摘要、正文與工單識別碼。"
+    ],
+    "references": [],
+    "faq": []
+  },
+  "body": "## 這份範例的用途\n\n本範例用來確認 Writer 可以把文章資料送進三傑益康的草稿流程。它沒有提出健康事實、商品功效或購買建議。\n\n## 正式編輯前\n\n請換成實際要處理的題目與正文，依內容補上可核對的來源。這份示範資料請保持草稿狀態。"
+}

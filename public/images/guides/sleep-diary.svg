@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="750" viewBox="0 0 1200 750">
+<rect width="1200" height="750" fill="#e7eaf0"/>
+<g font-family="Microsoft JhengHei, Noto Sans TC, sans-serif" fill="#263b51">
+<text x="85" y="130" font-size="76" font-weight="700">昨晚，睡得怎麼樣？</text>
+<rect x="85" y="195" width="1030" height="410" fill="#fffefa"/>
+<text x="130" y="285" font-size="52" font-weight="700">上床時間</text><path d="M440 290H1060" stroke="#aab5c3" stroke-width="3"/>
+<text x="130" y="410" font-size="52" font-weight="700">起床時間</text><path d="M440 415H1060" stroke="#aab5c3" stroke-width="3"/>
+<text x="130" y="535" font-size="52" font-weight="700">白天精神</text><path d="M440 540H1060" stroke="#aab5c3" stroke-width="3"/>
+<text x="85" y="675" font-size="46">先留下紀錄，再看習慣與睡眠的關係</text>
+</g></svg>

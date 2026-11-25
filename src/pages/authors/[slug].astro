@@ -1,0 +1,35 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/content/Breadcrumb.astro';
+import ArticleCard from '../../components/content/ArticleCard.astro';
+import ContentImage from '../../components/content/ContentImage.astro';
+import { getAuthors, getPublishedArticles } from '../../lib/content';
+import { breadcrumbSchema } from '../../lib/content-view';
+import { absolute } from '../../lib/seo';
+import { u } from '../../lib/url';
+import '../../styles/content.css';
+export async function getStaticPaths() {
+  const articles = await getPublishedArticles();
+  return (await getAuthors()).map((author) => ({ params: { slug: author.id }, props: { author, articles: articles.filter((entry) => entry.data.author === author.id) } }));
+}
+const { author, articles } = Astro.props;
+const { Content } = await render(author);
+const path = `/authors/${author.id}/`;
+const url = absolute(u(path), Astro.site);
+const schema = [{ '@context': 'https://schema.org', '@type': author.data.isOrganization ? 'Organization' : 'Person', '@id': `${url}#author`, name: author.data.name, description: author.data.bioShort, url, sameAs: author.data.sameAs, knowsAbout: author.data.specialties }, breadcrumbSchema([{ label: '首頁', path: '/' }, { label: '作者與編輯團隊', path: '/authors/' }, { label: author.data.name, path }], Astro.site)];
+---
+<Base title={author.data.name} description={author.data.bioShort} noindex={articles.length === 0} jsonLd={schema}>
+  <section class="section"><div class="wrap content-wrap">
+    <Breadcrumb items={[{ label: '首頁', href: '/' }, { label: '作者與編輯團隊', href: '/authors/' }, { label: author.data.name }]} />
+    <header class="content-intro">{author.data.avatar && <ContentImage src={author.data.avatar} alt={author.data.name} class="author-avatar" />}<h1>{author.data.name}</h1><p>{author.data.bioShort}</p></header>
+    <div class="author-bio article-body">
+      {author.data.bio && <p>{author.data.bio}</p>}
+      {author.data.credentials.length > 0 && <ul class="author-credentials">{author.data.credentials.map((credential) => <li>{credential}</li>)}</ul>}
+      <Content />
+      {author.data.sameAs.length > 0 && <ul class="author-credentials">{author.data.sameAs.map((link) => <li><a href={link} target="_blank" rel="noopener noreferrer">{new URL(link).hostname}</a></li>)}</ul>}
+      <a href={u('/editorial-policy/')}>內容編輯方式</a>
+    </div>
+    <section class="content-related"><h2>作者文章</h2>{articles.length > 0 ? <div class="content-grid">{articles.map((entry) => <ArticleCard article={entry} />)}</div> : <p>文章發布後，會整理在這裡。</p>}</section>
+  </div></section>
+</Base>

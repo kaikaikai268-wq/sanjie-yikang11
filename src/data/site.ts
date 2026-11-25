@@ -5,14 +5,15 @@ export const SITE = {
   name: '三傑益康生技',
   nameEn: '3J Wellness Biotech',
   motto: ['三傑嚴選，健康相伴', '三節送禮，首選益康'],
-  description: '三傑益康生技 3J Wellness Biotech，以保健商品、節慶送禮與通路合作為主軸。三傑嚴選，健康相伴；三節送禮，首選益康。',
+  description: '三傑益康生技的健康內容網站，由三傑益康編輯團隊整理飲食營養、保健品標示與生活習慣，附上資料來源與實用閱讀指引。',
   slogan: 'Join · Journey · Joy',
 };
 
 export const NAV = [
-  { href: '/products/', label: '保健商品' },
+  { href: '/articles/', label: '健康文章' },
+  { href: '/topics/', label: '主題指南' },
   { href: '/about/', label: '關於三傑' },
-  { href: '/partners/', label: '合作夥伴' },
+  { href: '/search/', label: '搜尋' },
 ];
 
 // ga：送到 GA4 contact_click 事件的 channel 參數，改名會讓報表前後不連續
@@ -109,4 +110,4 @@ export const VENUE = {
   ],
 };
 
-export const DISCLAIMER = '本網站商品資訊整理自原廠公開資料，包裝版本、成分、規格及食用方式以原廠最新公告為準；供貨與售價請洽詢確認。';
+export const DISCLAIMER = '健康內容供一般資訊參考，無法代替個人醫療評估。商品資訊整理自原廠公開資料，包裝版本、成分、規格及食用方式以原廠最新公告為準；供貨與售價請洽詢確認。';

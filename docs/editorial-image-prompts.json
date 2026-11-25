@@ -1,0 +1,12 @@
+[
+  {
+    "asset": "fiber-foods.webp",
+    "method": "built-in image_gen",
+    "prompt": "Use case: photorealistic-natural. Asset type: factual editorial food photograph for an article about recording dietary fibre sources. Primary request: an ordinary Taiwanese home kitchen meal preparation, a stainless steel colander of washed bok choy and carrots on a lightly used countertop, a plain bowl of cooked red beans, brown rice in a simple rice bowl, and a fresh guava with a few slices on a small cutting board. Straight documentary food photography, natural unstyled midday window light, honest ordinary materials, slightly imperfect arrangement, recognizable food textures. Landscape 3:2 composition, eye-level oblique medium close-up with all food groups clearly visible, no luxury decor, no dramatic golden light, no staged linen, no flowers, no people. No text, logos, packaging, medicine, numeric nutrition claims or watermark. This is illustrative food imagery, not a clinical record."
+  },
+  {
+    "asset": "calcium-foods.webp",
+    "method": "built-in image_gen",
+    "prompt": "Use case: photorealistic-natural. Asset type: editorial food photograph accompanying an explanatory article about calcium and vitamin D, without claiming that pictured foods provide all nutrients. Subject: a plain clear glass of milk, a small dish of tofu cubes, and a small ordinary bowl of cooked bok choy on an everyday Taiwanese dining table. Neutral daylight, straightforward realistic documentary photograph, clearly distinct subjects and honest textures. Landscape 3:2, camera directly above, table surface pale gray with a simple chopstick pair at edge, no elaborate styling, no linen or branches, no dramatic warm light. No text, no ingredient amounts, no health claims, no packaging, no labels, no logos, no medicine, no people, no watermark. Intended as a modest illustrative food photo, not an advertisement."
+  }
+]

@@ -5,3 +5,8 @@ dist/
 .env.*
 !.env.example
 .DS_Store
+data/analytics/
+public/media/content/
+public/og/default.png
+src/data/content-images.json
+.verify-*.log

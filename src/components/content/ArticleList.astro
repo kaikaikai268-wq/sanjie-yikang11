@@ -1,0 +1,19 @@
+---
+import ArticleCard from './ArticleCard.astro';
+import { u } from '../../lib/url';
+import type { ArticleEntry } from '../../lib/content';
+interface Props { articles: ArticleEntry[]; currentPage?: number; totalPages?: number; category?: string; categories?: string[] }
+const { articles, currentPage = 1, totalPages = 1, category, categories = [] } = Astro.props;
+const pageRoot = category ? `/articles/category/${encodeURIComponent(category)}/` : '/articles/';
+const pagePath = (n: number) => n === 1 ? pageRoot : `${pageRoot}page/${n}/`;
+---
+{categories.length > 0 && <nav class="content-filters" aria-label="文章分類">
+  <a href={u('/articles/')} aria-current={!category ? 'page' : undefined}>全部文章</a>
+  {categories.map((name) => <a href={u(`/articles/category/${encodeURIComponent(name)}/`)} aria-current={category === name ? 'page' : undefined}>{name}</a>)}
+</nav>}
+{articles.length > 0 ? <div class="content-grid content-article-list">{articles.map((article) => <ArticleCard article={article} />)}</div> : <div class="content-empty"><h2>尚未發布文章</h2><p>文章發布後會按分類與日期列在這裡。</p><a href={u('/editorial-policy/')}>編輯原則</a></div>}
+{totalPages > 1 && <nav class="content-pagination" aria-label="文章分頁">
+  {currentPage > 1 && <a href={u(pagePath(currentPage - 1))} rel="prev">上一頁</a>}
+  <span>第 {currentPage} / {totalPages} 頁</span>
+  {currentPage < totalPages && <a href={u(pagePath(currentPage + 1))} rel="next">下一頁</a>}
+</nav>}

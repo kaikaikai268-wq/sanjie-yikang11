@@ -1,0 +1,30 @@
+/* Compact archive headers and a text-first topic directory. */
+.listing-page { padding-block: 1.5rem 4rem; }
+.listing-header { display: flex; align-items: end; justify-content: space-between; gap: 1rem 3rem; padding-bottom: 1.7rem; margin-bottom: 1.5rem; border-bottom: 2px solid var(--brand-strong); }
+.listing-header h1 { font-size: clamp(var(--text-xl), 4vw, var(--text-2xl)); margin-bottom: 0.7rem; }
+.listing-header p:not(.listing-count) { max-width: 42rem; font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.7; margin-bottom: 0; }
+.listing-count { flex: none; font-size: var(--text-xs); color: var(--text-secondary); margin-bottom: 0.2rem; }
+.listing-content { scroll-margin-top: 6rem; }
+.listing-reference-links { display: flex; flex-wrap: wrap; gap: 0.6rem 1.5rem; margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); font-size: var(--text-xs); }
+.listing-reference-links a { display: inline-flex; align-items: center; min-height: 2.75rem; }
+.listing-empty { max-width: 44rem; padding-block: 1.5rem; }
+.listing-empty h2 { font-size: var(--text-lg); }
+.listing-empty p { font-size: var(--text-sm); color: var(--text-secondary); }
+.directory-topic { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr); gap: 3.5rem; padding-block: 1.5rem 2.5rem; border-bottom: 1px solid var(--line); }
+.directory-topic + .directory-topic { padding-top: 2.5rem; }
+.directory-topic-intro { min-width: 0; }
+.directory-topic-intro h2 { font-size: var(--text-xl); line-height: 1.4; margin-bottom: 1rem; }
+.directory-topic-intro h2 a { color: var(--text-primary); text-decoration: none; }
+.directory-topic-intro h2 a:hover { text-decoration: underline; }
+.directory-topic-intro > p:not(.directory-topic-count) { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.75; }
+.directory-topic-count { margin-bottom: 0.65rem; color: var(--brand); font-size: var(--text-xs); }
+.directory-topic-link { display: inline-flex; align-items: center; min-height: 2.75rem; font-size: var(--text-xs); }
+.directory-reading-order { padding: 0 0 0 1.4rem; margin: 0; }
+.directory-reading-order li { padding: 0 0 1.25rem 0.35rem; }
+.directory-reading-order li + li { border-top: 1px solid var(--line); padding-top: 1.25rem; }
+.directory-reading-order li::marker { color: var(--text-secondary); font-size: var(--text-xs); }
+.directory-reading-order h3 { font-size: var(--text-sm); line-height: 1.6; margin-bottom: 0; }
+.directory-reading-order h3 a { color: var(--text-primary); text-decoration: none; }
+.directory-reading-order h3 a:hover { text-decoration: underline; }
+.directory-article-meta { color: var(--text-secondary); font-size: var(--text-xs); margin-bottom: 0.4rem; }
+@media (max-width: 760px) { .listing-header { align-items: start; flex-direction: column; gap: 1rem; } .directory-topic { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; } .directory-reading-order { margin-left: 0.2rem; } }

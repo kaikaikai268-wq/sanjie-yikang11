@@ -1,57 +1,43 @@
 ---
-import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
-import SectionHead from '../components/SectionHead.astro';
-import { SITE, SELECTION, PLATFORMS, TEAM, ADVISOR } from '../data/site';
-import { siteImage } from '../lib/images';
+import { SITE, TEAM, ADVISOR } from '../data/site';
+import { u } from '../lib/url';
 ---
-<Base title="關於三傑" description={`${SITE.name}的選品理念、銷售與合作方向、團隊與特約健康食品顧問。`}>
-  <section class="section">
-    <div class="wrap">
-      <SectionHead level="h1" eyebrow="ABOUT 3J" title="關於三傑益康" lead={SITE.description} />
-      <h2 class="subhead">{SELECTION.title}</h2>
-      <p>{SELECTION.lead}</p>
-      <ol class="steps-inline">{SELECTION.steps.map((s) => <li>{s}</li>)}</ol>
-    </div>
-  </section>
-
-  <section class="section section-sage">
-    <div class="wrap">
-      <SectionHead eyebrow="SALES & PARTNERSHIPS" title="一起把關心，傳得更遠。" lead="以保健商品為核心，串連網站展示、團購代售與企業採購需求。" />
-      <div class="card-grid">
-        {PLATFORMS.map((p) => (
-          <article class="card">
-            <p class="eyebrow">{p.phase}</p>
-            <h3>{p.name}</h3>
-            <p class="tag">{p.use}</p>
-            <ul class="points">{p.points.map((t) => <li>{t}</li>)}</ul>
-          </article>
-        ))}
+<Base title="關於三傑" description="認識三傑益康的健康生活內容、編輯方式、團隊與顧問。">
+  <section class="section"><div class="wrap about-publication">
+    <header class="about-heading"><p class="about-label">關於本站</p><h1>三傑益康</h1><p class="about-lead">從營養成分、商品標示到家庭日常，整理你在做健康選擇時會遇到的問題。</p></header>
+    <div class="about-columns">
+      <div class="about-copy">
+        <section aria-labelledby="about-content"><h2 id="about-content">這裡讀得到什麼</h2><p>{SITE.name}經營本站，分享健康生活、營養與保健選擇的內容。一篇文章處理一個問題；主題指南則把同一議題的文章整理在一起。</p><p>文章裡會列出使用的資料來源。想多了解一項說法，可以沿著來源回到原始資料，再看它的研究對象、條件與限制。</p><nav class="about-links" aria-label="開始閱讀"><a href={u('/articles/')}>全部文章</a><a href={u('/topics/')}>主題指南</a><a href={u('/search/')}>搜尋問題</a></nav></section>
+        <section aria-labelledby="about-editing"><h2 id="about-editing">內容與商品資訊</h2><p>三傑益康也提供商品資料與品牌合作服務。內容使用的文獻、文章署名，以及相關商品或合作關係，分別在文章與網站說明中呈現。</p><nav class="about-links" aria-label="了解內容製作"><a href={u('/editorial-policy/')}>編輯與更正原則</a><a href={u('/disclosure/')}>商品與合作關係</a></nav></section>
       </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="wrap">
-      <aside class="advisor" aria-labelledby="advisor-title">
-        <Image src={siteImage('advisor-luo-yang')} alt={`${ADVISOR.name}，${SITE.name}${ADVISOR.title}`} widths={[360, 560]} sizes="(max-width: 900px) 100vw, 360px" />
-        <div>
-          <p class="eyebrow">{SITE.name}</p>
-          <h2 id="advisor-title" class="section-title">{ADVISOR.name}<small>{ADVISOR.title}</small></h2>
-          <p class="tag">{ADVISOR.background}</p>
-          <p>{ADVISOR.bio}</p>
-          <h3 class="subhead">專長領域</h3>
-          <ul class="points two-col">{ADVISOR.expertise.map((t) => <li>{t}</li>)}</ul>
-          <p><a href={ADVISOR.url} target="_blank" rel="noopener noreferrer">認識顧問與閱讀文章 ↗</a></p>
-        </div>
+      <aside class="about-people" aria-label="團隊與顧問">
+        <section><h2>三傑益康團隊</h2><ul>{TEAM.map((member) => <li>{member.name}</li>)}</ul><a href={u('/authors/')}>查看內容署名</a></section>
+        <section><p class="about-label">{ADVISOR.title}</p><h2>{ADVISOR.name}</h2><p class="about-background">{ADVISOR.background}</p><p>{ADVISOR.bio}</p><a href={ADVISOR.url} target="_blank" rel="noopener noreferrer">閱讀顧問在 APPI 的介紹</a></section>
+        <section><h2>與我們聯絡</h2><p>內容更正、文章意見與合作洽詢，請透過本站聯絡方式提出。</p><a href={u('/contact/')}>聯絡三傑益康</a></section>
       </aside>
     </div>
-  </section>
-
-  <section class="section section-sage">
-    <div class="wrap">
-      <SectionHead title="三傑益康團隊" lead="結合行銷、內容與通路資源，傳遞日常保健的好選擇。" />
-      <ul class="team">{TEAM.map((m) => <li><span>{m.en}</span>{m.name}</li>)}</ul>
-    </div>
-  </section>
+  </div></section>
 </Base>
+<style>
+  .about-publication { max-width: 72rem; overflow-wrap: anywhere; }
+  .about-heading { max-width: 49rem; margin-bottom: 3rem; }
+  .about-label { color: var(--text-secondary); font-size: var(--text-xs); margin-bottom: 0.65rem; }
+  .about-heading h1 { font-size: clamp(var(--text-xl), 5vw, var(--text-2xl)); margin-bottom: 1.25rem; }
+  .about-lead { font-size: var(--text-lg); line-height: 1.65; }
+  .about-columns { display: grid; grid-template-columns: minmax(0, 1fr) 20rem; gap: 4rem; border-top: 2px solid var(--brand-strong); padding-top: 2rem; }
+  .about-copy section + section { margin-top: 2.75rem; }
+  .about-columns h2 { font-size: var(--text-lg); margin-bottom: 1rem; }
+  .about-copy p { font-size: var(--text-sm); line-height: 1.85; }
+  .about-links { display: flex; flex-wrap: wrap; gap: 0.65rem 1.5rem; font-size: var(--text-xs); margin-top: 1.25rem; }
+  .about-people { border-left: 1px solid var(--line); padding-left: 2rem; }
+  .about-people section + section { margin-top: 2rem; padding-top: 1.75rem; border-top: 1px solid var(--line); }
+  .about-people p, .about-people a, .about-people li { font-size: var(--text-xs); }
+  .about-people p { color: var(--text-secondary); }
+  .about-people ul { list-style: none; padding: 0; margin-bottom: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; }
+  .about-background { margin-bottom: 0.75rem; }
+  @media (max-width: 850px) {
+    .about-columns { grid-template-columns: minmax(0, 1fr); gap: 2.5rem; }
+    .about-people { border-left: 0; border-top: 1px solid var(--line); padding: 2rem 0 0; }
+  }
+</style>

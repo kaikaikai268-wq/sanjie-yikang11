@@ -1,0 +1,34 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/content/Breadcrumb.astro';
+import { getPublishedTopics, getPublishedArticles, articlesForTopic, articleSlug } from '../../lib/content';
+import { listSchema, breadcrumbSchema, displayDate } from '../../lib/content-view';
+import { u } from '../../lib/url';
+import '../../styles/content.css';
+import '../../styles/listing-visual.css';
+const topics = await getPublishedTopics();
+const articles = await getPublishedArticles();
+const directory = topics.map((topic) => {
+  const members = articlesForTopic(topic, articles);
+  const sequence = [...new Set([...topic.data.sections.flatMap((section) => section.articles), ...topic.data.articles])];
+  const ordered = sequence.map((slug) => members.find((entry) => articleSlug(entry) === slug)).filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
+  return { topic, entries: [...ordered, ...members.filter((entry) => !sequence.includes(articleSlug(entry)))] };
+});
+const schema = [listSchema('主題指南', '/topics/', topics.map((topic) => ({ title: topic.data.title, path: `/topics/${topic.id}/` })), Astro.site), breadcrumbSchema([{ label: '首頁', path: '/' }, { label: '主題指南', path: '/topics/' }], Astro.site)];
+---
+<Base title="主題指南" description="把同一個健康問題的文章整理在一起，循著問題逐步看懂營養與日常保健。" noindex={topics.length === 0} jsonLd={schema}>
+  <section class="listing-page"><div class="wrap content-wrap">
+    <Breadcrumb items={[{ label: '首頁', href: '/' }, { label: '主題指南' }]} />
+    <header class="listing-header">
+      <div><h1>主題指南</h1><p>依問題整理的文章目錄。從基礎觀念讀起，再查你需要的細節。</p></div>
+      {topics.length > 0 && <p class="listing-count">{topics.length} 個專題</p>}
+    </header>
+    <section class="listing-content topic-directory" id="topic-guides" aria-label="專題與閱讀順序">
+      {directory.length ? directory.map(({ topic, entries }) => <section class="directory-topic" aria-labelledby={`topic-${topic.id}`}>
+        <header class="directory-topic-intro"><p class="directory-topic-count">{entries.length} 篇文章</p><h2 id={`topic-${topic.id}`}><a href={u(`/topics/${topic.id}/`)}>{topic.data.title}</a></h2><p>{topic.data.description}</p><a class="directory-topic-link" href={u(`/topics/${topic.id}/`)}>閱讀完整專題</a></header>
+        <ol class="directory-reading-order" aria-label={`${topic.data.title}閱讀順序`}>{entries.slice(0, 5).map((entry) => <li><div><p class="directory-article-meta">{entry.data.category}<span aria-hidden="true"> · </span><time datetime={entry.data.publishDate?.toISOString()}>{displayDate(entry.data.publishDate)}</time></p><h3><a href={u(`/articles/${articleSlug(entry)}/`)}>{entry.data.title}</a></h3></div></li>)}</ol>
+      </section>) : <div class="listing-empty"><h2>尚未發布主題指南</h2><p>專題將依已發布文章整理。你可以先瀏覽全部健康文章。</p><a href={u('/articles/')}>瀏覽健康文章</a></div>}
+    </section>
+    <nav class="listing-reference-links" aria-label="其他閱讀入口"><a href={u('/articles/')}>所有文章</a><a href={u('/search/')}>搜尋內容</a><a href={u('/editorial-policy/')}>編輯原則</a></nav>
+  </div></section>
+</Base>

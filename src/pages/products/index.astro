@@ -4,10 +4,10 @@ import SectionHead from '../../components/SectionHead.astro';
 import ProductCard from '../../components/ProductCard.astro';
 import { PRODUCTS, CATEGORIES, BRANDS, productsIn } from '../../data/products';
 ---
-<Base title="保健商品" description={`三傑益康生技精選 ${Object.values(BRANDS).map((b) => b.name).join('、')} 保健商品：${CATEGORIES.join('、')}。`}>
+<Base title="商品資訊" description={`認識 ${Object.values(BRANDS).map((b) => b.name).join('、')} 的商品成分與規格資訊：${CATEGORIES.join('、')}。`}>
   <section class="section">
     <div class="wrap">
-      <SectionHead level="h1" eyebrow="3J HEALTH SELECTION" title="保健商品" lead="依分類或商品名稱找到適合的日常保健。商品資訊整理自原廠公開資料，供貨與售價請洽詢確認。" />
+      <SectionHead level="h1" title="商品資訊" lead="依分類或名稱查閱商品的成分與規格。購買與交易條件由對應購物頁或服務窗口承接。" />
 
       <div class="toolbar">
         <div class="filters" role="group" aria-label="商品分類">

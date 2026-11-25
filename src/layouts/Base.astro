@@ -3,23 +3,39 @@ import { u } from '../lib/url';
 import '../styles/tokens.css';
 import '../styles/site.css';
 import { Image, getImage } from 'astro:assets';
-import { SITE, NAV, CONTACT, DISCLAIMER } from '../data/site';
-import { IS_PRODUCTION, GA_ID, GSC_TOKEN } from '../lib/env';
+import { SITE, CONTACT, DISCLAIMER } from '../data/site';
+import { IS_PRODUCTION, GA_ID, GSC_TOKEN, SHOP_URL } from '../lib/env';
+import { shoppingLink } from '../lib/commerce.mjs';
 import { siteImage } from '../lib/images';
+import { absolute, jsonScript, siteGraph } from '../lib/seo';
+import media from '../data/content-images.json';
+import { getPublishedArticles } from '../lib/content';
 
 interface Props {
   title?: string;           // 不含站名；首頁留空
   description?: string;
-  ogImage?: ImageMetadata;
-  jsonLd?: Record<string, unknown>;
+  ogImage?: ImageMetadata | string;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  noindex?: boolean;
+  ogType?: 'website' | 'article';
+  publishedTime?: Date | string;
+  modifiedTime?: Date | string;
 }
-const { title, description = SITE.description, ogImage, jsonLd } = Astro.props;
+const { title, description = SITE.description, ogImage, jsonLd, noindex = false, ogType = 'website', publishedTime, modifiedTime } = Astro.props;
 const fullTitle = title ? `${title}｜${SITE.name}` : `${SITE.name} | ${SITE.nameEn} · ${SITE.motto.join('；')}`;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
-const og = await getImage({ src: ogImage ?? siteImage('logo-full'), width: 1200, format: 'jpg' });
-const ogUrl = new URL(og.src, Astro.site).href;
+const og = typeof ogImage === 'string' ? null : ogImage ? await getImage({ src: ogImage, width: 1200, format: 'jpg' }) : null;
+const optimizedOg = typeof ogImage === 'string' ? (media as Record<string, {src: string}>)[ogImage]?.src ?? ogImage : undefined;
+const ogPath = optimizedOg ? (optimizedOg.startsWith('/') ? u(optimizedOg) : optimizedOg) : og?.src ?? u('/og/default.png');
+const ogUrl = absolute(ogPath, Astro.site);
+const nodes = [...siteGraph(Astro.site), ...(!jsonLd ? [] : Array.isArray(jsonLd) ? jsonLd : [jsonLd])];
+const isoDate = (value: Date | string | undefined) => value ? new Date(value).toISOString() : undefined;
 const path = Astro.url.pathname;
 const current = (href: string) => (path.startsWith(u(href)) ? 'page' : undefined);
+const shopHref = shoppingLink(SHOP_URL);
+const articleCategories = [...new Set((await getPublishedArticles()).map((article) => article.data.category))];
+const categoryOrder = ['飲食營養', '保健品判讀', '生活習慣'];
+const headerCategories = [...categoryOrder.filter((name) => articleCategories.includes(name)), ...articleCategories.filter((name) => !categoryOrder.includes(name))].slice(0, 3);
 ---
 <!doctype html>
 <html lang="zh-TW">
@@ -29,23 +45,31 @@ const current = (href: string) => (path.startsWith(u(href)) ? 'page' : undefined
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    {!IS_PRODUCTION && <meta name="robots" content="noindex,nofollow" />}
+    {(!IS_PRODUCTION || noindex) && <meta name="robots" content={IS_PRODUCTION ? 'noindex,follow' : 'noindex,nofollow'} />}
     {GSC_TOKEN && <meta name="google-site-verification" content={GSC_TOKEN} />}
     <link rel="icon" type="image/png" href={u('/favicon.png')} />
     <link rel="apple-touch-icon" href={u('/apple-touch-icon.png')} />
     <link rel="sitemap" href={u('/sitemap-index.xml')} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:locale" content="zh_TW" />
     <meta property="og:site_name" content={SITE.name} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:alt" content={title ?? SITE.name} />
+    {publishedTime && <meta property="article:published_time" content={isoDate(publishedTime)} />}
+    {modifiedTime && <meta property="article:modified_time" content={isoDate(modifiedTime)} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogUrl} />
+    <link rel="alternate" type="application/rss+xml" title={`${SITE.name}最新文章`} href={u('/rss.xml')} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet" />
-    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
-    {IS_PRODUCTION && GA_ID && (
+    <script type="application/ld+json" set:html={jsonScript({ '@context': 'https://schema.org', '@graph': nodes })} />
+    {IS_PRODUCTION && GA_ID && Astro.url.pathname !== u('/search/') && (
       <>
         <script async is:inline src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}></script>
         <script is:inline define:vars={{ GA_ID }}>
@@ -53,48 +77,69 @@ const current = (href: string) => (path.startsWith(u(href)) ? 'page' : undefined
           function gtag() { dataLayer.push(arguments); }
           window.gtag = gtag;
           gtag('js', new Date());
-          gtag('config', GA_ID);
+          let cleanReferrer = '';
+          try {
+            const referrer = new URL(document.referrer);
+            if (['http:', 'https:'].includes(referrer.protocol)) cleanReferrer = referrer.origin + referrer.pathname;
+          } catch { /* Direct visits have no referrer. */ }
+          gtag('config', GA_ID, { page_location: location.origin + location.pathname, page_path: location.pathname, page_referrer: cleanReferrer });
         </script>
       </>
     )}
   </head>
   <body>
     <a class="skip" href="#main">跳到主要內容</a>
-    <header class="site-header">
+    <header class="site-header" data-pagefind-ignore>
+      <div class="masthead-utility"><div class="wrap utility-inner"><a href={u('/about/')}>三傑益康生技</a><nav aria-label="網站資訊"><a href={u('/authors/')}>編輯團隊</a><a href={u('/editorial-policy/')}>編輯原則</a><a href={u('/contact/')}>聯絡我們</a></nav></div></div>
       <div class="wrap header-inner">
         <a class="brand" href={u('/')} aria-label={`${SITE.name} 首頁`}>
-          <Image src={siteImage('logo-mark')} alt="" width={52} height={45} loading="eager" />
-          <span>{SITE.name}</span>
+          <Image src={siteImage('logo-mark')} alt="" width={64} height={55} loading="eager" />
+          <span class="brand-title">三傑益康<span class="brand-subtitle">健康生活・營養・保健品判讀</span></span>
         </a>
-        <nav class="nav" aria-label="主選單">
-          {NAV.map((n) => <a href={u(n.href)} aria-current={current(n.href)}>{n.label}</a>)}
-          <a class="btn btn-primary" href={u('/contact/')} aria-current={current('/contact/')}>聯絡我們</a>
-        </nav>
-        <details class="nav-mobile">
-          <summary>選單</summary>
-          <nav aria-label="行動版選單">
-            {NAV.map((n) => <a href={u(n.href)}>{n.label}</a>)}
-            <a href={u('/contact/')}>聯絡我們</a>
-          </nav>
-        </details>
+        {path !== u('/search/') && <><form class="masthead-search" role="search" action={u('/search/')} method="get"><label for="site-query">搜尋文章</label><div><input id="site-query" type="search" name="q" placeholder="輸入關鍵字" required /><button type="submit">搜尋</button></div></form><a class="mobile-search-link" href={u('/search/')}>搜尋</a></>}
       </div>
+      <div class="masthead-nav"><div class="wrap">
+        <nav class="nav" aria-label="主選單">
+          <a href={u('/articles/')} aria-current={path === u('/articles/') || path.startsWith(u('/articles/page/')) ? 'page' : undefined}>最新文章</a>
+          {headerCategories.map((name) => <a href={u(`/articles/category/${encodeURIComponent(name)}/`)} aria-current={current(`/articles/category/${encodeURIComponent(name)}/`)}>{name}</a>)}
+          <a href={u('/topics/')} aria-current={current('/topics/')}>閱讀專題</a>
+          <a href={u('/about/')} aria-current={current('/about/')}>關於三傑</a>
+          {shopHref && <a class="nav-shop" href={shopHref} data-ga-shop="" data-shop-placement="header" target="_blank" rel="noopener noreferrer">購物網站 ↗</a>}
+        </nav>
+      </div></div>
     </header>
 
     <main id="main">
       <slot />
     </main>
 
-    <footer class="site-footer">
+    <footer class="site-footer" data-pagefind-ignore>
       <div class="wrap footer-inner">
         <div>
           <Image src={siteImage('logo-full')} alt={`${SITE.name} ${SITE.nameEn}`} width={140} />
-          <p class="motto">{SITE.motto.join('；')}</p>
+          <p class="motto">健康生活、飲食營養與保健品判讀</p>
         </div>
         <div class="footer-cols">
           <nav aria-label="頁尾選單">
+            <h2 class="footer-nav-title">閱讀內容</h2>
             <a href={u('/')}>首頁</a>
-            {NAV.map((n) => <a href={u(n.href)}>{n.label}</a>)}
+            <a href={u('/articles/')}>健康文章</a>
+            <a href={u('/topics/')}>閱讀專題</a>
+            <a href={u('/search/')}>搜尋內容</a>
+            <a href={u('/authors/')}>內容團隊</a>
+            <a href={u('/rss.xml')}>RSS 訂閱</a>
+          </nav>
+          <nav aria-label="關於與服務">
+            <h2 class="footer-nav-title">關於與服務</h2>
+            <a href={u('/about/')}>關於三傑</a>
+            <a href={u('/partners/')}>品牌合作</a>
             <a href={u('/contact/')}>聯絡我們</a>
+            <a href={u('/products/')}>商品資訊</a>
+            <a href={u('/resources/')}>場地與活動資源</a>
+            <a href={u('/editorial-policy/')}>編輯與更正原則</a>
+            <a href={u('/disclosure/')}>商品與合作關係</a>
+            <a href={u('/privacy/')}>隱私權</a>
+            {shopHref && <a href={shopHref} data-ga-shop="" data-shop-placement="footer" target="_blank" rel="noopener noreferrer">前往購物網站</a>}
           </nav>
           <div class="footer-contact">
             <a href={CONTACT.phone.href} data-ga-contact={CONTACT.phone.ga}>電話 {CONTACT.phone.label}</a>
@@ -119,6 +164,10 @@ const current = (href: string) => (path.startsWith(u(href)) ? 'page' : undefined
         if (!a || !gtag) return;
         if (a.dataset.gaContact) gtag('event', 'contact_click', { channel: a.dataset.gaContact, page_path: location.pathname });
         if (a.dataset.gaOfficial) gtag('event', 'official_click', { product_id: a.dataset.gaOfficial, link_url: a.href });
+        if (a.hasAttribute('data-ga-shop')) {
+          const article = document.querySelector<HTMLElement>('[data-reading-article]');
+          gtag('event', 'shop_click', { product_id: a.dataset.gaShop || undefined, article_slug: article?.dataset.articleSlug, link_domain: new URL(a.href).hostname, placement: a.dataset.shopPlacement || 'content' });
+        }
       });
       // 點選行動版選單連結後收起
       document.querySelectorAll<HTMLDetailsElement>('.nav-mobile').forEach((d) =>

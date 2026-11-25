@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="750" viewBox="0 0 1200 750">
+<rect width="1200" height="750" fill="#f0ede5"/>
+<g font-family="Microsoft JhengHei, Noto Sans TC, sans-serif" fill="#333c39">
+<text x="75" y="125" font-size="72" font-weight="700">諮詢前，先記下來</text>
+<rect x="75" y="190" width="1050" height="480" fill="#fffefa" stroke="#c2c4bc" stroke-width="3"/>
+<path d="M430 230V630M115 340H1085M115 450H1085M115 560H1085" stroke="#c2c4bc" stroke-width="3"/>
+<text x="120" y="305" font-size="54">品名與成分</text><text x="480" y="305" font-size="48" fill="#57655e">保留外盒、標示或照片</text>
+<text x="120" y="415" font-size="54">每次用量</text><text x="480" y="415" font-size="48" fill="#57655e">寫下實際吃的份量</text>
+<text x="120" y="525" font-size="54">服用時間</text><text x="480" y="525" font-size="48" fill="#57655e">一天幾次、什麼時候吃</text>
+<text x="120" y="635" font-size="54">正在用的藥</text><text x="480" y="635" font-size="48" fill="#57655e">處方藥與自行購買的藥</text>
+</g></svg>

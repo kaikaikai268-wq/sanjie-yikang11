@@ -1,0 +1,28 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/SectionHead.astro';
+import { VENUE } from '../data/site';
+import { siteImage } from '../lib/images';
+import { u } from '../lib/url';
+---
+<Base title="場地與活動資源" description={VENUE.intro}>
+  <section class="section"><div class="wrap"><SectionHead level="h1" title="場地與活動資源" lead={VENUE.intro} /><p>活動與場地方案依合作窗口確認的條件辦理。</p><a href={u('/partners/')}>查看品牌合作</a></div></section>
+  <section class="section section-sage">
+    <div class="wrap">
+      <SectionHead eyebrow="知域國際" title="場地與活動資源" />
+      <div class="card-grid two">
+        {VENUE.offers.map((o) => (
+          <article class="card venue">
+            <Image src={siteImage(o.image)} alt={o.imageAlt} widths={[480, 720]} sizes="(max-width: 900px) 100vw, 540px" />
+            <span class="tag">{o.badge}</span>
+            <h3>{o.title}</h3>
+            <p>{o.desc}</p>
+            <ul class="chips">{o.tags.map((t) => <li>{t}</li>)}</ul>
+            <a class="btn btn-primary" href={o.cta.href} target="_blank" rel="noopener noreferrer" data-ga-contact={o.cta.ga}>{o.cta.label}</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>

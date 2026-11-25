@@ -1,114 +1,60 @@
 ---
-import { u } from '../lib/url';
-import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
-import SectionHead from '../components/SectionHead.astro';
-import ProductCard from '../components/ProductCard.astro';
-import ContactButtons from '../components/ContactButtons.astro';
-import { SITE, HERO, SELECTION, NEEDS, PROCESS } from '../data/site';
-import { PRODUCTS, BRANDS, CATEGORIES, productsIn } from '../data/products';
-import { siteImage, productImage } from '../lib/images';
-
-const heroTiles = [
-  { img: productImage('ym-d3'), label: '營養補給', alt: '陽明維生素D3商品介紹圖' },
-  { img: siteImage('hero-probiotic'), label: '日常保養', alt: '一家人益生菌商品介紹圖' },
-  { img: siteImage('hero-night'), label: '夜間補給', alt: '夜光孅子夜間補給商品介紹圖' },
-];
-// 首頁精選：各分類輪流取，共 6 項（兩列三欄排滿）
-const FEATURED_COUNT = 6;
-const pools = CATEGORIES.map((c) => productsIn(c));
-const featured: typeof PRODUCTS = [];
-for (let i = 0; featured.length < FEATURED_COUNT && pools.some((p) => p[i]); i++)
-  for (const pool of pools) if (pool[i] && featured.length < FEATURED_COUNT) featured.push(pool[i]);
-const needHref = (c: string | null) => u(c ? `/products/?category=${encodeURIComponent(c)}` : '/products/');
-
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: SITE.name,
-  alternateName: SITE.nameEn,
-  url: Astro.site?.href,
-  description: SITE.description,
+import ContentImage from '../components/content/ContentImage.astro';
+import { getPublishedArticles, getPublishedTopics, articleSlug, articlesForTopic, type ArticleEntry } from '../lib/content';
+import { selectHomeContent } from '../lib/home-content.mjs';
+import { listSchema, displayDate } from '../lib/content-view';
+import { u } from '../lib/url';
+import { HOME_READING_ORDER } from '../data/editorial';
+import '../styles/content.css';
+import '../styles/home.css';
+const { featured, latest, articles, categories } = selectHomeContent(await getPublishedArticles(), { featuredLimit: 1, latestLimit: 8 });
+const lead = featured[0] as ArticleEntry | undefined;
+const secondary = articles.filter((article) => !lead || articleSlug(article) !== articleSlug(lead)).sort((a, b) => {
+  const rank = (article: ArticleEntry) => { const index = HOME_READING_ORDER.indexOf(articleSlug(article)); return index < 0 ? HOME_READING_ORDER.length : index; };
+  return rank(a) - rank(b);
+}).slice(0, 2) as ArticleEntry[];
+const secondarySlugs = new Set(secondary.map(articleSlug));
+const remaining = latest.filter((article) => !secondarySlugs.has(articleSlug(article))) as ArticleEntry[];
+const topics = (await getPublishedTopics()).slice(0, 3);
+const articlePath = (article: ArticleEntry) => `/articles/${articleSlug(article)}/`;
+const visibleArticles = [lead, ...secondary, ...remaining].filter((entry): entry is ArticleEntry => Boolean(entry));
+const schema = listSchema('健康生活與營養', '/', visibleArticles.map((article) => ({ title: article.data.title, path: articlePath(article) })), Astro.site);
+const orderedTopicArticles = (topic: (typeof topics)[number]) => {
+  const members = articlesForTopic(topic, articles);
+  const order = [...new Set([...topic.data.sections.flatMap((section) => section.articles), ...topic.data.articles])];
+  return [...members].sort((a, b) => {
+    const rank = (article: ArticleEntry) => { const index = order.indexOf(articleSlug(article)); return index < 0 ? order.length : index; };
+    return rank(a) - rank(b);
+  });
 };
 ---
-<Base jsonLd={jsonLd}>
-  <section class="hero">
-    <div class="wrap hero-grid">
-      <div class="hero-copy">
-        <p class="eyebrow">{HERO.eyebrow}</p>
-        <h1>
-          <span class="hero-name">{SITE.name}</span>
-          <span class="hero-headline">{HERO.headline.map((l) => <span>{l}</span>)}</span>
-        </h1>
-        <p class="motto-lines">{SITE.motto.map((m) => <span>{m}</span>)}</p>
-        <p class="lead">{HERO.lead.join('')}</p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href={u('/products/')}>探索保健商品</a>
-          <a class="btn btn-ghost" href={u('/about/')}>我們的選品理念 →</a>
-        </div>
-        <p class="hero-brands">合作品牌：{Object.values(BRANDS).map((b) => b.name).join('、')}</p>
-      </div>
-      <div class="hero-visual">
-        <p class="eyebrow">{HERO.collectionLabel}</p>
-        <p class="hero-visual-title">{HERO.collectionTitle}</p>
-        <div class="hero-tiles">
-          {heroTiles.map((t, i) => (
-            <a class="hero-tile" href={u('/products/')}>
-              <Image src={t.img} alt={t.alt} widths={[240, 400]} sizes="(max-width: 900px) 30vw, 200px" loading={i === 0 ? 'eager' : 'lazy'} />
-              <span>{t.label}</span>
-            </a>
-          ))}
-        </div>
-        <p class="hero-slogan">{SITE.slogan}</p>
-      </div>
+<Base title="健康生活、營養與保健品判讀" description="三傑益康編輯團隊整理飲食營養、保健品標示與生活習慣。閱讀有來源的實用文章，從具體問題開始了解。" ogImage={lead?.data.coverImage} jsonLd={schema}>
+  <div class="wrap frontpage">
+    <header class="frontpage-heading"><h1>健康生活與營養</h1><p>三傑益康編輯團隊</p></header>
+    {lead ? <section class="front-opening" aria-label="編輯選讀">
+      <article class="front-lead">
+        <p class="front-kicker">編輯選讀<span>{lead.data.category}</span></p>
+        <h2><a href={u(articlePath(lead))}>{lead.data.title}</a></h2>
+        {lead.data.coverImage && <a class="front-lead-image" href={u(articlePath(lead))} tabindex="-1" aria-hidden="true"><ContentImage src={lead.data.coverImage} alt="" eager /></a>}
+        <p class="front-deck">{lead.data.description}</p>
+        <p class="front-byline"><time datetime={lead.data.publishDate?.toISOString()}>{displayDate(lead.data.publishDate)}</time><a href={u('/authors/3j-editorial/')}>三傑益康編輯團隊</a></p>
+      </article>
+      <aside class="front-secondary" aria-labelledby="front-secondary-title">
+        <h2 class="front-column-title" id="front-secondary-title">接著讀</h2>
+        {secondary.map((article) => <article class="front-side-story"><p class="front-kicker">{article.data.category}</p><h3><a href={u(articlePath(article))}>{article.data.title}</a></h3><div class="front-side-detail">{article.data.coverImage && <a href={u(articlePath(article))} tabindex="-1" aria-hidden="true"><ContentImage src={article.data.coverImage} alt="" /></a>}<p>{article.data.description}</p></div></article>)}
+        <div class="front-desk-note"><h3>讀者須知</h3><p>本站由三傑益康編輯團隊整理內容。資料來源與圖片說明列於文中；商品與合作關係另有說明。</p><a href={u('/editorial-policy/')}>編輯與更正原則</a></div>
+      </aside>
+    </section> : <section class="front-empty"><h2>文章準備中</h2><p>本站整理飲食營養、保健品判讀與生活習慣。公開文章會列在這裡。</p><a href={u('/editorial-policy/')}>編輯與更正原則</a></section>}
+    <div class="front-lower">
+      <section class="front-latest" aria-labelledby="front-latest-title"><header class="front-section-heading"><h2 id="front-latest-title">最新文章</h2><a href={u('/articles/')}>全部文章</a></header>
+        {remaining.length > 0 ? remaining.map((article) => <article class="front-list-story">{article.data.coverImage && <a class="front-list-image" href={u(articlePath(article))} tabindex="-1" aria-hidden="true"><ContentImage src={article.data.coverImage} alt="" /></a>}<div><p class="front-kicker">{article.data.category}</p><h3><a href={u(articlePath(article))}>{article.data.title}</a></h3><p class="front-list-description">{article.data.description}</p><p class="front-byline"><time datetime={article.data.publishDate?.toISOString()}>{displayDate(article.data.publishDate)}</time></p></div></article>) : <p class="front-small-note">新文章會依發布時間排列。上方可閱讀目前的編輯選讀。</p>}
+      </section>
+      <aside class="front-topics" aria-labelledby="front-topics-title"><header class="front-section-heading"><h2 id="front-topics-title">閱讀專題</h2><a href={u('/topics/')}>專題目錄</a></header>
+        {topics.length > 0 ? topics.map((topic) => <article class="front-topic"><h3><a href={u(`/topics/${topic.id}/`)}>{topic.data.title}</a></h3><p>{topic.data.description}</p><ol>{orderedTopicArticles(topic).slice(0, 3).map((article) => <li><a href={u(articlePath(article))}>{article.data.title}</a></li>)}</ol></article>) : <p class="front-small-note">相關文章公開後，會依問題整理為閱讀專題。</p>}
+      </aside>
     </div>
-  </section>
-
-  <section class="section">
-    <div class="wrap">
-      <SectionHead eyebrow="OUR SELECTION" title={SELECTION.title} lead={SELECTION.lead} center />
-      <ol class="steps-inline">{SELECTION.steps.map((s) => <li>{s}</li>)}</ol>
-    </div>
-  </section>
-
-  <section class="section section-sage">
-    <div class="wrap">
-      <SectionHead eyebrow="START WITH YOUR NEEDS" title="從你的日常，找到起點。" lead="先選一個你在意的方向，再慢慢認識商品。" />
-      <div class="needs-grid">
-        {NEEDS.map((n) => (
-          <a class="need-card" href={needHref(n.category)}>
-            <strong>{n.title}</strong>
-            <span>{n.desc}</span>
-            <b>探索商品 →</b>
-          </a>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="wrap">
-      <SectionHead eyebrow="3J HEALTH SELECTION" title="一家人，日常好選擇。" lead="健康不用很複雜。從了解需求開始，找到真正適合自己的日常保健。" />
-      <div class="product-grid">{featured.map((p) => <ProductCard product={p} />)}</div>
-      <p class="more"><a class="btn btn-outline" href={u('/products/')}>看全部 {PRODUCTS.length} 款商品 →</a></p>
-    </div>
-  </section>
-
-  <section class="section section-sage">
-    <div class="wrap">
-      <SectionHead eyebrow="商品洽詢流程" title="從了解，到安心選擇。" lead="日常補給或節慶送禮，先從你的需求開始。" center />
-      <ol class="process">
-        {PROCESS.map((s) => <li><strong>{s.title}</strong><span>{s.desc}</span></li>)}
-      </ol>
-    </div>
-  </section>
-
-  <section class="section cta-band">
-    <div class="wrap center">
-      <p class="eyebrow">聯繫三傑益康生技</p>
-      <h2 class="motto-lines">{SITE.motto.map((m) => <span>{m}</span>)}</h2>
-      <p class="lead">日常保健 × 節慶送禮 × 通路合作</p>
-      <ContactButtons />
-    </div>
-  </section>
+    {categories.length > 0 && <nav class="front-directory" aria-label="文章欄目"><h2>文章欄目</h2>{categories.map(({ name, count }) => <a href={u(`/articles/category/${encodeURIComponent(name)}/`)}>{name}<span>{count} 篇</span></a>)}</nav>}
+    <section class="front-editorial" aria-labelledby="front-editorial-title"><h2 id="front-editorial-title">關於這份內容</h2><div><p>從生活裡的問題出發，查閱官方資料與研究，再以一般讀者能理解的方式整理。文章供健康資訊參考，不能取代個人醫療評估。</p><nav aria-label="內容說明"><a href={u('/authors/')}>編輯團隊</a><a href={u('/disclosure/')}>商品與合作關係</a><a href={u('/contact/')}>提供更正與意見</a><a href={u('/rss.xml')}>RSS 訂閱</a></nav></div></section>
+  </div>
 </Base>

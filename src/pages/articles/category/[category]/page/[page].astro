@@ -1,0 +1,28 @@
+---
+import Base from '../../../../../layouts/Base.astro';
+import Breadcrumb from '../../../../../components/content/Breadcrumb.astro';
+import ArticleList from '../../../../../components/content/ArticleList.astro';
+import { getPublishedArticles, articleSlug } from '../../../../../lib/content';
+import { ARTICLE_PAGE_SIZE, listSchema, breadcrumbSchema } from '../../../../../lib/content-view';
+import '../../../../../styles/content.css';
+export async function getStaticPaths() {
+  const all = await getPublishedArticles();
+  const categories = [...new Set(all.map((article) => article.data.category))];
+  return categories.flatMap((category) => {
+    const selected = all.filter((article) => article.data.category === category);
+    const totalPages = Math.ceil(selected.length / ARTICLE_PAGE_SIZE);
+    return Array.from({ length: Math.max(0, totalPages - 1) }, (_, i) => ({ params: { category, page: String(i + 2) }, props: { category, categories, articles: selected.slice((i + 1) * ARTICLE_PAGE_SIZE, (i + 2) * ARTICLE_PAGE_SIZE), currentPage: i + 2, totalPages } }));
+  });
+}
+const { category, categories, articles, currentPage, totalPages } = Astro.props;
+const categoryPath = `/articles/category/${encodeURIComponent(category)}/`;
+const path = `${categoryPath}page/${currentPage}/`;
+const schema = [listSchema(`${category} 第 ${currentPage} 頁`, path, articles.map((article) => ({ title: article.data.title, path: `/articles/${articleSlug(article)}/` })), Astro.site), breadcrumbSchema([{ label: '首頁', path: '/' }, { label: '健康文章', path: '/articles/' }, { label: category, path: categoryPath }, { label: `第 ${currentPage} 頁`, path }], Astro.site)];
+---
+<Base title={`${category}文章｜第 ${currentPage} 頁`} description={`閱讀三傑益康整理的${category}文章，從日常問題認識健康與營養。`} jsonLd={schema}>
+  <section class="section"><div class="wrap content-wrap">
+    <Breadcrumb items={[{ label: '首頁', href: '/' }, { label: '健康文章', href: '/articles/' }, { label: category, href: categoryPath }, { label: `第 ${currentPage} 頁` }]} />
+    <header class="content-intro"><h1>{category} · 第 {currentPage} 頁</h1></header>
+    <ArticleList articles={articles} category={category} categories={categories} currentPage={currentPage} totalPages={totalPages} />
+  </div></section>
+</Base>

@@ -2,24 +2,19 @@
 import Base from '../layouts/Base.astro';
 import SectionHead from '../components/SectionHead.astro';
 import ContactButtons from '../components/ContactButtons.astro';
-import { SITE, CONTACT, PROCESS, TEAM } from '../data/site';
+import { SITE, CONTACT, TEAM } from '../data/site';
+import { u } from '../lib/url';
+const purposes = [
+  { title: '內容反映與更正', detail: '請附文章網址、需要確認的段落，以及可供核對的資料。', subject: '三傑益康｜內容反映與更正' },
+  { title: '品牌與內容合作', detail: '請說明合作品牌、希望處理的主題與聯絡方式。', subject: '三傑益康｜品牌與內容合作' },
+  { title: '商品資訊與企業需求', detail: '請附商品名稱，以及希望了解的規格或採購需求。', subject: '三傑益康｜商品資訊與企業需求' },
+];
 ---
-<Base title="聯絡我們" description={`${SITE.name}聯絡方式：電話 ${CONTACT.phone.label}、Email、Facebook 與 Instagram。商品洽詢、節慶送禮與通路合作。`}>
-  <section class="section">
-    <div class="wrap">
-      <SectionHead level="h1" eyebrow="CONTACT" title="聯絡我們" lead="日常保健 × 節慶送禮 × 通路合作，歡迎透過社群私訊或電話洽詢。" />
-      <dl class="facts contact-facts">
-        <div><dt>電話</dt><dd><a href={CONTACT.phone.href} data-ga-contact={CONTACT.phone.ga}>{CONTACT.phone.label}</a></dd></div>
-        <div><dt>公司 Email</dt><dd><a href={CONTACT.email.href} data-ga-contact={CONTACT.email.ga}>{CONTACT.email.label}</a></dd></div>
-        <div><dt>聯絡窗口</dt><dd>{TEAM.map((m) => `${m.en} ${m.name}`).join('、')}</dd></div>
-      </dl>
-      <ContactButtons />
-    </div>
-  </section>
-  <section class="section section-sage">
-    <div class="wrap">
-      <SectionHead eyebrow="商品洽詢流程" title="從了解，到安心選擇。" />
-      <ol class="process">{PROCESS.map((s) => <li><strong>{s.title}</strong><span>{s.desc}</span></li>)}</ol>
-    </div>
-  </section>
+<Base title="聯絡我們" description={`${SITE.name}的內容反映、更正、品牌合作與商品資訊聯絡方式。`}>
+  <section class="section"><div class="wrap">
+    <SectionHead level="h1" title="聯絡我們" lead="內容更正、讀者意見與合作詢問，請透過以下方式聯絡。" />
+    <dl class="facts contact-facts"><div><dt>電話</dt><dd><a href={CONTACT.phone.href} data-ga-contact={CONTACT.phone.ga}>{CONTACT.phone.label}</a></dd></div><div><dt>公司 Email</dt><dd><a href={CONTACT.email.href} data-ga-contact={CONTACT.email.ga}>{CONTACT.email.label}</a></dd></div><div><dt>聯絡窗口</dt><dd>{TEAM.map((m) => `${m.en} ${m.name}`).join('、')}</dd></div></dl>
+    <ContactButtons />
+  </div></section>
+  <section class="section section-sage"><div class="wrap"><SectionHead title="先說明你的需求" lead="選擇主題後會開啟電子郵件程式，你可以補上相關內容再寄出。" /><div class="card-grid">{purposes.map((purpose) => <article class="card"><h3>{purpose.title}</h3><p>{purpose.detail}</p><a class="btn btn-outline" href={`${CONTACT.email.href}?subject=${encodeURIComponent(purpose.subject)}`} data-ga-contact="email">以 Email 聯絡</a></article>)}</div><p class="more"><a href={u('/editorial-policy/')}>查看編輯與更正原則</a></p></div></section>
 </Base>
