@@ -2,7 +2,7 @@
 import { u } from '../lib/url';
 import '../styles/tokens.css';
 import '../styles/site.css';
-import { getImage } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import { SITE, CONTACT, DISCLAIMER } from '../data/site';
 import { IS_PRODUCTION, GA_ID, GSC_TOKEN, SHOP_URL } from '../lib/env';
 import { shoppingLink } from '../lib/commerce.mjs';
@@ -11,6 +11,7 @@ import media from '../data/content-images.json';
 import { getPublishedArticles } from '../lib/content';
 import Icon from '../components/Icon.astro';
 import ImageViewer from '../components/content/ImageViewer.astro';
+import brandMark from '../assets/published-site/brand-mark.png';
 
 interface Props {
   title?: string;           // 不含站名；首頁留空
@@ -94,7 +95,8 @@ const headerCategories = [...categoryOrder.filter((name) => articleCategories.in
       <div class="masthead-utility"><div class="wrap utility-inner"><a href={u('/about/')}>三傑益康</a><nav aria-label="網站資訊"><a href={u('/authors/')}>編輯團隊</a><a href={u('/editorial-policy/')}>編輯原則</a>{CONTACT.length > 0 && <a href={u('/contact/')}>聯絡我們</a>}</nav></div></div>
       <div class="wrap header-inner">
         <a class="brand" href={u('/')} aria-label={`${SITE.name} 首頁`}>
-          <span class="brand-title">三傑益康<span class="brand-subtitle">健康生活・營養・保健品判讀</span></span>
+          <Image src={brandMark} alt="" width={104} height={90} loading="eager" />
+          <span class="brand-title">三傑益康<span class="brand-subtitle">健康生活與營養</span></span>
         </a>
         {path !== u('/search/') && <><form class="masthead-search" role="search" action={u('/search/')} method="get"><label for="site-query">搜尋文章</label><div><input id="site-query" type="search" name="q" placeholder="輸入關鍵字" required /><button type="submit"><Icon name="search" />搜尋</button></div></form><a class="mobile-search-link" href={u('/search/')}><Icon name="search" />搜尋</a></>}
       </div>
@@ -117,7 +119,7 @@ const headerCategories = [...categoryOrder.filter((name) => articleCategories.in
     <footer class="site-footer" data-pagefind-ignore>
       <div class="wrap footer-inner">
         <div>
-          <a class="brand footer-brand" href={u('/')} aria-label={`${SITE.name} 首頁`}><span class="brand-title">三傑益康<span class="brand-subtitle">健康生活・營養・保健品判讀</span></span></a>
+          <a class="brand footer-brand" href={u('/')} aria-label={`${SITE.name} 首頁`}><Image src={brandMark} alt="" width={80} height={69} loading="lazy" /><span class="brand-title">三傑益康<span class="brand-subtitle">健康生活與營養</span></span></a>
           <p class="motto">健康生活、飲食營養與保健品判讀</p>
         </div>
         <div class="footer-cols">
